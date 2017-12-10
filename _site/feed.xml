@@ -2,12 +2,203 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>dmc</title>
-    <description>欢迎来到我的个人站~</description>
+    <description>欢迎来到我的博客</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 09 Dec 2017 00:25:52 +0800</pubDate>
-    <lastBuildDate>Sat, 09 Dec 2017 00:25:52 +0800</lastBuildDate>
+    <pubDate>Sun, 10 Dec 2017 15:41:25 +0800</pubDate>
+    <lastBuildDate>Sun, 10 Dec 2017 15:41:25 +0800</lastBuildDate>
     <generator>Jekyll v3.5.2</generator>
+    
+      <item>
+        <title>个人博客搭建教程</title>
+        <description>&lt;p&gt;  先写写我的博客的搭建教程吧，希望能帮到需要的人。&lt;/p&gt;
+
+&lt;h2 id=&quot;总体情况&quot;&gt;总体情况&lt;/h2&gt;
+
+&lt;p&gt;  我的博客搭建环境是在mac，主要是使用了jekyll框架搭建，之前看网上的教程都是使用hexo，自己之前也是用hexo试过，不过过了几天，发现了一个问题，就是平时在家主要是用windows，然后每次修改就比较麻烦，于是就用了&lt;a href=&quot;https://www.jekyll.com.cn/&quot;&gt;jekyll&lt;/a&gt;来搭建，网站部署在github上。使用jekyll的好吃也很明显，就是它是静态的网站，如果想写微博，机器只需要一个git和一个markdown编辑器就可以了,如果说你不，这也是我使用的主要的原因，主题模板也是使用了网上的一个大牛的-&amp;gt;&lt;a href=&quot;http://baixin.io&quot;&gt;大牛的博客&lt;/a&gt;，对，还要说一点，搭建环境最好是在mac或者linux操作系统上，windows实在是太智商捉急了。&lt;/p&gt;
+
+&lt;h2 id=&quot;环境搭建&quot;&gt;环境搭建&lt;/h2&gt;
+
+&lt;p&gt;  以下的搭建是在mac环境下进行的&lt;/p&gt;
+
+&lt;h3 id=&quot;ruby&quot;&gt;Ruby&lt;/h3&gt;
+
+&lt;p&gt;首先是ruby的环境安装，mac自带ruby环境，不过自己用时发现版本过低，是要2.1以上，于是重新安装，本来电脑中有homebrew，想用homebrew安装，但不知为何，反正失败了，后面就改用rvm，具体过程如下：&lt;/p&gt;
+
+&lt;h4 id=&quot;rvm安装&quot;&gt;rvm安装&lt;/h4&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;curl -L https://get.rvm.io | bash -s stable
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;载入rvm环境&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;source&lt;/span&gt; ~/.rvm/scripts/rvm
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;版本检查&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;rvm -v
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h4 id=&quot;通过rvm安装ruby&quot;&gt;通过rvm安装ruby&lt;/h4&gt;
+
+&lt;p&gt;查看可以选择的版本&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;rvm list known
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;会出现下图&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;pic1.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;接着开始安装，泡杯咖啡的时间就ok了&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;rvm install 2.4
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;确认是否安装成功&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ruby -v
+gem -v
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;jekyll&quot;&gt;jekyll&lt;/h3&gt;
+
+&lt;p&gt;jekyll的环境安装&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;gem install jekyll
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;确认jekyll已安装&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;jekyll -v
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;bundler&quot;&gt;bundler&lt;/h3&gt;
+
+&lt;p&gt;bundler安装&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-shelll&quot;&gt;gem install bundler
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;bundler查看&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;bundler -v
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;###以上用于本地环境的搭建，环境搭建好后就简单了&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;jekyll new my-awesome-site
+&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;my-awesome-site
+jekyll serve
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;窗口不能关闭，用浏览器访问localhost:4000就可以了&lt;/p&gt;
+
+&lt;h3 id=&quot;git-环境搭建&quot;&gt;git 环境搭建&lt;/h3&gt;
+
+&lt;p&gt;git主要是用与github，而github主要是因为其中的github page(你写博客总是希望发布到互联网上的吧。。。还可以顺便和非计算机专业的妹子吹个牛，岂不是美滋滋)，githubpage的介绍可以看&lt;a href=&quot;https://pages.github.com/&quot;&gt;这里&lt;/a&gt;，主要是充当了一个服务器，省去了很多的麻烦。&lt;/p&gt;
+
+&lt;p&gt;首先是github账号的注册。。。emmm跳过了&lt;/p&gt;
+
+&lt;p&gt;之后“https://github.com/{你注册时的username}”就是你的github主页了&lt;/p&gt;
+
+&lt;h3 id=&quot;github-page的搭建&quot;&gt;github page的搭建&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;pic2.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;如上图选择Repositories,然后选择New&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;pic3.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;想关选项就类似上图吧，开源协议就填GPL协议吧&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;pic4.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;拉到下方，选择choose a theme这个按钮，跳转后点击select theme就可以，再访问https://{你的username}.github.io 你发现了什么，okay。&lt;/p&gt;
+
+&lt;p&gt;接着是需要生成一对秘钥，将公钥添加到github上，具体原理就不多说了，这一部分可以看我的另外一篇文章，“github初始化设置”&lt;/p&gt;
+
+&lt;h4 id=&quot;至此github-page的页面也可用了&quot;&gt;至此github page的页面也可用了&lt;/h4&gt;
+
+&lt;p&gt;接着就是将你本地的博客上传到github page上了。首先是选个主题，直接去&lt;a href=&quot;http://jekyllthemes.org/&quot;&gt;jekyll主题&lt;/a&gt;可以找到一个不错的主题，直接下载下来，将这些文件上传到github中那个刚刚创建的仓库就可以了。另外说一句，要更改博客相关样式需要在下载下来的文件夹的根目录下的__config.yml文件中修改，里面应该都有注释，不难。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;pic7.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;复制其中的内容&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git clone 上面复制了的内容
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;然后通过cd命令到该文件夹的更目录下，将之前下载下来的主题替换这之中全部的文件&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git add .
+git commit -m &lt;span class=&quot;s2&quot;&gt;&quot;update&quot;&lt;/span&gt;
+git push
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;等文件上传成功，这时，在安装ruby时泡的咖啡估计也冷了，可以倒了，杯子洗好再去看看你的主页&lt;/p&gt;
+
+&lt;h2 id=&quot;博文编写&quot;&gt;博文编写&lt;/h2&gt;
+
+&lt;p&gt;接下来就简单了，直接使用markdown编辑器，mac下我用的是Typora，windows下用的是markdownpad，多说一句，markdown还是一个很不错的编辑工具的，可以制作简历，写文档等等，优点可以自行百度。&lt;/p&gt;
+
+&lt;p&gt;直接将写好的文件存入_posts中就可以了。&lt;/p&gt;
+
+&lt;p&gt;当然别忘记了去看看下载下来的主题中自带的_posts中的文章，保证格式正确（主要是开头一些title，layout之类的）&lt;/p&gt;
+
+&lt;p&gt;差不多，总的来说就是这样。&lt;/p&gt;
+
+</description>
+        <pubDate>Sun, 10 Dec 2017 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2017/12/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/</link>
+        <guid isPermaLink="true">http://localhost:4000/2017/12/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/</guid>
+        
+        <category>杂记</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>出发了，少年</title>
+        <description>&lt;p&gt;    这是我的第一篇的博客，趁着今天周六，想写一篇杂记，写点东西，但一时对着电脑，竟不知如何提笔，算了，还是想到什么写什么了。&lt;/p&gt;
+
+&lt;p&gt;   还是先讲讲为何会想到搭建这个博客吧。要说初衷，是因为专业，因为职业，作为计算机行业，不断学习肯定是必须的，想到之前在微博上看见这么一句话，“比你聪明的人比你还努力，为什么还要努力”，虽说是个段子，别的行业我不清楚，前半句来形容我们专业是再恰当不过的了，无论是之前acm在役时，还是之后转服务器，转工程之后，总是会碰见许多的问题，遇到问题也更多是去百度去谷歌，不过自己也没有黄蓉母亲那种过目不忘的本领，还是希望记下这些问题和解决方法，进行一个简单的归纳总结，当然如果能帮到其他同学更是我的荣幸。还有就是想练练文笔，想写点东西，这其实更多得和我的成长有关系，我爸年轻的时候（给我爸吹一波：））很是痴迷文学，常常通宵写文章，也是曾是出版社的记者，当地作协的骨干，然而颇有讽刺意味的是，我的语文成绩一直很差，数学很强，这正与我爸完全相反。进入大学后，也不再需要去学习语文，竟不知为何想写点东西，特别是在acm退役之后（恩。。。终于不害怕偏题了，虽然没有题目）。还有我觉得我是一个比较有归属感，集体感的人，无论是之前大学时候的学生会，集训队，还是现在刚开的博客。&lt;/p&gt;
+
+&lt;h2 id=&quot;秋招&quot;&gt;秋招&lt;/h2&gt;
+
+&lt;p&gt;  说到秋招，也有意思，顺便也写了吧。要说到秋招，正式开始准备应该是七月初，就是邱神和狸神来我学校这边&lt;del&gt;疯狂打dota&lt;/del&gt;游山玩水之后吧。那时候ck和yxh都回家了，一个人在寝室开刷leetcode，之前一年多在集训队还是挺勤得，所以刷起来也还是很快的。之后就开始各种看面经……//TODO&lt;/p&gt;
+
+&lt;p&gt;   我想了想，这流水账记起来一下子真记不完，细节一些东西还是下次再写吧，反正这博客也没人看，这篇文章我想也之后也没什么兄弟会看，还是先打个TODO吧。总的来说秋招很遗憾，主要的问题也还是自己几个月学的东西太多了，缺乏一定的实践去沉淀，还有就是运气不太好，刚来杭州一两天就面瘫了，然后连着一个多星期的面试，真的是什么都撞到一起，那段时间心情也挺复杂的，满怀信心来杭，突然就当头一棒，连个“分布式”的音都发不出来，别说面带笑容了，我一笑都怕面试的师兄揍我（其实面试的师兄都还是很不错的，会引导我，主要是自己平时笑就比较夸张，然后emmm那时候的笑就是“蔑笑”，就是嘴角只扬一边的那种，哈哈哈，画面感好强），然后医生又说什么容易拉下后遗症（兄弟啊，他娘的我老婆都还没娶啊）……不说了，说多了矫情，无论是之前给我内推的认识的和不认识的师兄，还是面试时指引我前进的师兄，亦或是现在实习时一直为我解惑的师兄，都是我生命中非常宝贵的一笔财富（现在还记得初三时，我爸送给我的一句话，“身边的良师益友会是你一生的财富，愈久愈回味无穷”）。&lt;/p&gt;
+
+&lt;h2 id=&quot;烂尾&quot;&gt;烂尾&lt;/h2&gt;
+
+&lt;p&gt;  这一个月实习也渐渐熟悉了很多的东西，学校那边的毕业设计也差不多了，自己的面瘫也快好了，这周在下班的零碎的时间也搭起了这个博客，这几天会把之前秋招以及现在实习学到的写起来，不忘初心，奔跑吧，骄傲的少年（我想了想，之后肯定会写一篇关于摇滚乐的杂记吧，写写那些人那些事，真的很喜欢，有兴趣的也可以加我网易云音乐id是“haochun1”,名字是他妈得蠢啊）。&lt;/p&gt;
+
+&lt;h2 id=&quot;结语&quot;&gt;结语&lt;/h2&gt;
+
+&lt;p&gt;人这一生，也就一次，岂敢将就，青春将逝，态度不失，生命不息，折腾不止&lt;/p&gt;
+</description>
+        <pubDate>Sat, 09 Dec 2017 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2017/12/%E5%87%BA%E5%8F%91%E4%BA%86-%E5%B0%91%E5%B9%B4/</link>
+        <guid isPermaLink="true">http://localhost:4000/2017/12/%E5%87%BA%E5%8F%91%E4%BA%86-%E5%B0%91%E5%B9%B4/</guid>
+        
+        <category>杂记</category>
+        
+        
+      </item>
     
   </channel>
 </rss>
