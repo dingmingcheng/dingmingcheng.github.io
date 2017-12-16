@@ -6,17 +6,17 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <title>个人博客搭建教程</title>
-  <meta name="description" content="  先写写我的博客的搭建教程吧，希望能帮到需要的人。">
+  <title>github sshkey添加</title>
+  <meta name="description" content="SSH配置">
   <meta name="author" content="leopardpan">
 
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="个人博客搭建教程">
-  <meta name="twitter:description" content="  先写写我的博客的搭建教程吧，希望能帮到需要的人。">
+  <meta name="twitter:title" content="github sshkey添加">
+  <meta name="twitter:description" content="SSH配置">
   
   <meta property="og:type" content="article">
-  <meta property="og:title" content="个人博客搭建教程">
-  <meta property="og:description" content="  先写写我的博客的搭建教程吧，希望能帮到需要的人。">
+  <meta property="og:title" content="github sshkey添加">
+  <meta property="og:description" content="SSH配置">
   
   <link rel="icon" type="image/png" href="/images/favicon.png" />
   <link href="/images/favicon.png" rel="shortcut icon" type="image/png">
@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="/css/main.css">
   <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 
-  <link rel="canonical" href="http://localhost:4000/2017/12/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/">
+  <link rel="canonical" href="http://localhost:4000/2017/12/github%E5%88%9D%E5%A7%8B%E5%8C%96%E8%AE%BE%E7%BD%AE/">
   <link rel="alternate" type="application/rss+xml" title="dmc" href="http://localhost:4000/feed.xml">
   
   <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
@@ -156,10 +156,10 @@
         <div class="content-wrapper__inner">
             <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
   <header class="post-header">
-    <h1 class="post-title">个人博客搭建教程</h1>
+    <h1 class="post-title">github sshkey添加</h1>
     <div class="post-meta">
       <img src="/images/calendar.png" width="20px"/> 
-      <time datetime="2017-12-10 00:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2017-12-10</time>  
+      <time datetime="2017-12-16 00:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2017-12-16</time>  
          
       <span id="busuanzi_container_page_pv"> | 阅读：<span id="busuanzi_value_page_pv"></span>次</span>
     </p>
@@ -167,156 +167,48 @@
   </header>
 
   <section class="post">
-    <p>  先写写我的博客的搭建教程吧，希望能帮到需要的人。</p>
+    <h2 id="ssh配置">SSH配置</h2>
 
-<h2 id="总体情况">总体情况</h2>
+<p>ssh配置其实很简单，网上也有很多的教程，直接给个传送门吧，一步一步来就OK了，<a href="https://jingyan.baidu.com/article/a65957f4e91ccf24e77f9b11.html">windows下github ssh配置</a>，<a href="http://blog.csdn.net/yin1031468524/article/details/50096723">linux/mac下配置</a></p>
 
-<p>  我的博客搭建环境是在mac，主要是使用了jekyll框架搭建，之前看网上的教程都是使用hexo，自己之前也是用hexo试过，不过过了几天，发现了一个问题，就是平时在家主要是用windows，然后每次修改就比较麻烦，于是就用了<a href="https://www.jekyll.com.cn/">jekyll</a>来搭建，网站部署在github上。使用jekyll的好吃也很明显，就是它是静态的网站，如果想写微博，机器只需要一个git和一个markdown编辑器就可以了,如果说你不，这也是我使用的主要的原因，主题模板也是使用了网上的一个大牛的-&gt;<a href="http://baixin.io">大牛的博客</a>，对，还要说一点，搭建环境最好是在mac或者linux操作系统上，windows实在是太智商捉急了。</p>
+<h2 id="git协议">git协议</h2>
 
-<h2 id="环境搭建">环境搭建</h2>
+<p>通常使用git时，进行push，pull，clone等操作时，是使用https协议和SSH协议</p>
 
-<p>  以下的搭建是在mac环境下进行的</p>
-
-<h3 id="ruby">Ruby</h3>
-
-<p>首先是ruby的环境安装，mac自带ruby环境，不过自己用时发现版本过低，是要2.1以上，于是重新安装，本来电脑中有homebrew，想用homebrew安装，但不知为何，反正失败了，后面就改用rvm，具体过程如下：</p>
-
-<h4 id="rvm安装">rvm安装</h4>
-
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code>curl -L https://get.rvm.io | bash -s stable
+<div class="language-shell highlighter-rouge"><pre class="highlight"><code><span class="c">#通常将远程仓库拉到本地有以下两种方式</span>
+git clone git@github.com:dingmingcheng/dingmingcheng.github.io.git
+git clone https://github.com/dingmingcheng/dingmingcheng.github.io.git
 </code></pre>
 </div>
 
-<p>载入rvm环境</p>
+<p>而在使用时，https协议可以说是非常不方便的，因为每次都需要输入密码，而git主要是使用SSH协议进行数据加密传输。</p>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code><span class="nb">source</span> ~/.rvm/scripts/rvm
+<h3 id="ssh协议">ssh协议</h3>
+
+<p>百度百科上是这么介绍ssh协议的：“SSH 为 <a href="https://baike.baidu.com/item/Secure%20Shell">Secure Shell</a> 的缩写，由 IETF 的网络小组（Network Working Group）所制定；SSH 为建立在应用层基础上的安全协议。SSH 是目前较可靠，专为<a href="https://baike.baidu.com/item/%E8%BF%9C%E7%A8%8B%E7%99%BB%E5%BD%95">远程登录</a>会话和其他网络服务提供安全性的协议。利用 SSH 协议可以有效防止远程管理过程中的信息泄露问题。SSH最初是UNIX系统上的一个程序，后来又迅速扩展到其他操作平台。SSH在正确使用时可弥补网络中的漏洞。SSH客户端适用于多种平台。几乎所有UNIX平台—包括<a href="https://baike.baidu.com/item/HP-UX">HP-UX</a>、<a href="https://baike.baidu.com/item/Linux">Linux</a>、<a href="https://baike.baidu.com/item/AIX">AIX</a>、<a href="https://baike.baidu.com/item/Solaris/3517">Solaris</a>、<a href="https://baike.baidu.com/item/Digital">Digital</a> <a href="https://baike.baidu.com/item/UNIX">UNIX</a>、<a href="https://baike.baidu.com/item/Irix">Irix</a>，以及其他平台，都可运行SSH”</p>
+
+<p>简单来说，当我们需要远程登录其他的机器时，ssh就起了很大的作用，使用登陆主要有两种方式，第一种是口令登陆，就是你知道远程机器的密码，每次连接时通过口令登陆即可。（服务端默认端口是22）</p>
+
+<div class="language-shell highlighter-rouge"><pre class="highlight"><code>ssh user@host
 </code></pre>
 </div>
 
-<p>版本检查</p>
+<p>之后输入密码即可。</p>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code>rvm -v
+<p>还有一种就是通过公钥，首先需要在本机上生成一对密钥，mac/linux下时在当前用户的文件夹下</p>
+
+<div class="language-shell highlighter-rouge"><pre class="highlight"><code><span class="nb">cd</span> ~/.ssh/
+ls
 </code></pre>
 </div>
 
-<h4 id="通过rvm安装ruby">通过rvm安装ruby</h4>
+<p>里面会有id_rsa和id_rsa.pub，其中id_rsa.pub中的内容就是你生成公钥，也就是要存在远程主机上的秘钥。</p>
 
-<p>查看可以选择的版本</p>
+<p>登陆原理很简单，就是用户将自己的公钥储存在远程主机上。登录的时候，远程主机将一个随机字符串发送给客户端，客户端根据自己的私钥加密这个随机字符串之后再发送给远程服务器。远程主机用事先储存的公钥进行解密，如果成功，就证明用户是可信的，直接允许登录shell，不再要求密码。</p>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code>rvm list known
-</code></pre>
-</div>
+<h2 id="结尾">结尾</h2>
 
-<p>会出现下图</p>
-
-<p><img src="pic1.png" alt="" /></p>
-
-<p>接着开始安装，泡杯咖啡的时间就ok了</p>
-
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code>rvm install 2.4
-</code></pre>
-</div>
-
-<p>确认是否安装成功</p>
-
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code>ruby -v
-gem -v
-</code></pre>
-</div>
-
-<h3 id="jekyll">jekyll</h3>
-
-<p>jekyll的环境安装</p>
-
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code>gem install jekyll
-</code></pre>
-</div>
-
-<p>确认jekyll已安装</p>
-
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code>jekyll -v
-</code></pre>
-</div>
-
-<h3 id="bundler">bundler</h3>
-
-<p>bundler安装</p>
-
-<pre><code class="language-shelll">gem install bundler
-</code></pre>
-
-<p>bundler查看</p>
-
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code>bundler -v
-</code></pre>
-</div>
-
-<p>###以上用于本地环境的搭建，环境搭建好后就简单了</p>
-
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code>jekyll new my-awesome-site
-<span class="nb">cd </span>my-awesome-site
-jekyll serve
-</code></pre>
-</div>
-
-<p>窗口不能关闭，用浏览器访问localhost:4000就可以了</p>
-
-<h3 id="git-环境搭建">git 环境搭建</h3>
-
-<p>git主要是用与github，而github主要是因为其中的github page(你写博客总是希望发布到互联网上的吧。。。还可以顺便和非计算机专业的妹子吹个牛，岂不是美滋滋)，githubpage的介绍可以看<a href="https://pages.github.com/">这里</a>，主要是充当了一个服务器，省去了很多的麻烦。</p>
-
-<p>首先是github账号的注册。。。emmm跳过了</p>
-
-<p>之后“https://github.com/{你注册时的username}”就是你的github主页了</p>
-
-<h3 id="github-page的搭建">github page的搭建</h3>
-
-<p><img src="pic2.png" alt="" /></p>
-
-<p>如上图选择Repositories,然后选择New</p>
-
-<p><img src="pic3.png" alt="" /></p>
-
-<p>想关选项就类似上图吧，开源协议就填GPL协议吧</p>
-
-<p><img src="pic4.png" alt="" /></p>
-
-<p>拉到下方，选择choose a theme这个按钮，跳转后点击select theme就可以，再访问https://{你的username}.github.io 你发现了什么，okay。</p>
-
-<p>接着是需要生成一对秘钥，将公钥添加到github上，具体原理就不多说了，这一部分可以看我的另外一篇文章，“github初始化设置”</p>
-
-<h4 id="至此github-page的页面也可用了">至此github page的页面也可用了</h4>
-
-<p>接着就是将你本地的博客上传到github page上了。首先是选个主题，直接去<a href="http://jekyllthemes.org/">jekyll主题</a>可以找到一个不错的主题，直接下载下来，将这些文件上传到github中那个刚刚创建的仓库就可以了。另外说一句，要更改博客相关样式需要在下载下来的文件夹的根目录下的__config.yml文件中修改，里面应该都有注释，不难。</p>
-
-<p><img src="pic7.png" alt="" /></p>
-
-<p>复制其中的内容</p>
-
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code>git clone 上面复制了的内容
-</code></pre>
-</div>
-
-<p>然后通过cd命令到该文件夹的更目录下，将之前下载下来的主题替换这之中全部的文件</p>
-
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code>git add .
-git commit -m <span class="s2">"update"</span>
-git push
-</code></pre>
-</div>
-
-<p>等文件上传成功，这时，在安装ruby时泡的咖啡估计也冷了，可以倒了，杯子洗好再去看看你的主页</p>
-
-<h2 id="博文编写">博文编写</h2>
-
-<p>接下来就简单了，直接使用markdown编辑器，mac下我用的是Typora，windows下用的是markdownpad，多说一句，markdown还是一个很不错的编辑工具的，可以制作简历，写文档等等，优点可以自行百度。</p>
-
-<p>直接将写好的文件存入_posts中就可以了。</p>
-
-<p>当然别忘记了去看看下载下来的主题中自带的_posts中的文章，保证格式正确（主要是开头一些title，layout之类的）</p>
-
-<p>差不多，总的来说就是这样。</p>
-
+<p>其实以上只是个人的一些简单的理解，如有错误希望提出，说到加密，其实涉及到了另外一个计算机分支网络安全，计算机发展太快，希望自己能脚踏实地，一点一滴去积累，异步一个脚印。</p>
 
 
   </section>
@@ -386,15 +278,10 @@ git push
        <ul class="pager">
         
         <li class="previous">
-            <a href="/2017/12/%E5%87%BA%E5%8F%91%E4%BA%86-%E5%B0%91%E5%B9%B4/" data-toggle="tooltip" data-placement="top" title="出发了，少年">上一篇：  <span>出发了，少年</span>
+            <a href="/2017/12/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/" data-toggle="tooltip" data-placement="top" title="个人博客搭建教程">上一篇：  <span>个人博客搭建教程</span>
             </a>
         </li>
         
-        
-        <li class="next">
-            <a href="/2017/12/github%E5%88%9D%E5%A7%8B%E5%8C%96%E8%AE%BE%E7%BD%AE/" data-toggle="tooltip" data-placement="top" title="github sshkey添加">下一篇：  <span>github sshkey添加</span>
-            </a>
-        </li>
         
     </ul>
 </section>

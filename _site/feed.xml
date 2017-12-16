@@ -5,9 +5,63 @@
     <description>欢迎来到我的博客</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 10 Dec 2017 15:49:27 +0800</pubDate>
-    <lastBuildDate>Sun, 10 Dec 2017 15:49:27 +0800</lastBuildDate>
+    <pubDate>Sat, 16 Dec 2017 13:02:05 +0800</pubDate>
+    <lastBuildDate>Sat, 16 Dec 2017 13:02:05 +0800</lastBuildDate>
     <generator>Jekyll v3.5.2</generator>
+    
+      <item>
+        <title>github sshkey添加</title>
+        <description>&lt;h2 id=&quot;ssh配置&quot;&gt;SSH配置&lt;/h2&gt;
+
+&lt;p&gt;ssh配置其实很简单，网上也有很多的教程，直接给个传送门吧，一步一步来就OK了，&lt;a href=&quot;https://jingyan.baidu.com/article/a65957f4e91ccf24e77f9b11.html&quot;&gt;windows下github ssh配置&lt;/a&gt;，&lt;a href=&quot;http://blog.csdn.net/yin1031468524/article/details/50096723&quot;&gt;linux/mac下配置&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;git协议&quot;&gt;git协议&lt;/h2&gt;
+
+&lt;p&gt;通常使用git时，进行push，pull，clone等操作时，是使用https协议和SSH协议&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;#通常将远程仓库拉到本地有以下两种方式&lt;/span&gt;
+git clone git@github.com:dingmingcheng/dingmingcheng.github.io.git
+git clone https://github.com/dingmingcheng/dingmingcheng.github.io.git
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;而在使用时，https协议可以说是非常不方便的，因为每次都需要输入密码，而git主要是使用SSH协议进行数据加密传输。&lt;/p&gt;
+
+&lt;h3 id=&quot;ssh协议&quot;&gt;ssh协议&lt;/h3&gt;
+
+&lt;p&gt;百度百科上是这么介绍ssh协议的：“SSH 为 &lt;a href=&quot;https://baike.baidu.com/item/Secure%20Shell&quot;&gt;Secure Shell&lt;/a&gt; 的缩写，由 IETF 的网络小组（Network Working Group）所制定；SSH 为建立在应用层基础上的安全协议。SSH 是目前较可靠，专为&lt;a href=&quot;https://baike.baidu.com/item/%E8%BF%9C%E7%A8%8B%E7%99%BB%E5%BD%95&quot;&gt;远程登录&lt;/a&gt;会话和其他网络服务提供安全性的协议。利用 SSH 协议可以有效防止远程管理过程中的信息泄露问题。SSH最初是UNIX系统上的一个程序，后来又迅速扩展到其他操作平台。SSH在正确使用时可弥补网络中的漏洞。SSH客户端适用于多种平台。几乎所有UNIX平台—包括&lt;a href=&quot;https://baike.baidu.com/item/HP-UX&quot;&gt;HP-UX&lt;/a&gt;、&lt;a href=&quot;https://baike.baidu.com/item/Linux&quot;&gt;Linux&lt;/a&gt;、&lt;a href=&quot;https://baike.baidu.com/item/AIX&quot;&gt;AIX&lt;/a&gt;、&lt;a href=&quot;https://baike.baidu.com/item/Solaris/3517&quot;&gt;Solaris&lt;/a&gt;、&lt;a href=&quot;https://baike.baidu.com/item/Digital&quot;&gt;Digital&lt;/a&gt; &lt;a href=&quot;https://baike.baidu.com/item/UNIX&quot;&gt;UNIX&lt;/a&gt;、&lt;a href=&quot;https://baike.baidu.com/item/Irix&quot;&gt;Irix&lt;/a&gt;，以及其他平台，都可运行SSH”&lt;/p&gt;
+
+&lt;p&gt;简单来说，当我们需要远程登录其他的机器时，ssh就起了很大的作用，使用登陆主要有两种方式，第一种是口令登陆，就是你知道远程机器的密码，每次连接时通过口令登陆即可。（服务端默认端口是22）&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ssh user@host
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;之后输入密码即可。&lt;/p&gt;
+
+&lt;p&gt;还有一种就是通过公钥，首先需要在本机上生成一对密钥，mac/linux下时在当前用户的文件夹下&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; ~/.ssh/
+ls
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;里面会有id_rsa和id_rsa.pub，其中id_rsa.pub中的内容就是你生成公钥，也就是要存在远程主机上的秘钥。&lt;/p&gt;
+
+&lt;p&gt;登陆原理很简单，就是用户将自己的公钥储存在远程主机上。登录的时候，远程主机将一个随机字符串发送给客户端，客户端根据自己的私钥加密这个随机字符串之后再发送给远程服务器。远程主机用事先储存的公钥进行解密，如果成功，就证明用户是可信的，直接允许登录shell，不再要求密码。&lt;/p&gt;
+
+&lt;h2 id=&quot;结尾&quot;&gt;结尾&lt;/h2&gt;
+
+&lt;p&gt;其实以上只是个人的一些简单的理解，如有错误希望提出，说到加密，其实涉及到了另外一个计算机分支网络安全，计算机发展太快，希望自己能脚踏实地，一点一滴去积累，异步一个脚印。&lt;/p&gt;
+</description>
+        <pubDate>Sat, 16 Dec 2017 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2017/12/github%E5%88%9D%E5%A7%8B%E5%8C%96%E8%AE%BE%E7%BD%AE/</link>
+        <guid isPermaLink="true">http://localhost:4000/2017/12/github%E5%88%9D%E5%A7%8B%E5%8C%96%E8%AE%BE%E7%BD%AE/</guid>
+        
+        <category>git</category>
+        
+        
+      </item>
     
       <item>
         <title>个人博客搭建教程</title>
