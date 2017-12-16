@@ -2,120 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7cfb5ba9-4664-4d9a-a62d-ddba9c9927ff" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/README.md" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/about/index.html" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/payimg/alipayimg.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/payimg/weipayimg.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/Wifilist/PastedGraphic.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/Wifilist/WLAN.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/Wifilist/entitlement.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/Wifilist/infoplist.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/Wifilist/systemVersion.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/Xcode8/image1.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/Xcode8/image10.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/Xcode8/image11.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/Xcode8/image12.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/Xcode8/image13.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/Xcode8/image2.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/Xcode8/image3.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/Xcode8/image4.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/Xcode8/image5.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/Xcode8/image6.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/Xcode8/image7.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/Xcode8/image8.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/Xcode8/image9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/codeless/code.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/codeless/codeless1.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/codeless/codeless2.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/codeless/image01.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/codeless/image02.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/codeless/image03.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/codeless/image04.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/codeless/image05.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/codeless/img1.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/codeless/img2.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/iBeacon/iBeacon.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/icon/image01.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/jekyll/image1.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/markdown/image1.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/markdown/image2.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/markdown/image3.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/tfimg/ck.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/tfimg/image01.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/tfimg/image02.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/tfimg/ipod1.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/tfimg/ipod2.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/tfimg/logo.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/tfimg/mouse1.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/tfimg/mouse2.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/tfimg/notebook.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/tfimg/wb.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/_site/images/posts/tfimg/wq.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/payimg/alipayimg.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/payimg/weipayimg.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/Wifilist/PastedGraphic.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/Wifilist/WLAN.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/Wifilist/entitlement.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/Wifilist/infoplist.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/Wifilist/systemVersion.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/Xcode8/image1.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/Xcode8/image10.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/Xcode8/image11.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/Xcode8/image12.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/Xcode8/image13.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/Xcode8/image2.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/Xcode8/image3.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/Xcode8/image4.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/Xcode8/image5.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/Xcode8/image6.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/Xcode8/image7.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/Xcode8/image8.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/Xcode8/image9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/codeless/code.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/codeless/codeless1.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/codeless/codeless2.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/codeless/image01.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/codeless/image02.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/codeless/image03.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/codeless/image04.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/codeless/image05.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/codeless/img1.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/codeless/img2.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/iBeacon/iBeacon.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/icon/image01.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/jekyll/image1.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/markdown/image1.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/markdown/image2.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/markdown/image3.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/tfimg/ck.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/tfimg/image01.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/tfimg/image02.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/tfimg/ipod1.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/tfimg/ipod2.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/tfimg/logo.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/tfimg/mouse1.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/tfimg/mouse2.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/tfimg/notebook.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/tfimg/wb.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/images/posts/tfimg/wq.jpg" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/_site/images/avatar.jpg" afterPath="$PROJECT_DIR$/_site/images/avatar.jpg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/_site/images/background-cover.jpg" afterPath="$PROJECT_DIR$/_site/images/background-cover.jpg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/_site/images/favicon.png" afterPath="$PROJECT_DIR$/_site/images/favicon.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/images/avatar.jpg" afterPath="$PROJECT_DIR$/images/avatar.jpg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/images/background-cover.jpg" afterPath="$PROJECT_DIR$/images/background-cover.jpg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/images/favicon.png" afterPath="$PROJECT_DIR$/images/favicon.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/_config.yml" afterPath="$PROJECT_DIR$/_config.yml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/_includes/footer.html" afterPath="$PROJECT_DIR$/_includes/footer.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/_includes/new-old.html" afterPath="$PROJECT_DIR$/_includes/new-old.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/_site/404.html" afterPath="$PROJECT_DIR$/_site/404.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/_site/archive/index.html" afterPath="$PROJECT_DIR$/_site/archive/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/_site/css/main.css" afterPath="$PROJECT_DIR$/_site/css/main.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/_site/feed.xml" afterPath="$PROJECT_DIR$/_site/feed.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/_site/index.html" afterPath="$PROJECT_DIR$/_site/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/_site/sitemap.xml" afterPath="$PROJECT_DIR$/_site/sitemap.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/_site/tags/index.html" afterPath="$PROJECT_DIR$/_site/tags/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/about.md" afterPath="$PROJECT_DIR$/about.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/css/main.css" afterPath="$PROJECT_DIR$/css/main.css" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -384,12 +272,12 @@
       <updated>1512791421777</updated>
       <workItem from="1512791423105" duration="3455000" />
       <workItem from="1512883031209" duration="12000" />
-      <workItem from="1512891583981" duration="86000" />
+      <workItem from="1512891583981" duration="365000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="3553000" />
+    <option name="totallyTimeSpent" value="3832000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
