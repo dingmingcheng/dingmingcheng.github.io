@@ -5,9 +5,92 @@
     <description>欢迎来到我的博客</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 16 Dec 2017 13:02:05 +0800</pubDate>
-    <lastBuildDate>Sat, 16 Dec 2017 13:02:05 +0800</lastBuildDate>
+    <pubDate>Sat, 23 Dec 2017 15:34:34 +0800</pubDate>
+    <lastBuildDate>Sat, 23 Dec 2017 15:34:34 +0800</lastBuildDate>
     <generator>Jekyll v3.5.2</generator>
+    
+      <item>
+        <title>mybatis自动生成工具</title>
+        <description>&lt;h2 id=&quot;前言&quot;&gt;前言&lt;/h2&gt;
+
+&lt;p&gt;实习也一个月多了，也学到了很多的东西，记得刚开始接触开发时，其中感觉最恶心的是mybatis的相关文件的编写，主要是Mapper文件，之前自己的个人项目中，数据库相关的字段命名都是很不规范的，而且字段也少。所以一开始接触企业项目时真的是头痛，mapper基础文件又长。第二天感觉这样效率很低，就自己写了一个java程序，通过在建模工具中导出的sql建表语句进行生成需要的部分。最近不知怎么突然感觉肯定有相应的工具类，果然。。。（记得有个老哥一开始还自己写了getter和setter的自动生成的脚本，哈哈哈），既然有这些比较稳定的工具，肯定比自己几小时写的程序好用的。&lt;/p&gt;
+
+&lt;h2 id=&quot;使用&quot;&gt;使用&lt;/h2&gt;
+
+&lt;h3 id=&quot;相关文件下载&quot;&gt;相关文件下载&lt;/h3&gt;
+
+&lt;p&gt;1.&lt;a href=&quot;https://github.com/mybatis/generator/releases&amp;gt;[](https://github.com/mybatis/generator/releases/tag/mybatis-generator-1.3.2)&quot;&gt;Mybatis-Generator&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;2.数据库驱动jar包，我这里使用的是mysql，可以去&lt;a href=&quot;http://mvnrepository.com/artifact/mysql/mysql-connector-java&quot;&gt;这里&lt;/a&gt; 下载，我使用的是5.1.44版本&lt;/p&gt;
+
+&lt;h3 id=&quot;具体操作过程&quot;&gt;具体操作过程&lt;/h3&gt;
+
+&lt;p&gt;1.解压下载的Mybatis-Generator的压缩包，进入lib文件夹下&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;pic1.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;放入之前已经下载好的mysql驱动包，以及创建好generatorConfig.xml配置文件，再创建相关的生成的类的文件夹&lt;/p&gt;
+
+&lt;p&gt;2.generatorConfig.xml文件，还是比较好修改的&lt;/p&gt;
+
+&lt;div class=&quot;language-xml highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;&amp;lt;!DOCTYPE generatorConfiguration
+  PUBLIC &quot;-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN&quot;
+  &quot;http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd&quot;&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;generatorConfiguration&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;c&quot;&gt;&amp;lt;!--数据库驱动--&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;classPathEntry&lt;/span&gt;    &lt;span class=&quot;na&quot;&gt;location=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;mysql-connector-java-5.1.44.jar&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;context&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;id=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;DB2Tables&quot;&lt;/span&gt;    &lt;span class=&quot;na&quot;&gt;targetRuntime=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;MyBatis3&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;commentGenerator&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;suppressDate&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;value=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;true&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;suppressAllComments&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;value=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;true&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/commentGenerator&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;c&quot;&gt;&amp;lt;!--数据库链接地址账号密码--&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;jdbcConnection&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;driverClass=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;com.mysql.jdbc.Driver&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;connectionURL=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;jdbc:mysql://127.0.0.1:3306/dmc-test?characterEncoding=utf8&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;userId=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;root&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;password=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;******&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/jdbcConnection&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;javaTypeResolver&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;forceBigDecimals&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;value=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;false&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/javaTypeResolver&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;c&quot;&gt;&amp;lt;!--生成Model类存放位置--&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;javaModelGenerator&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;targetPackage=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;test.model&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;targetProject=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;src&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;enableSubPackages&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;value=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;true&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;trimStrings&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;value=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;true&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/javaModelGenerator&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;c&quot;&gt;&amp;lt;!--生成映射文件存放位置--&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;sqlMapGenerator&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;targetPackage=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;test.mapping&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;targetProject=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;src&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;enableSubPackages&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;value=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;true&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/sqlMapGenerator&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;c&quot;&gt;&amp;lt;!--生成Dao类存放位置--&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;javaClientGenerator&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;type=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;XMLMAPPER&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;targetPackage=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;test.dao&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;targetProject=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;src&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;enableSubPackages&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;value=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;true&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/javaClientGenerator&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;c&quot;&gt;&amp;lt;!--生成对应表及类名--&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;table&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;tableName=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;testtable&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;domainObjectName=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Testtable&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;enableCountByExample=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;false&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;enableUpdateByExample=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;false&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;enableDeleteByExample=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;false&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;enableSelectByExample=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;false&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;selectByExampleQueryId=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;false&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&amp;lt;/table&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/context&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/generatorConfiguration&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;3.在lib文件夹下输入以下命令&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;java -jar mybatis-generator-core-1.3.5.jar -configfile generatorConfig.xml -overwrite
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;4.完成&lt;/p&gt;
+
+&lt;h2 id=&quot;结尾&quot;&gt;结尾&lt;/h2&gt;
+
+&lt;p&gt;通过工具的使用，可以大大提高工作的效率，而且文件的准确性也没问题，之后也可以使用起来。&lt;/p&gt;
+</description>
+        <pubDate>Sat, 16 Dec 2017 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2017/12/mybatis%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E5%B7%A5%E5%85%B7/</link>
+        <guid isPermaLink="true">http://localhost:4000/2017/12/mybatis%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E5%B7%A5%E5%85%B7/</guid>
+        
+        <category>mybatis</category>
+        
+        
+      </item>
     
       <item>
         <title>github sshkey添加</title>
