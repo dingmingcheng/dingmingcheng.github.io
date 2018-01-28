@@ -6,16 +6,16 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <title>mybatis自动生成工具</title>
+  <title>记一次简单OOM分析</title>
   <meta name="description" content="前言">
   <meta name="author" content="leopardpan">
 
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="mybatis自动生成工具">
+  <meta name="twitter:title" content="记一次简单OOM分析">
   <meta name="twitter:description" content="前言">
   
   <meta property="og:type" content="article">
-  <meta property="og:title" content="mybatis自动生成工具">
+  <meta property="og:title" content="记一次简单OOM分析">
   <meta property="og:description" content="前言">
   
   <link rel="icon" type="image/png" href="/images/favicon.png" />
@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="/css/main.css">
   <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 
-  <link rel="canonical" href="http://localhost:4000/2017/12/mybatis%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E5%B7%A5%E5%85%B7/">
+  <link rel="canonical" href="http://localhost:4000/2018/01/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%AE%80%E5%8D%95OOM%E5%88%86%E6%9E%90/">
   <link rel="alternate" type="application/rss+xml" title="dmc" href="http://localhost:4000/feed.xml">
   
   <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
@@ -156,10 +156,10 @@
         <div class="content-wrapper__inner">
             <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
   <header class="post-header">
-    <h1 class="post-title">mybatis自动生成工具</h1>
+    <h1 class="post-title">记一次简单OOM分析</h1>
     <div class="post-meta">
       <img src="/images/calendar.png" width="20px"/> 
-      <time datetime="2017-12-16 00:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2017-12-16</time>  
+      <time datetime="2018-01-08 00:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2018-01-08</time>  
          
       <span id="busuanzi_container_page_pv"> | 阅读：<span id="busuanzi_value_page_pv"></span>次</span>
     </p>
@@ -169,75 +169,133 @@
   <section class="post">
     <h2 id="前言">前言</h2>
 
-<p>实习也一个月多了，也学到了很多的东西，记得刚开始接触开发时，其中感觉最恶心的是mybatis的相关文件的编写，主要是Mapper文件，之前自己的个人项目中，数据库相关的字段命名都是很不规范的，而且字段也少。所以一开始接触企业项目时真的是头痛，mapper基础文件又长。第二天感觉这样效率很低，就自己写了一个java程序，通过在建模工具中导出的sql建表语句进行生成需要的部分。最近不知怎么突然感觉肯定有相应的工具类，果然。。。（记得有个老哥一开始还自己写了getter和setter的自动生成的脚本，哈哈哈），既然有这些比较稳定的工具，肯定比自己几小时写的程序好用的。</p>
+<p>说到OOM，out of memory也是一个广泛存在的问题，如果线上出了问题，临时抱佛脚肯定是不行的，所以未雨绸缪是必须的。</p>
 
-<h2 id="使用">使用</h2>
+<h2 id="测试过程">测试过程</h2>
 
-<h3 id="相关文件下载">相关文件下载</h3>
+<h3 id="首先是程序的准备">首先是程序的准备</h3>
 
-<p>1.<a href="https://github.com/mybatis/generator/releases/tag/mybatis-generator-1.3.2">Mybatis-Generator</a></p>
+<p>准备了两个OOM的程序</p>
 
-<p>2.数据库驱动jar包，我这里使用的是mysql，可以去<a href="http://mvnrepository.com/artifact/mysql/mysql-connector-java">这里</a> 下载，我使用的是5.1.44版本</p>
+<pre><code class="language-Java">
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-<h3 id="具体操作过程">具体操作过程</h3>
+/**
+ * @Author: dingmingcheng
+ * @Description
+ * @Date: Created in 下午8:15 2018/1/8
+ * @Modifyed By:
+ */
+public class test {
+    static class task implements Runnable{
 
-<p>1.解压下载的Mybatis-Generator的压缩包，进入lib文件夹下</p>
+        Long key;
+        Long value;
 
-<p><img src="pic1.png" alt="" /></p>
+        task(Long key, Long value) {
+            this.key = key;
+            this.value = value;
+        }
+        @Override
+        public void run() {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public static void main(String[] args) {
+        ExecutorService threads = Executors.newFixedThreadPool(10);
+        while (true) {
+            threads.execute(new task(100L, 100L));
+        }
+    }
+}
+</code></pre>
 
-<p>放入之前已经下载好的mysql驱动包，以及创建好generatorConfig.xml配置文件，再创建相关的生成的类的文件夹</p>
+<div class="language-java highlighter-rouge"><pre class="highlight"><code>
+<span class="kn">import</span> <span class="nn">java.util.concurrent.ExecutorService</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.concurrent.Executors</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.*</span><span class="o">;</span>
 
-<p>2.generatorConfig.xml文件，还是比较好修改的</p>
-
-<div class="language-xml highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
-<span class="cp">&lt;!DOCTYPE generatorConfiguration
-  PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
-  "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd"&gt;</span>
-<span class="nt">&lt;generatorConfiguration&gt;</span>
-    <span class="c">&lt;!--数据库驱动--&gt;</span>
-    <span class="nt">&lt;classPathEntry</span>    <span class="na">location=</span><span class="s">"mysql-connector-java-5.1.44.jar"</span><span class="nt">/&gt;</span>
-    <span class="nt">&lt;context</span> <span class="na">id=</span><span class="s">"DB2Tables"</span>    <span class="na">targetRuntime=</span><span class="s">"MyBatis3"</span><span class="nt">&gt;</span>
-        <span class="nt">&lt;commentGenerator&gt;</span>
-            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"suppressDate"</span> <span class="na">value=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
-            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"suppressAllComments"</span> <span class="na">value=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
-        <span class="nt">&lt;/commentGenerator&gt;</span>
-        <span class="c">&lt;!--数据库链接地址账号密码--&gt;</span>
-        <span class="nt">&lt;jdbcConnection</span> <span class="na">driverClass=</span><span class="s">"com.mysql.jdbc.Driver"</span> <span class="na">connectionURL=</span><span class="s">"jdbc:mysql://127.0.0.1:3306/dmc-test?characterEncoding=utf8"</span> <span class="na">userId=</span><span class="s">"root"</span> <span class="na">password=</span><span class="s">"******"</span><span class="nt">&gt;</span>
-        <span class="nt">&lt;/jdbcConnection&gt;</span>
-        <span class="nt">&lt;javaTypeResolver&gt;</span>
-            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"forceBigDecimals"</span> <span class="na">value=</span><span class="s">"false"</span><span class="nt">/&gt;</span>
-        <span class="nt">&lt;/javaTypeResolver&gt;</span>
-        <span class="c">&lt;!--生成Model类存放位置--&gt;</span>
-        <span class="nt">&lt;javaModelGenerator</span> <span class="na">targetPackage=</span><span class="s">"test.model"</span> <span class="na">targetProject=</span><span class="s">"src"</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"enableSubPackages"</span> <span class="na">value=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
-            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"trimStrings"</span> <span class="na">value=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
-        <span class="nt">&lt;/javaModelGenerator&gt;</span>
-        <span class="c">&lt;!--生成映射文件存放位置--&gt;</span>
-        <span class="nt">&lt;sqlMapGenerator</span> <span class="na">targetPackage=</span><span class="s">"test.mapping"</span> <span class="na">targetProject=</span><span class="s">"src"</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"enableSubPackages"</span> <span class="na">value=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
-        <span class="nt">&lt;/sqlMapGenerator&gt;</span>
-        <span class="c">&lt;!--生成Dao类存放位置--&gt;</span>
-        <span class="nt">&lt;javaClientGenerator</span> <span class="na">type=</span><span class="s">"XMLMAPPER"</span> <span class="na">targetPackage=</span><span class="s">"test.dao"</span> <span class="na">targetProject=</span><span class="s">"src"</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"enableSubPackages"</span> <span class="na">value=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
-        <span class="nt">&lt;/javaClientGenerator&gt;</span>
-        <span class="c">&lt;!--生成对应表及类名--&gt;</span>
-        <span class="nt">&lt;table</span> <span class="na">tableName=</span><span class="s">"testtable"</span> <span class="na">domainObjectName=</span><span class="s">"Testtable"</span> <span class="na">enableCountByExample=</span><span class="s">"false"</span> <span class="na">enableUpdateByExample=</span><span class="s">"false"</span> <span class="na">enableDeleteByExample=</span><span class="s">"false"</span> <span class="na">enableSelectByExample=</span><span class="s">"false"</span> <span class="na">selectByExampleQueryId=</span><span class="s">"false"</span><span class="nt">&gt;&lt;/table&gt;</span>
-    <span class="nt">&lt;/context&gt;</span>
-<span class="nt">&lt;/generatorConfiguration&gt;</span>
+<span class="cm">/**
+ * @Author: dingmingcheng
+ * @Description
+ * @Date: Created in 下午8:15 2018/1/8
+ * @Modifyed By:
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">test2</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">List</span><span class="o">&lt;</span><span class="n">Long</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Long</span><span class="o">&gt;();</span>
+        <span class="k">while</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">Long</span> <span class="n">it</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Long</span><span class="o">(</span><span class="mi">123L</span><span class="o">);</span>
+            <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">it</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
 </code></pre>
 </div>
 
-<p>3.在lib文件夹下输入以下命令</p>
+<h3 id="具体实现过程">具体实现过程</h3>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code>java -jar mybatis-generator-core-1.3.5.jar -configfile generatorConfig.xml -overwrite
+<pre><code class="language-Shell">#编译这两个文件
+javac test
+javac test2
+#运行,设置堆内存大小，方便观察结果
+java -Xmx20m test 
+java -Xmx5m test2 
+#查看进程Id
+jps
+</code></pre>
+
+<p>在之前的两个程序分别出现以下的情况</p>
+
+<p>第一个程序</p>
+
+<p><img src="pic1.png" alt="" />
+第二个程序</p>
+
+<p><img src="pic2.png" alt="" /></p>
+
+<p>使用jmap生产dump文件并且进行分析:</p>
+
+<div class="language-shell highlighter-rouge"><pre class="highlight"><code><span class="c">#通过·jmap根据pid生成dump文件</span>
+jmap -dump:live,format<span class="o">=</span>b,file<span class="o">=</span>heap.hprof <span class="o">[</span>pid]
+<span class="c">#通过内置的jhat指令进行分析</span>
+jhat heap.hprof
 </code></pre>
 </div>
 
-<p>4.完成</p>
+<p><img src="pic3.png" alt="" /></p>
 
-<h2 id="结尾">结尾</h2>
+<p>结果查看地址：localhost:7000/</p>
 
-<p>通过工具的使用，可以大大提高工作的效率，而且文件的准确性也没问题，之后也可以使用起来。</p>
+<p><img src="pic4.png" alt="" /></p>
+
+<p>ecplise中有自带的MAT分析工具，应该会更加地直观，网上还是有很多关于它的使用的</p>
+
+<h3 id="知识发散">知识发散</h3>
+
+<p>在进行测试时，发现OOM还是有很多种情况的，目前接触到这3种情况：</p>
+
+<p>1.GC overhead limit exceede</p>
+
+<p>大意是指98%的时间回收了不到2%的内存，jvm就认为这程序肯定会发生OOM，不再让它继续跑下去了，有兴趣也可以通过jstat命令去查看GC的情况，会出现大量的Full GC</p>
+
+<p>2.Java heap space</p>
+
+<p>超了设定的堆内存</p>
+
+<p>3.unable to create new native thread</p>
+
+<p>这问题时偶然碰见的，在程序一中，用newCachedThreadPool代替newFixedThreadPool就会出现，这其实和本机所允许的最大线程数有关，线程数超过了机子设定值时就会出现，通过ulimit -u也可以看见当前机子上的线程数量。</p>
+
+<p>emmm…之后碰到还可以再补充</p>
+
+<p><em>知易行难，“实践是检验真理的唯一标准”！</em></p>
+
 
 
   </section>
@@ -307,13 +365,13 @@
        <ul class="pager">
         
         <li class="previous">
-            <a href="/2017/12/github%E5%88%9D%E5%A7%8B%E5%8C%96%E8%AE%BE%E7%BD%AE/" data-toggle="tooltip" data-placement="top" title="github sshkey添加">上一篇：  <span>github sshkey添加</span>
+            <a href="/2017/12/mysql%E4%B8%AD%E7%9A%84explain%E7%9A%84%E4%BD%BF%E7%94%A8/" data-toggle="tooltip" data-placement="top" title="mysql中的explain的使用">上一篇：  <span>mysql中的explain的使用</span>
             </a>
         </li>
         
         
         <li class="next">
-            <a href="/2017/12/%E8%BD%AC-jvm%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%92%8C%E6%B5%81%E7%A8%8B/" data-toggle="tooltip" data-placement="top" title="[转]jvm工作原理和流程">下一篇：  <span>[转]jvm工作原理和流程</span>
+            <a href="/2018/01/mysql%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95%E4%B8%8Esysbench/" data-toggle="tooltip" data-placement="top" title="mysql基准测试与sysbench">下一篇：  <span>mysql基准测试与sysbench</span>
             </a>
         </li>
         

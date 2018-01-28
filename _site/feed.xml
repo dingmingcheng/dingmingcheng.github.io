@@ -5,9 +5,348 @@
     <description>欢迎来到我的博客</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 23 Dec 2017 22:16:46 +0800</pubDate>
-    <lastBuildDate>Sat, 23 Dec 2017 22:16:46 +0800</lastBuildDate>
+    <pubDate>Sun, 28 Jan 2018 16:21:26 +0800</pubDate>
+    <lastBuildDate>Sun, 28 Jan 2018 16:21:26 +0800</lastBuildDate>
     <generator>Jekyll v3.5.2</generator>
+    
+      <item>
+        <title>mysql基准测试与sysbench</title>
+        <description>&lt;h2 id=&quot;前言&quot;&gt;前言&lt;/h2&gt;
+
+&lt;p&gt;之前常常会看到QPS，TPS这些字样，确实这些指标也是衡量数据库性能的非常重要的指标，而基准测试则是抛开业务，对机子上的数据库进行测试，自己也尝试用sysbench做了一遍，废话少说。&lt;/p&gt;
+
+&lt;p&gt;##测试过程&lt;/p&gt;
+
+&lt;p&gt;测试主要依赖自带的oltp.lua这个脚本文件，不同系统应该会在不同文件夹下，我的是mac，位于/usr/local/Cellar/sysbench/1.0.11_1/share/sysbench/tests/include/oltp_legacy/oltp.lua，文件搜索一下也能找到。&lt;/p&gt;
+
+&lt;p&gt;其次是要准备一个叫做sbtest的库&lt;/p&gt;
+
+&lt;p&gt;测试过程比较简单，主要包含三个部分：1.准备数据；2.执行测试；3.清理数据&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;准备数据&lt;/p&gt;
+
+    &lt;p&gt;准备数据就是初始化表&lt;/p&gt;
+
+    &lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sysbench /usr/local/Cellar/sysbench/1.0.11_1/share/sysbench/tests/include/oltp_legacy/oltp.lua --mysql-host&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;127.0.0.1 --mysql-port&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;3306 --mysql-user&lt;span class=&quot;o&quot;&gt;={&lt;/span&gt;username&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; --mysql-password&lt;span class=&quot;o&quot;&gt;={&lt;/span&gt;password&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; --oltp-test-mode&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;complex --oltp-tables-count&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;10 --oltp-table-size&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;100000 --threads&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;10 --time&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;120 --report-interval&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;10 prepare
+&lt;/code&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+
+    &lt;p&gt;其中涉及到的主要参数（当然可以执行sysbench –help了解各参数的具体解释）：&lt;/p&gt;
+
+    &lt;p&gt;其中主要有mysql和oltp的参数，其实都比较易懂，mysql的就是连接相关参数&lt;/p&gt;
+
+    &lt;p&gt;oltp-test-mode这边选的是complex模式，有这些模式：simple(简单select测试),complex(事务测试),nontrx(非事务测试),sp(存储过程)&lt;/p&gt;
+
+    &lt;p&gt;oltp-tables-count就是初始化表的数量，这里为10张表&lt;/p&gt;
+
+    &lt;p&gt;oltp-table-size初始化表的大小&lt;/p&gt;
+
+    &lt;p&gt;thread代表开启线程数&lt;/p&gt;
+
+    &lt;p&gt;time代表最长测试时间&lt;/p&gt;
+
+    &lt;p&gt;report-interval表示每10秒输出一次测试进度报告&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;执行测试&lt;/p&gt;
+
+    &lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sysbench /usr/local/Cellar/sysbench/1.0.11_1/share/sysbench/tests/include/oltp_legacy/oltp.lua --mysql-host&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;127.0.0.1 --mysql-port&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;3306 --mysql-user&lt;span class=&quot;o&quot;&gt;={&lt;/span&gt;username&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; --mysql-password&lt;span class=&quot;o&quot;&gt;={&lt;/span&gt;password&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; --oltp-test-mode&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;complex --oltp-tables-count&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;10 --oltp-table-size&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;100000 --threads&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;10 --time&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;120 --report-interval&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;10 run &amp;gt;&amp;gt; /Users/dingmingcheng/Desktop/sysbenchtest.log
+&lt;/code&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+
+    &lt;p&gt;测试结果重定向至测试报告中&lt;/p&gt;
+
+    &lt;p&gt;结果如下，数据还是很详细的&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;pic1.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;清理数据&lt;/p&gt;
+
+    &lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sysbench /usr/local/Cellar/sysbench/1.0.11_1/share/sysbench/tests/include/oltp_legacy/oltp.lua --mysql-host&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;127.0.0.1 --mysql-port&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;3306 --mysql-user&lt;span class=&quot;o&quot;&gt;={&lt;/span&gt;username&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; --mysql-password&lt;span class=&quot;o&quot;&gt;={&lt;/span&gt;password&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; --oltp-tables-count&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;10 cleanup
+&lt;/code&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;结尾&quot;&gt;结尾&lt;/h2&gt;
+
+&lt;p&gt;当然，sysbench除了mysql的测试还可以进行别的测试，如cpu测试，memory测试，文件io测试等等，有兴趣可以看看这篇&lt;a href=&quot;https://www.cnblogs.com/chenmh/p/5866058.html&quot;&gt;文章&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Sat, 13 Jan 2018 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2018/01/mysql%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95%E4%B8%8Esysbench/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/01/mysql%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95%E4%B8%8Esysbench/</guid>
+        
+        <category>mysql</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>记一次简单OOM分析</title>
+        <description>&lt;h2 id=&quot;前言&quot;&gt;前言&lt;/h2&gt;
+
+&lt;p&gt;说到OOM，out of memory也是一个广泛存在的问题，如果线上出了问题，临时抱佛脚肯定是不行的，所以未雨绸缪是必须的。&lt;/p&gt;
+
+&lt;h2 id=&quot;测试过程&quot;&gt;测试过程&lt;/h2&gt;
+
+&lt;h3 id=&quot;首先是程序的准备&quot;&gt;首先是程序的准备&lt;/h3&gt;
+
+&lt;p&gt;准备了两个OOM的程序&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Java&quot;&gt;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+/**
+ * @Author: dingmingcheng
+ * @Description
+ * @Date: Created in 下午8:15 2018/1/8
+ * @Modifyed By:
+ */
+public class test {
+    static class task implements Runnable{
+
+        Long key;
+        Long value;
+
+        task(Long key, Long value) {
+            this.key = key;
+            this.value = value;
+        }
+        @Override
+        public void run() {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public static void main(String[] args) {
+        ExecutorService threads = Executors.newFixedThreadPool(10);
+        while (true) {
+            threads.execute(new task(100L, 100L));
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.util.concurrent.ExecutorService&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.util.concurrent.Executors&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.util.*&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;cm&quot;&gt;/**
+ * @Author: dingmingcheng
+ * @Description
+ * @Date: Created in 下午8:15 2018/1/8
+ * @Modifyed By:
+ */&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;test2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Long&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;list&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ArrayList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Long&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;();&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;Long&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Long&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;123L&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;list&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;it&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;具体实现过程&quot;&gt;具体实现过程&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Shell&quot;&gt;#编译这两个文件
+javac test
+javac test2
+#运行,设置堆内存大小，方便观察结果
+java -Xmx20m test 
+java -Xmx5m test2 
+#查看进程Id
+jps
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;在之前的两个程序分别出现以下的情况&lt;/p&gt;
+
+&lt;p&gt;第一个程序&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;pic1.png&quot; alt=&quot;&quot; /&gt;
+第二个程序&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;pic2.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;使用jmap生产dump文件并且进行分析:&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;#通过·jmap根据pid生成dump文件&lt;/span&gt;
+jmap -dump:live,format&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;b,file&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;heap.hprof &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid]
+&lt;span class=&quot;c&quot;&gt;#通过内置的jhat指令进行分析&lt;/span&gt;
+jhat heap.hprof
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;pic3.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;结果查看地址：localhost:7000/&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;pic4.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;ecplise中有自带的MAT分析工具，应该会更加地直观，网上还是有很多关于它的使用的&lt;/p&gt;
+
+&lt;h3 id=&quot;知识发散&quot;&gt;知识发散&lt;/h3&gt;
+
+&lt;p&gt;在进行测试时，发现OOM还是有很多种情况的，目前接触到这3种情况：&lt;/p&gt;
+
+&lt;p&gt;1.GC overhead limit exceede&lt;/p&gt;
+
+&lt;p&gt;大意是指98%的时间回收了不到2%的内存，jvm就认为这程序肯定会发生OOM，不再让它继续跑下去了，有兴趣也可以通过jstat命令去查看GC的情况，会出现大量的Full GC&lt;/p&gt;
+
+&lt;p&gt;2.Java heap space&lt;/p&gt;
+
+&lt;p&gt;超了设定的堆内存&lt;/p&gt;
+
+&lt;p&gt;3.unable to create new native thread&lt;/p&gt;
+
+&lt;p&gt;这问题时偶然碰见的，在程序一中，用newCachedThreadPool代替newFixedThreadPool就会出现，这其实和本机所允许的最大线程数有关，线程数超过了机子设定值时就会出现，通过ulimit -u也可以看见当前机子上的线程数量。&lt;/p&gt;
+
+&lt;p&gt;emmm…之后碰到还可以再补充&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;知易行难，“实践是检验真理的唯一标准”！&lt;/em&gt;&lt;/p&gt;
+
+</description>
+        <pubDate>Mon, 08 Jan 2018 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2018/01/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%AE%80%E5%8D%95OOM%E5%88%86%E6%9E%90/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/01/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%AE%80%E5%8D%95OOM%E5%88%86%E6%9E%90/</guid>
+        
+        <category>java</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>mysql中的explain的使用</title>
+        <description>&lt;h2 id=&quot;前言&quot;&gt;前言&lt;/h2&gt;
+
+&lt;p&gt;由于开源简单等优势，mysql近几年也变得越来越火，最近看到一个报告，报告显示中国开发者常用的数据库中，mysql稳居第一，使用比例高达79.0%，而且在“全球开发者常用的数据库”中，mysql也稳居第一，高达55.6%。数据库的io一直是系统性能调优中非常重要的一环，写出好的sql语句也是开发者必须具备的基本素质之一，explain的合理使用也可以帮助开发者对sql语句进行相关的优化。这篇博文也讲讲explain中一些参数。&lt;/p&gt;
+
+&lt;p&gt;(注：目前使用的mysql版本为mysql 5.7.20,和5.6.34)&lt;/p&gt;
+
+&lt;h2 id=&quot;内容&quot;&gt;内容&lt;/h2&gt;
+
+&lt;h3 id=&quot;基本列&quot;&gt;基本列&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;pic1.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;​	其中主要包括id, select_type, table, partitions, type, possible_keys, key, key_len, ref, rows, filtered, Extra&lt;/p&gt;
+
+&lt;h3 id=&quot;id&quot;&gt;id&lt;/h3&gt;
+
+&lt;p&gt;​	比较好理解的列，包含了一个编号，标志了select所属的行，代表了唯一性。&lt;/p&gt;
+
+&lt;h3 id=&quot;select_type&quot;&gt;select_type&lt;/h3&gt;
+
+&lt;p&gt;这一列显示了对应行是简单还是复杂select，简单类型表示为SIMPLE，而复杂类型又分为三大类：简单子查询，所谓的派生表（from子句中的子查询），以及union查询。而复杂类型中又主要包括PRIMARY，SUBQUERY, DERIVED, UNION&lt;/p&gt;
+
+&lt;p&gt;PRIMARY是指复杂语句中最外层的部分&lt;/p&gt;
+
+&lt;p&gt;SUBQUERY我理解为不在from语句中的select部分&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;pic2.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;DERIVED是指在from语句中的select部分&lt;/p&gt;
+
+&lt;p&gt;注：mysql5.7种应该是对临时表进行了优化，因为经过测试，在5.6中，就算没有limit 1也会有DERIVED的select，而在5.7中，如果不加limit 1，就只会有一个SIMPLE类型的查询。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;pic3.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;UNION&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;pic4.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;UNION RESULT&lt;/p&gt;
+
+&lt;p&gt;注：在5.6中，执行上述union语句是这样的：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;pic5.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;table&quot;&gt;table&lt;/h3&gt;
+
+&lt;p&gt;这一列显示了对应行正在访问哪个表。可以在这一列中从上往下观察Mysql的关联优化器为查询选择的顺序，emmm，mysql的查询执行计划总是左侧深度优先树，有兴趣可以另外去了解&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;pic6.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;partitions&quot;&gt;partitions&lt;/h3&gt;
+
+&lt;p&gt;此列和分区有关，目前均显示NULL，有兴趣的同学可以自行了解。&lt;/p&gt;
+
+&lt;h3 id=&quot;type重要&quot;&gt;type（重要）&lt;/h3&gt;
+
+&lt;p&gt;type是指Mysql绝对如何查找表中的行。依次从最优到最差&lt;/p&gt;
+
+&lt;p&gt;system，const，eq_ref，ref，fulltext，ref_or_null，unique_subquery，index_subquery，range，index_merge，index，ALL，除了all之外，其他的type都可以使用到索引，除了index_merge之外，其他type只可以用到一个索引。&lt;/p&gt;
+
+&lt;p&gt;平时常常出现的主要可以分为六类，效率由差到好,如果说你的效率是1，2，那么你就需要考虑进行优化了。&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;All，使用了全表扫描，效率当然差了&lt;/li&gt;
+  &lt;li&gt;index，索引全表扫描，把索引从头到尾扫一遍&lt;/li&gt;
+  &lt;li&gt;range，索引范围扫描，常见于使用&amp;gt;,&amp;lt;,is null,between ,in ,like等运算符的查询中。&lt;/li&gt;
+  &lt;li&gt;ref，等值查询，但没有主键和唯一索引的要求&lt;/li&gt;
+  &lt;li&gt;Const,system,使用了唯一索引或者主键,&lt;/li&gt;
+  &lt;li&gt;Null，是指mysql在优化阶段分解查询语句，在执行阶段甚至不再访问表或者索引，比如在使用min，max会出现&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;possible_keys&quot;&gt;possible_keys&lt;/h3&gt;
+
+&lt;p&gt;显示可以使用的索引，此列表在优化过程的前期创建的，有些索引对后续的查询可能并无作用。&lt;/p&gt;
+
+&lt;h3 id=&quot;key&quot;&gt;key&lt;/h3&gt;
+
+&lt;p&gt;key是实际上是指采用哪一个索引可以最小化查询成本。&lt;/p&gt;
+
+&lt;h3 id=&quot;key_len&quot;&gt;key_len&lt;/h3&gt;
+
+&lt;p&gt;显示了Mysql在索引里使用的字节数,有时候可以用来计算组合索引使用情况，详情可以看看这篇&lt;a href=&quot;https://www.cnblogs.com/gomysql/p/4004244.html&quot;&gt;博客&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;ref&quot;&gt;ref&lt;/h3&gt;
+
+&lt;p&gt;这一列显示了之前的表在key列纪录的索引中查找值所用的列或常量&lt;/p&gt;
+
+&lt;h3 id=&quot;rows&quot;&gt;rows&lt;/h3&gt;
+
+&lt;p&gt;这列代表了Mysql估计为了找到所需的行所读取的行数。当并不代表最终要从表里读取出来的行数。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;通过将所有行的rows列的值想乘，可以粗略估计整个检查会查询的行数&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;filtered&quot;&gt;filtered&lt;/h3&gt;
+
+&lt;p&gt;这一列是指对于一些满足条件（如where语句）的记录数的百分比的一个估算。&lt;/p&gt;
+
+&lt;h3 id=&quot;extra重要&quot;&gt;Extra（重要）&lt;/h3&gt;
+
+&lt;p&gt;在查看网上资料时，也确实感觉其中有很多比较模糊的地方，很多同学也理解有所偏差&lt;/p&gt;
+
+&lt;p&gt;extra显示了一些重要而之前却没有显示的信息。&lt;/p&gt;
+
+&lt;p&gt;1.using index，这里要注意区分type中的index，这里也叫覆盖索引，是指直接查询索引中的数据即可，不会去读数据文件，当你的请求列都可以在该索引中获取时就会出现using index。&lt;/p&gt;
+
+&lt;p&gt;2.using where，这是一个比较模糊，《高性能mysql》中是这么说的“这意味着Mysql服务器在存储引擎检索行后再进行过滤，许多where条件里涉及索引中的列，当（并且如果）它读取索引时，就能被存储引擎检验，因此不是所有带where子句的查询都会显示“using where”。有时他的出现就是一个暗示：查询可以受益于不同的索引”。emmm….仔细读了一遍，书上讲的还是比较清楚的，也就是一个检索行后的过滤….mysql5.6之后还有针对其优化的一个部分：Using index condition&lt;/p&gt;
+
+&lt;p&gt;3.using filesort,如果说排序使用不到索引时，就会出现，常见于order by和group by语句&lt;/p&gt;
+
+&lt;p&gt;4.using temporary，指对查询结果排序时会使用临时表&lt;/p&gt;
+
+</description>
+        <pubDate>Sun, 24 Dec 2017 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2017/12/mysql%E4%B8%AD%E7%9A%84explain%E7%9A%84%E4%BD%BF%E7%94%A8/</link>
+        <guid isPermaLink="true">http://localhost:4000/2017/12/mysql%E4%B8%AD%E7%9A%84explain%E7%9A%84%E4%BD%BF%E7%94%A8/</guid>
+        
+        <category>mysql</category>
+        
+        
+      </item>
     
       <item>
         <title>[转]java基础-内存泄漏与内存溢出</title>
@@ -642,7 +981,7 @@ JVM的类加载是通过ClassLoader及其子类来完成的，类的层次关系
 
 &lt;h3 id=&quot;相关文件下载&quot;&gt;相关文件下载&lt;/h3&gt;
 
-&lt;p&gt;1.&lt;a href=&quot;https://github.com/mybatis/generator/releases&amp;gt;[](https://github.com/mybatis/generator/releases/tag/mybatis-generator-1.3.2)&quot;&gt;Mybatis-Generator&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;1.&lt;a href=&quot;https://github.com/mybatis/generator/releases/tag/mybatis-generator-1.3.2&quot;&gt;Mybatis-Generator&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;2.数据库驱动jar包，我这里使用的是mysql，可以去&lt;a href=&quot;http://mvnrepository.com/artifact/mysql/mysql-connector-java&quot;&gt;这里&lt;/a&gt; 下载，我使用的是5.1.44版本&lt;/p&gt;
 

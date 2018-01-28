@@ -18,11 +18,11 @@ tag: mysql
 
 ![](pic1.png)
 
-其中主要包括id, select_type, table, partitions, type, possible_keys, key, key_len, ref, rows, filtered, Extra
+​	其中主要包括id, select_type, table, partitions, type, possible_keys, key, key_len, ref, rows, filtered, Extra
 
-###id
+### id
 
-比较好理解的列，包含了一个编号，标志了select所属的行，代表了唯一性。
+​	比较好理解的列，包含了一个编号，标志了select所属的行，代表了唯一性。
 
 ### select_type
 
