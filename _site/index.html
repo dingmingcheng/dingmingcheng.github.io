@@ -159,6 +159,48 @@
   <ol class="post-list">
     
     <li>
+      <h2 class="post-list__post-title post-title"><a href="/2018/02/redis-skiplist%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" title="访问 redis-skiplist源码学习">redis-skiplist源码学习</a></h2>
+      <p class="excerpt">前言注：以下代码基于redis-4.0.7redis中有5种数据结构，之前面试时好几次遇到“排行榜”的问题，虽说都答了出来，不过对其底层的实现还是不清楚。抽空去了解学习了一下。也看到了一些比较好的文章，给了我比较大的帮助，为啥 redis 使用跳表(skiplist)而不是使用 red-black？,跳跃表。具体实现数据结构先来看看数据结构，这对理解redis的skiplist会有很大帮助typedef struct zskiplistNode {    sds ele;    doubl...&hellip;</p>
+      <div class="post-list__meta">        
+        <time datetime="2018-02-06 00:00:00 +0800" class="post-list__meta--date date">
+          <img src="/images/calendar.png" width="20px" /> 
+          2018-02-06</time> 
+        <div class = "tag-img-icon">
+          <img src="/images/tag-icon.svg" width="20px" /> 
+        </div>
+        <a href="/tags">
+          <div class = "post-list-icon-mate">
+            <span class="post-list__meta--tags-right">redis</span>
+          </div>
+          <div class = "post-list-small-mate">
+          <a class="btn-border-small" href=/2018/02/redis-skiplist%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/>阅读全文 » </a>
+          </div>
+      </div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
+      <h2 class="post-list__post-title post-title"><a href="/2018/02/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E4%BB%A3%E7%A0%81%E8%A7%A3%E8%AF%BB/" title="访问 redis分布式锁代码解读">redis分布式锁代码解读</a></h2>
+      <p class="excerpt">前言说起锁，其实还是一个很宽泛的概念，在java中，基础的就是synchronized关键字，ReentrantLock，但是就这两个就可以引出非常多的知识点，包括操作系统层面的monitor锁，AQS，volatile等等。不过在分布式环境中，在对共享资源进行操作时（最常见的就是一个秒杀的场景），单机的锁肯定是行不通的，于是就引申出了分布式锁的概念，分布式锁的实现方式有多种，本人才疏学浅：），只能讲讲redis实现的版本。具体实现redis实现的分布式锁网上还是有很多的，我看自己公司也有...&hellip;</p>
+      <div class="post-list__meta">        
+        <time datetime="2018-02-04 00:00:00 +0800" class="post-list__meta--date date">
+          <img src="/images/calendar.png" width="20px" /> 
+          2018-02-04</time> 
+        <div class = "tag-img-icon">
+          <img src="/images/tag-icon.svg" width="20px" /> 
+        </div>
+        <a href="/tags">
+          <div class = "post-list-icon-mate">
+            <span class="post-list__meta--tags-right">redis</span>
+          </div>
+          <div class = "post-list-small-mate">
+          <a class="btn-border-small" href=/2018/02/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E4%BB%A3%E7%A0%81%E8%A7%A3%E8%AF%BB/>阅读全文 » </a>
+          </div>
+      </div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
       <h2 class="post-list__post-title post-title"><a href="/2018/01/%E8%BD%AC-Git%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6%E4%B8%8EGit-Flow%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B/" title="访问 [转]Git版本控制与Git Flow工作流程">[转]Git版本控制与Git Flow工作流程</a></h2>
       <p class="excerpt">本文出处：原文引言编写的目的  通过规范化的流程，使得产品、开发与测试等各个部门更高效的协同工作。  通过规范化的流程使得产品高效稳定运行。背景在多组员，多项目等环境进行协同工作时，如果没有统一规范、统一流程，则会导致额外的工作量，甚至会做无用功。所以要减少版本冲突，减轻不必要的工作，就需要规范化的工作流程。总则  统一使用Git作为版本控制的主要工具。  统一使用GitFlow流程管理控制版本。提交的准则  除了源码相关的东西之外，其他build产生的东西（如：maven的target文...&hellip;</p>
       <div class="post-list__meta">        
@@ -326,90 +368,6 @@
       <hr class="post-list__divider" />
     </li>
     
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2017/12/mybatis%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E5%B7%A5%E5%85%B7/" title="访问 mybatis自动生成工具">mybatis自动生成工具</a></h2>
-      <p class="excerpt">前言实习也一个月多了，也学到了很多的东西，记得刚开始接触开发时，其中感觉最恶心的是mybatis的相关文件的编写，主要是Mapper文件，之前自己的个人项目中，数据库相关的字段命名都是很不规范的，而且字段也少。所以一开始接触企业项目时真的是头痛，mapper基础文件又长。第二天感觉这样效率很低，就自己写了一个java程序，通过在建模工具中导出的sql建表语句进行生成需要的部分。最近不知怎么突然感觉肯定有相应的工具类，果然。。。（记得有个老哥一开始还自己写了getter和setter的自动生...&hellip;</p>
-      <div class="post-list__meta">        
-        <time datetime="2017-12-16 00:00:00 +0800" class="post-list__meta--date date">
-          <img src="/images/calendar.png" width="20px" /> 
-          2017-12-16</time> 
-        <div class = "tag-img-icon">
-          <img src="/images/tag-icon.svg" width="20px" /> 
-        </div>
-        <a href="/tags">
-          <div class = "post-list-icon-mate">
-            <span class="post-list__meta--tags-right">mybatis</span>
-          </div>
-          <div class = "post-list-small-mate">
-          <a class="btn-border-small" href=/2017/12/mybatis%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E5%B7%A5%E5%85%B7/>阅读全文 » </a>
-          </div>
-      </div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2017/12/github%E5%88%9D%E5%A7%8B%E5%8C%96%E8%AE%BE%E7%BD%AE/" title="访问 github sshkey添加">github sshkey添加</a></h2>
-      <p class="excerpt">SSH配置ssh配置其实很简单，网上也有很多的教程，直接给个传送门吧，一步一步来就OK了，windows下github ssh配置，linux/mac下配置git协议通常使用git时，进行push，pull，clone等操作时，是使用https协议和SSH协议#通常将远程仓库拉到本地有以下两种方式git clone git@github.com:dingmingcheng/dingmingcheng.github.io.gitgit clone https://github.com/din...&hellip;</p>
-      <div class="post-list__meta">        
-        <time datetime="2017-12-16 00:00:00 +0800" class="post-list__meta--date date">
-          <img src="/images/calendar.png" width="20px" /> 
-          2017-12-16</time> 
-        <div class = "tag-img-icon">
-          <img src="/images/tag-icon.svg" width="20px" /> 
-        </div>
-        <a href="/tags">
-          <div class = "post-list-icon-mate">
-            <span class="post-list__meta--tags-right">git</span>
-          </div>
-          <div class = "post-list-small-mate">
-          <a class="btn-border-small" href=/2017/12/github%E5%88%9D%E5%A7%8B%E5%8C%96%E8%AE%BE%E7%BD%AE/>阅读全文 » </a>
-          </div>
-      </div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2017/12/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/" title="访问 个人博客搭建教程">个人博客搭建教程</a></h2>
-      <p class="excerpt">  先写写我的博客的搭建教程吧，希望能帮到需要的人。总体情况  我的博客搭建环境是在mac，主要是使用了jekyll框架搭建，之前看网上的教程都是使用hexo，自己之前也是用hexo试过，不过过了几天，发现了一个问题，就是平时在家主要是用windows，然后每次修改就比较麻烦，于是就用了jekyll来搭建，网站部署在github上。使用jekyll的好吃也很明显，就是它是静态的网站，如果想写微博，机器只需要一个git和一个markdown编辑器就可以了,如果说你不，这也是我使用的主要的原因...&hellip;</p>
-      <div class="post-list__meta">        
-        <time datetime="2017-12-10 00:00:00 +0800" class="post-list__meta--date date">
-          <img src="/images/calendar.png" width="20px" /> 
-          2017-12-10</time> 
-        <div class = "tag-img-icon">
-          <img src="/images/tag-icon.svg" width="20px" /> 
-        </div>
-        <a href="/tags">
-          <div class = "post-list-icon-mate">
-            <span class="post-list__meta--tags-right">杂记</span>
-          </div>
-          <div class = "post-list-small-mate">
-          <a class="btn-border-small" href=/2017/12/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/>阅读全文 » </a>
-          </div>
-      </div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2017/12/%E5%87%BA%E5%8F%91%E4%BA%86-%E5%B0%91%E5%B9%B4/" title="访问 出发了，少年">出发了，少年</a></h2>
-      <p class="excerpt">    这是我的第一篇的博客，趁着今天周六，想写一篇杂记，写点东西，但一时对着电脑，竟不知如何提笔，算了，还是想到什么写什么了。   还是先讲讲为何会想到搭建这个博客吧。要说初衷，是因为专业，因为职业，作为计算机行业，不断学习肯定是必须的，想到之前在微博上看见这么一句话，“比你聪明的人比你还努力，为什么还要努力”，虽说是个段子，别的行业我不清楚，前半句来形容我们专业是再恰当不过的了，无论是之前acm在役时，还是之后转服务器，转工程之后，总是会碰见许多的问题，遇到问题也更多是去百度去谷歌，不...&hellip;</p>
-      <div class="post-list__meta">        
-        <time datetime="2017-12-09 00:00:00 +0800" class="post-list__meta--date date">
-          <img src="/images/calendar.png" width="20px" /> 
-          2017-12-09</time> 
-        <div class = "tag-img-icon">
-          <img src="/images/tag-icon.svg" width="20px" /> 
-        </div>
-        <a href="/tags">
-          <div class = "post-list-icon-mate">
-            <span class="post-list__meta--tags-right">杂记</span>
-          </div>
-          <div class = "post-list-small-mate">
-          <a class="btn-border-small" href=/2017/12/%E5%87%BA%E5%8F%91%E4%BA%86-%E5%B0%91%E5%B9%B4/>阅读全文 » </a>
-          </div>
-      </div>
-      <hr class="post-list__divider" />
-    </li>
-    
   </ol>
 
   <hr class="post-list__divider " />
@@ -421,7 +379,9 @@
 	</script>
 	
     
-    <span class="pagination__page-number">1 / 1</span>
+    <span class="pagination__page-number">1 / 2</span>
+    
+        <a class="older-posts pagination__older btn btn-small btn-tertiary" href="/page/2/#blog">更早 &rarr;</a>
     
 </nav>
 
@@ -459,7 +419,9 @@
 
         <div class = "footer_div">  
            <p class="copyright text-muted">
-            Copyright &copy; dmc 2018 Theme by <a href="http://baixin.io/">leopardpan</a> |
+            Copyright &copy; dmc 2018
+               <!--Theme by <a href="http://baixin.io/">leopardpan</a> -->
+               |
             </p>
         	<div align="right">
     			<link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css">
