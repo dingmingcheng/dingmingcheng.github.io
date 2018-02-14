@@ -5,9 +5,307 @@
     <description>欢迎来到我的博客</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 12 Feb 2018 22:51:36 +0800</pubDate>
-    <lastBuildDate>Mon, 12 Feb 2018 22:51:36 +0800</lastBuildDate>
+    <pubDate>Wed, 14 Feb 2018 19:49:52 +0800</pubDate>
+    <lastBuildDate>Wed, 14 Feb 2018 19:49:52 +0800</lastBuildDate>
     <generator>Jekyll v3.5.2</generator>
+    
+      <item>
+        <title>单例模式实现</title>
+        <description>&lt;h2 id=&quot;前言&quot;&gt;前言&lt;/h2&gt;
+
+&lt;p&gt;说起单例模式，应该设计模式中算是代码比较短，其主要作用是保证一个类只有一个实例，节省内存空间，也避免了频繁的创建与销毁对象，比如在spring中bean的创建时，就默认采取了单例模式。单例模式主要包括懒汉式和饿汉式。顾名思义，懒汉式就是“懒”，在你需要的时候我再给你创建对象，而对于饿汉式，则在于“饿”，在类加载时就就生成实例对象。&lt;/p&gt;
+
+&lt;h2 id=&quot;实现&quot;&gt;实现&lt;/h2&gt;
+
+&lt;p&gt;为了不让外部类创建对象，一般是通过对构造函数的私有化来实现，&lt;/p&gt;
+
+&lt;h3 id=&quot;懒汉式&quot;&gt;懒汉式&lt;/h3&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;lazy&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;volatile&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lazy&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;lazy&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lazy&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;newInstance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;kd&quot;&gt;synchronized&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lazy&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+                    &lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lazy&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;在学习懒汉式的时候还是遇到一些问题的&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;关于双重检查锁的问题&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;以正常的思维，我们开始去写newInstance很容易想成是这样的：&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lazy&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;newInstance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;synchronized&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lazy&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lazy&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;不过如果在这种情况下，就会出现这么一种情况，在大量线程同时调用newInstance()时，就会出现很严重的锁竞争的问题，而改进的办法，就是在同步代码块外部再添加一个null的判断，那么在实例创建好后，之后进来的线程就可以直接返回此实例。&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;关于volatile变量的问题&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;在性能上得到优化后，不过在线程安全上还是存在问题。场景是这样的。现在有个线程A和线程B，同时到达synchronized(lazy.class)处，A抢到了锁，执行完后，B获取到了锁，此时若线程A没有将工作内存中的值写回到主内存中，那么此时线程B也创建了一个对象，也就不符合我们所说的“一个类对应一个实例”。这时我们就需要给实例添加一个volatile修饰，使用它的可见性去解决这个问题。说到volatile，还有很多的东西需要去解释，可以看这篇文章。&lt;/p&gt;
+
+&lt;h3 id=&quot;饿汉式&quot;&gt;饿汉式&lt;/h3&gt;
+
+&lt;p&gt;饿汉式相对较简单&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;hungry&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hungry&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hungry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;hungry&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hungry&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;newInstance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+</description>
+        <pubDate>Wed, 14 Feb 2018 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2018/02/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%E5%AE%9E%E7%8E%B0/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/02/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%E5%AE%9E%E7%8E%B0/</guid>
+        
+        <category>设计模式</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>volatile详解</title>
+        <description>&lt;h2 id=&quot;前言&quot;&gt;前言&lt;/h2&gt;
+
+&lt;p&gt;说到volatile关键字，应该是个很古老的关键字，然而这是一个很关键的一个关键字，从暑假接触到开始，看了许多的文章，也渐渐有了一些自己的理解。就来讲讲volatile这个东西。参考：&lt;a href=&quot;https://tech.meituan.com/java-memory-reordering.html&quot;&gt;Java内存访问重排序的研究&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;volatile特性&quot;&gt;volatile特性&lt;/h2&gt;
+
+&lt;p&gt;总的来说，volatile具有两个特性，一个是可见性，一个是禁止指令重排序&lt;/p&gt;
+
+&lt;h3 id=&quot;可见性&quot;&gt;可见性&lt;/h3&gt;
+
+&lt;p&gt;关于可见性的，之前忘记在哪本书上截了一张图，讲的是工作内存和主内存的关系以及volatile的可见性实现。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;pic1.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;pic2.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;以下是测试可见性的一个程序&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;volatileTest&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;boolean&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Task&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Runnable&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+        &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+        &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;++;&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;finished......&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;InterruptedException&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Thread&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Task&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;Thread&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sleep&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1000&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;上述程序一眼望去，完全ok，1s后，控制台输出“finished……”，然而，事实是程序无法终止。其原因就是Task线程没有读取到主内存中已经修改的flag变量，换言之Task线程的工作内存中flag变量依然是true，一直处于while循环当中。&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;要让程序正常结束，给flag变量添加volaatile关键字即可&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;另外在测试时还碰到一个奇怪的现象，如果在while(flag) {}循环体中添加System.out.println()或者Thread.sleep()，那么无论volatile关键字添加与否，程序均可正常退出。经过查阅资料与自己理解，究其原因，是在于工作内存和主内存之间的数据交换是基于线程有空闲的时候，如果说只是while(flag){i++;}，那么就虚拟机就无法找到空闲的时间去进行数据交换，而对于Thread.sleep()和System.out.println(),即可进行内存数据的交换。&lt;/p&gt;
+
+&lt;h3 id=&quot;禁止指令重排序&quot;&gt;禁止指令重排序&lt;/h3&gt;
+
+&lt;p&gt;还是先放张问题出现的情况吧：&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;volatileTest&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+    &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;TaskA&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Runnable&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+        &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+        &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;a1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;TaskB&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Runnable&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+        &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+        &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;b1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;InterruptedException&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;time&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;Thread&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;aTask&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Thread&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TaskA&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;Thread&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bTask&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Thread&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TaskB&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;aTask&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;bTask&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;aTask&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;join&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;bTask&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;join&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;: a1 = &quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;and b1 = &quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;break&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;a1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;b1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;以上代码经过测试，在执行到第100w+次时，程序结束。显然，按照正常逻辑不可能出现a1,b1均等于0的情况，然而它就是这样发生了，这简直比“墨菲定律”还不靠谱，你觉得不可能发生的事它都发生了，哈哈。其实这就是指令重排序做的梗。在机器看来，a=1和a1=b实际上是两个互不干涉的指令，于是它擅作主张，将a1=b提到了a=1之前执行。此时完整的执行过程是这样的:(a1=b, b=1, b1=a, a=1)。&lt;/p&gt;
+
+&lt;p&gt;说到指令重排序，其实涉及到的东西还是比较多的，所谓指令重排，顾名思义，重新编排指令执行顺序，java的JIT即时编译器也会有指令重排，其主要目的是在条件允许的情况下，执行之后的指令，以提高处理器的执行效率。&lt;/p&gt;
+
+&lt;p&gt;以上是指令重排的简单概念，为了实现禁止指令重排，JMM为此规定了一个happens-before的规则，happens-before的前后两个操作不会被重排序且后者对前者的内存可见，而对于具体的实现，则是通过了内存屏障（Memory Barrier）来实现。&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;LoadLoad屏障：对于这样的语句Load1; LoadLoad; Load2，在Load2及后续读取操作要读取的数据被访问前，保证Load1要读取的数据被读取完毕。&lt;/p&gt;
+
+  &lt;p&gt;StoreStore屏障：对于这样的语句Store1; StoreStore; Store2，在Store2及后续写入操作执行前，保证Store1的写入操作对其它处理器可见。&lt;/p&gt;
+
+  &lt;p&gt;LoadStore屏障：对于这样的语句Load1; LoadStore; Store2，在Store2及后续写入操作被刷出前，保证Load1要读取的数据被读取完毕。&lt;/p&gt;
+
+  &lt;p&gt;StoreLoad屏障：对于这样的语句Store1;StoreLoad; Load2，在Load2及后续所有读取操作执行前，保证Store1的写入对所有处理器可见。它的开销是四种屏障中最大的。在大多数处理器的实现中，这个屏障是个万能屏障，兼具其它三种内存屏障的功能。&lt;/p&gt;
+
+&lt;/blockquote&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;内存屏障&lt;/th&gt;
+      &lt;th&gt;普通读&lt;/th&gt;
+      &lt;th&gt;普通写&lt;/th&gt;
+      &lt;th&gt;volatile读同步块入口&lt;/th&gt;
+      &lt;th&gt;volatile写同步块出口&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;普通读&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;LoadStore&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;普通写&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;StoreStore&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;volatile读同步块入口&lt;/td&gt;
+      &lt;td&gt;LoadLoad&lt;/td&gt;
+      &lt;td&gt;LoadStore&lt;/td&gt;
+      &lt;td&gt;LoadLoad&lt;/td&gt;
+      &lt;td&gt;LoadStore&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;volatile写同步块出口&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;StoreLoad&lt;/td&gt;
+      &lt;td&gt;StoreStore&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;当然以上内容为CPU中的指令，回到java volatile中，用张表格来说明一下（列代表第一个操作，行代表第二个操作）：&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;是否允许重排序&lt;/th&gt;
+      &lt;th&gt;普通读写&lt;/th&gt;
+      &lt;th&gt;volatile读&lt;/th&gt;
+      &lt;th&gt;volatile写&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;普通读写&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;不允许&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;volatile读&lt;/td&gt;
+      &lt;td&gt;不允许&lt;/td&gt;
+      &lt;td&gt;不允许&lt;/td&gt;
+      &lt;td&gt;不允许&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;volatile写&lt;/td&gt;
+      &lt;td&gt; &lt;/td&gt;
+      &lt;td&gt;不允许&lt;/td&gt;
+      &lt;td&gt;不允许&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;初见此表，必有疑惑。首先是一个读写的概念。例如a++这个操作，首先是取出a对应的地址中的值，再通过运算器进行加1操作，再写回内存。其中第一步称为读，第三步称为写。&lt;/p&gt;
+
+&lt;p&gt;比如第二行第四列，普通读不能与其之后的所有volatile写重排序&lt;/p&gt;
+
+&lt;h2 id=&quot;知识误区&quot;&gt;知识误区&lt;/h2&gt;
+
+&lt;p&gt;原子性的问题：看到很多文章中都提到了这么一个问题，估计踩到这个坑的人不少，volatile修饰的变量无法保证原子性，所谓原子性，就如a++，分为读，运算，写，三个部分，在多线程下是不安全的，volatile也无法保证这三个操作的原子性。可以使用concurrent下的atomic实现原子性。&lt;/p&gt;
+
+&lt;p&gt;和synchronized的区别的问题：synchronized属于重量级锁，volatile非常适用于单线程写，多线程读的场景。volatile更多的是去解决一个可见性的问题，在多线程问题上还是有很大的局限性的。&lt;/p&gt;
+
+&lt;h2 id=&quot;使用场景&quot;&gt;使用场景&lt;/h2&gt;
+
+&lt;p&gt;其实随着synchronized近几年的优化，volatile对于性能的提升没有这么大了，但作为java底层关键字，掌握当然是必须的。另外，在netty中，volatile也是有着大量的应用，主要是和读写锁，cas一起使用，大大降低了锁的粒度，提升了netty的性能，也是netty成为现在非常流行的通行框架的原因之一。还有就是上面提到的，单线程写多线程读的场景。&lt;/p&gt;
+
+</description>
+        <pubDate>Wed, 14 Feb 2018 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2018/02/volatile%E8%AF%A6%E8%A7%A3/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/02/volatile%E8%AF%A6%E8%A7%A3/</guid>
+        
+        <category>java</category>
+        
+        
+      </item>
     
       <item>
         <title>[转]OAuth2.0授权管理</title>
@@ -1877,270 +2175,6 @@ public class MainReactor implements Runnable, CallBack{
         <pubDate>Sat, 13 Jan 2018 00:00:00 +0800</pubDate>
         <link>http://localhost:4000/2018/01/mysql%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95%E4%B8%8Esysbench/</link>
         <guid isPermaLink="true">http://localhost:4000/2018/01/mysql%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95%E4%B8%8Esysbench/</guid>
-        
-        <category>mysql</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>记一次简单OOM分析</title>
-        <description>&lt;h2 id=&quot;前言&quot;&gt;前言&lt;/h2&gt;
-
-&lt;p&gt;说到OOM，out of memory也是一个广泛存在的问题，如果线上出了问题，临时抱佛脚肯定是不行的，所以未雨绸缪是必须的。&lt;/p&gt;
-
-&lt;h2 id=&quot;测试过程&quot;&gt;测试过程&lt;/h2&gt;
-
-&lt;h3 id=&quot;首先是程序的准备&quot;&gt;首先是程序的准备&lt;/h3&gt;
-
-&lt;p&gt;准备了两个OOM的程序&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-Java&quot;&gt;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-/**
- * @Author: dingmingcheng
- * @Description
- * @Date: Created in 下午8:15 2018/1/8
- * @Modifyed By:
- */
-public class test {
-    static class task implements Runnable{
-
-        Long key;
-        Long value;
-
-        task(Long key, Long value) {
-            this.key = key;
-            this.value = value;
-        }
-        @Override
-        public void run() {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-    public static void main(String[] args) {
-        ExecutorService threads = Executors.newFixedThreadPool(10);
-        while (true) {
-            threads.execute(new task(100L, 100L));
-        }
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.util.concurrent.ExecutorService&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.util.concurrent.Executors&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.util.*&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-
-&lt;span class=&quot;cm&quot;&gt;/**
- * @Author: dingmingcheng
- * @Description
- * @Date: Created in 下午8:15 2018/1/8
- * @Modifyed By:
- */&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;test2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Long&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;list&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ArrayList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Long&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;();&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;Long&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Long&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;123L&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;list&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;it&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;h3 id=&quot;具体实现过程&quot;&gt;具体实现过程&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-Shell&quot;&gt;#编译这两个文件
-javac test
-javac test2
-#运行,设置堆内存大小，方便观察结果
-java -Xmx20m test 
-java -Xmx5m test2 
-#查看进程Id
-jps
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;在之前的两个程序分别出现以下的情况&lt;/p&gt;
-
-&lt;p&gt;第一个程序&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;pic1.png&quot; alt=&quot;&quot; /&gt;
-第二个程序&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;pic2.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;使用jmap生产dump文件并且进行分析:&lt;/p&gt;
-
-&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;#通过·jmap根据pid生成dump文件&lt;/span&gt;
-jmap -dump:live,format&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;b,file&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;heap.hprof &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;pid]
-&lt;span class=&quot;c&quot;&gt;#通过内置的jhat指令进行分析&lt;/span&gt;
-jhat heap.hprof
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;&lt;img src=&quot;pic3.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;结果查看地址：localhost:7000/&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;pic4.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;ecplise中有自带的MAT分析工具，应该会更加地直观，网上还是有很多关于它的使用的&lt;/p&gt;
-
-&lt;h3 id=&quot;知识发散&quot;&gt;知识发散&lt;/h3&gt;
-
-&lt;p&gt;在进行测试时，发现OOM还是有很多种情况的，目前接触到这3种情况：&lt;/p&gt;
-
-&lt;p&gt;1.GC overhead limit exceede&lt;/p&gt;
-
-&lt;p&gt;大意是指98%的时间回收了不到2%的内存，jvm就认为这程序肯定会发生OOM，不再让它继续跑下去了，有兴趣也可以通过jstat命令去查看GC的情况，会出现大量的Full GC&lt;/p&gt;
-
-&lt;p&gt;2.Java heap space&lt;/p&gt;
-
-&lt;p&gt;超了设定的堆内存&lt;/p&gt;
-
-&lt;p&gt;3.unable to create new native thread&lt;/p&gt;
-
-&lt;p&gt;这问题时偶然碰见的，在程序一中，用newCachedThreadPool代替newFixedThreadPool就会出现，这其实和本机所允许的最大线程数有关，线程数超过了机子设定值时就会出现，通过ulimit -u也可以看见当前机子上的线程数量。&lt;/p&gt;
-
-&lt;p&gt;emmm…之后碰到还可以再补充&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;知易行难，“实践是检验真理的唯一标准”！&lt;/em&gt;&lt;/p&gt;
-
-</description>
-        <pubDate>Mon, 08 Jan 2018 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2018/01/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%AE%80%E5%8D%95OOM%E5%88%86%E6%9E%90/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/01/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%AE%80%E5%8D%95OOM%E5%88%86%E6%9E%90/</guid>
-        
-        <category>java</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>mysql中的explain的使用</title>
-        <description>&lt;h2 id=&quot;前言&quot;&gt;前言&lt;/h2&gt;
-
-&lt;p&gt;由于开源简单等优势，mysql近几年也变得越来越火，最近看到一个报告，报告显示中国开发者常用的数据库中，mysql稳居第一，使用比例高达79.0%，而且在“全球开发者常用的数据库”中，mysql也稳居第一，高达55.6%。数据库的io一直是系统性能调优中非常重要的一环，写出好的sql语句也是开发者必须具备的基本素质之一，explain的合理使用也可以帮助开发者对sql语句进行相关的优化。这篇博文也讲讲explain中一些参数。&lt;/p&gt;
-
-&lt;p&gt;(注：目前使用的mysql版本为mysql 5.7.20,和5.6.34)&lt;/p&gt;
-
-&lt;h2 id=&quot;内容&quot;&gt;内容&lt;/h2&gt;
-
-&lt;h3 id=&quot;基本列&quot;&gt;基本列&lt;/h3&gt;
-
-&lt;p&gt;&lt;img src=&quot;pic1.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;​	其中主要包括id, select_type, table, partitions, type, possible_keys, key, key_len, ref, rows, filtered, Extra&lt;/p&gt;
-
-&lt;h3 id=&quot;id&quot;&gt;id&lt;/h3&gt;
-
-&lt;p&gt;​	比较好理解的列，包含了一个编号，标志了select所属的行，代表了唯一性。&lt;/p&gt;
-
-&lt;h3 id=&quot;select_type&quot;&gt;select_type&lt;/h3&gt;
-
-&lt;p&gt;这一列显示了对应行是简单还是复杂select，简单类型表示为SIMPLE，而复杂类型又分为三大类：简单子查询，所谓的派生表（from子句中的子查询），以及union查询。而复杂类型中又主要包括PRIMARY，SUBQUERY, DERIVED, UNION&lt;/p&gt;
-
-&lt;p&gt;PRIMARY是指复杂语句中最外层的部分&lt;/p&gt;
-
-&lt;p&gt;SUBQUERY我理解为不在from语句中的select部分&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;pic2.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;DERIVED是指在from语句中的select部分&lt;/p&gt;
-
-&lt;p&gt;注：mysql5.7种应该是对临时表进行了优化，因为经过测试，在5.6中，就算没有limit 1也会有DERIVED的select，而在5.7中，如果不加limit 1，就只会有一个SIMPLE类型的查询。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;pic3.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;UNION&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;pic4.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;UNION RESULT&lt;/p&gt;
-
-&lt;p&gt;注：在5.6中，执行上述union语句是这样的：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;pic5.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;table&quot;&gt;table&lt;/h3&gt;
-
-&lt;p&gt;这一列显示了对应行正在访问哪个表。可以在这一列中从上往下观察Mysql的关联优化器为查询选择的顺序，emmm，mysql的查询执行计划总是左侧深度优先树，有兴趣可以另外去了解&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;pic6.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;partitions&quot;&gt;partitions&lt;/h3&gt;
-
-&lt;p&gt;此列和分区有关，目前均显示NULL，有兴趣的同学可以自行了解。&lt;/p&gt;
-
-&lt;h3 id=&quot;type重要&quot;&gt;type（重要）&lt;/h3&gt;
-
-&lt;p&gt;type是指Mysql绝对如何查找表中的行。依次从最优到最差&lt;/p&gt;
-
-&lt;p&gt;system，const，eq_ref，ref，fulltext，ref_or_null，unique_subquery，index_subquery，range，index_merge，index，ALL，除了all之外，其他的type都可以使用到索引，除了index_merge之外，其他type只可以用到一个索引。&lt;/p&gt;
-
-&lt;p&gt;平时常常出现的主要可以分为六类，效率由差到好,如果说你的效率是1，2，那么你就需要考虑进行优化了。&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;All，使用了全表扫描，效率当然差了&lt;/li&gt;
-  &lt;li&gt;index，索引全表扫描，把索引从头到尾扫一遍&lt;/li&gt;
-  &lt;li&gt;range，索引范围扫描，常见于使用&amp;gt;,&amp;lt;,is null,between ,in ,like等运算符的查询中。&lt;/li&gt;
-  &lt;li&gt;ref，等值查询，但没有主键和唯一索引的要求&lt;/li&gt;
-  &lt;li&gt;Const,system,使用了唯一索引或者主键,&lt;/li&gt;
-  &lt;li&gt;Null，是指mysql在优化阶段分解查询语句，在执行阶段甚至不再访问表或者索引，比如在使用min，max会出现&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h3 id=&quot;possible_keys&quot;&gt;possible_keys&lt;/h3&gt;
-
-&lt;p&gt;显示可以使用的索引，此列表在优化过程的前期创建的，有些索引对后续的查询可能并无作用。&lt;/p&gt;
-
-&lt;h3 id=&quot;key&quot;&gt;key&lt;/h3&gt;
-
-&lt;p&gt;key是实际上是指采用哪一个索引可以最小化查询成本。&lt;/p&gt;
-
-&lt;h3 id=&quot;key_len&quot;&gt;key_len&lt;/h3&gt;
-
-&lt;p&gt;显示了Mysql在索引里使用的字节数,有时候可以用来计算组合索引使用情况，详情可以看看这篇&lt;a href=&quot;https://www.cnblogs.com/gomysql/p/4004244.html&quot;&gt;博客&lt;/a&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;ref&quot;&gt;ref&lt;/h3&gt;
-
-&lt;p&gt;这一列显示了之前的表在key列纪录的索引中查找值所用的列或常量&lt;/p&gt;
-
-&lt;h3 id=&quot;rows&quot;&gt;rows&lt;/h3&gt;
-
-&lt;p&gt;这列代表了Mysql估计为了找到所需的行所读取的行数。当并不代表最终要从表里读取出来的行数。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;通过将所有行的rows列的值想乘，可以粗略估计整个检查会查询的行数&lt;/strong&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;filtered&quot;&gt;filtered&lt;/h3&gt;
-
-&lt;p&gt;这一列是指对于一些满足条件（如where语句）的记录数的百分比的一个估算。&lt;/p&gt;
-
-&lt;h3 id=&quot;extra重要&quot;&gt;Extra（重要）&lt;/h3&gt;
-
-&lt;p&gt;在查看网上资料时，也确实感觉其中有很多比较模糊的地方，很多同学也理解有所偏差&lt;/p&gt;
-
-&lt;p&gt;extra显示了一些重要而之前却没有显示的信息。&lt;/p&gt;
-
-&lt;p&gt;1.using index，这里要注意区分type中的index，这里也叫覆盖索引，是指直接查询索引中的数据即可，不会去读数据文件，当你的请求列都可以在该索引中获取时就会出现using index。&lt;/p&gt;
-
-&lt;p&gt;2.using where，这是一个比较模糊，《高性能mysql》中是这么说的“这意味着Mysql服务器在存储引擎检索行后再进行过滤，许多where条件里涉及索引中的列，当（并且如果）它读取索引时，就能被存储引擎检验，因此不是所有带where子句的查询都会显示“using where”。有时他的出现就是一个暗示：查询可以受益于不同的索引”。emmm….仔细读了一遍，书上讲的还是比较清楚的，也就是一个检索行后的过滤….mysql5.6之后还有针对其优化的一个部分：Using index condition&lt;/p&gt;
-
-&lt;p&gt;3.using filesort,如果说排序使用不到索引时，就会出现，常见于order by和group by语句&lt;/p&gt;
-
-&lt;p&gt;4.using temporary，指对查询结果排序时会使用临时表&lt;/p&gt;
-
-</description>
-        <pubDate>Sun, 24 Dec 2017 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2017/12/mysql%E4%B8%AD%E7%9A%84explain%E7%9A%84%E4%BD%BF%E7%94%A8/</link>
-        <guid isPermaLink="true">http://localhost:4000/2017/12/mysql%E4%B8%AD%E7%9A%84explain%E7%9A%84%E4%BD%BF%E7%94%A8/</guid>
         
         <category>mysql</category>
         
