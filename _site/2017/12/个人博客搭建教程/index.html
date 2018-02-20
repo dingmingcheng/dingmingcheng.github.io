@@ -182,7 +182,7 @@
 
 <h2 id="总体情况">总体情况</h2>
 
-<p>  我的博客搭建环境是在mac，主要是使用了jekyll框架搭建，之前看网上的教程都是使用hexo，自己之前也是用hexo试过，不过过了几天，发现了一个问题，就是平时在家主要是用windows，然后每次修改就比较麻烦，于是就用了<a href="https://www.jekyll.com.cn/">jekyll</a>来搭建，网站部署在github上。使用jekyll的好吃也很明显，就是它是静态的网站，如果想写微博，机器只需要一个git和一个markdown编辑器就可以了,如果说你不，这也是我使用的主要的原因，主题模板也是使用了网上的一个大牛的-&gt;<a href="http://baixin.io">大牛的博客</a>，对，还要说一点，搭建环境最好是在mac或者linux操作系统上，windows实在是太智商捉急了。</p>
+<p>  我的博客搭建环境是在mac，主要是使用了jekyll框架搭建，之前看网上的教程都是使用hexo，自己之前也是用hexo试过，不过看到一个很不错的模版，也有一定的扩展性，于是就用了<a href="https://www.jekyll.com.cn/">jekyll</a>来搭建，网站部署在github上，就是加载速度有点慢…。主题模板也是使用了网上的一个<a href="http://baixin.io">模板</a>。</p>
 
 <h2 id="环境搭建">环境搭建</h2>
 
@@ -266,7 +266,7 @@ gem -v
 
 <div class="language-shell highlighter-rouge"><pre class="highlight"><code>jekyll new my-awesome-site
 <span class="nb">cd </span>my-awesome-site
-jekyll serve
+jekyll server
 </code></pre>
 </div>
 
@@ -318,11 +318,11 @@ git push
 
 <p>等文件上传成功，这时，在安装ruby时泡的咖啡估计也冷了，可以倒了，杯子洗好再去看看你的主页</p>
 
-<h2 id="博文编写">博文编写</h2>
+<h2 id="博文撰写">博文撰写</h2>
 
-<p>接下来就简单了，直接使用markdown编辑器，mac下我用的是Typora，windows下用的是markdownpad，多说一句，markdown还是一个很不错的编辑工具的，可以制作简历，写文档等等，优点可以自行百度。</p>
+<p>接下来就简单了，直接使用markdown编辑器，mac下我用的是Typora，windows下用的是markdownpad，多说一句，markdown还是一个很不错的编辑工具的，可以制作简历，写文档等等。</p>
 
-<p>直接将写好的文件存入_posts中就可以了。</p>
+<p>直接将写好的文件存入_posts中就可以了（当然别忘了<em>jekyll server</em>命令，将你的md文件自动转换成静态页面进行展示）。</p>
 
 <p>当然别忘记了去看看下载下来的主题中自带的_posts中的文章，保证格式正确（主要是开头一些title，layout之类的）</p>
 
