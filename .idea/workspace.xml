@@ -2,9 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7cfb5ba9-4664-4d9a-a62d-ddba9c9927ff" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/_posts/2018-02-14-volatile详解.md" afterPath="$PROJECT_DIR$/_posts/2018-02-14-volatile详解.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/_site/2018/02/volatile详解/index.html" afterPath="$PROJECT_DIR$/_site/2018/02/volatile详解/index.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/_site/feed.xml" afterPath="$PROJECT_DIR$/_site/feed.xml" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -29,11 +26,11 @@
       <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/_site/2018/02/volatile详解/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="425">
-              <caret line="196" column="13" lean-forward="false" selection-start-line="196" selection-start-column="13" selection-end-line="196" selection-end-column="13" />
+            <state relative-caret-position="221">
+              <caret line="184" column="12" lean-forward="false" selection-start-line="184" selection-start-column="12" selection-end-line="184" selection-end-column="12" />
               <folding>
-                <marker date="1519124550000" expanded="false" signature="18910:18983" ph="..." />
-                <marker date="1519124550000" expanded="false" signature="22574:22580" ph="©" />
+                <marker date="1519125798000" expanded="false" signature="18910:18983" ph="..." />
+                <marker date="1519125798000" expanded="false" signature="22574:22580" ph="©" />
               </folding>
             </state>
           </provider>
@@ -363,12 +360,12 @@
       <workItem from="1518336786899" duration="354000" />
       <workItem from="1518427639305" duration="1421000" />
       <workItem from="1518525927502" duration="9000" />
-      <workItem from="1519124367989" duration="319000" />
+      <workItem from="1519124367989" duration="479000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="7296000" />
+    <option name="totallyTimeSpent" value="7456000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
@@ -688,11 +685,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/_site/2018/02/volatile详解/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="425">
-          <caret line="196" column="13" lean-forward="false" selection-start-line="196" selection-start-column="13" selection-end-line="196" selection-end-column="13" />
+        <state relative-caret-position="221">
+          <caret line="184" column="12" lean-forward="false" selection-start-line="184" selection-start-column="12" selection-end-line="184" selection-end-column="12" />
           <folding>
-            <marker date="1519124550000" expanded="false" signature="18910:18983" ph="..." />
-            <marker date="1519124550000" expanded="false" signature="22574:22580" ph="©" />
+            <marker date="1519125798000" expanded="false" signature="18910:18983" ph="..." />
+            <marker date="1519125798000" expanded="false" signature="22574:22580" ph="©" />
           </folding>
         </state>
       </provider>
