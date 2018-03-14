@@ -6,17 +6,17 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <title>github sshkey添加</title>
-  <meta name="description" content="SSH配置">
+  <title>熟悉而又陌生的算法</title>
+  <meta name="description" content="">
   <meta name="author" content="leopardpan">
 
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="github sshkey添加">
-  <meta name="twitter:description" content="SSH配置">
+  <meta name="twitter:title" content="熟悉而又陌生的算法">
+  <meta name="twitter:description" content="">
   
   <meta property="og:type" content="article">
-  <meta property="og:title" content="github sshkey添加">
-  <meta property="og:description" content="SSH配置">
+  <meta property="og:title" content="熟悉而又陌生的算法">
+  <meta property="og:description" content="">
   
   <link rel="icon" type="image/png" href="/images/favicon.png" />
   <link href="/images/favicon.png" rel="shortcut icon" type="image/png">
@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="/css/main.css">
   <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 
-  <link rel="canonical" href="http://localhost:4000/2017/12/github%E5%88%9D%E5%A7%8B%E5%8C%96%E8%AE%BE%E7%BD%AE/">
+  <link rel="canonical" href="http://localhost:4000/2018/03/%E7%86%9F%E6%82%89%E8%80%8C%E5%8F%88%E9%99%8C%E7%94%9F%E7%9A%84%E7%AE%97%E6%B3%95/">
   <link rel="alternate" type="application/rss+xml" title="dmc" href="http://localhost:4000/feed.xml">
   
   <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
@@ -167,10 +167,10 @@
         <div class="content-wrapper__inner">
             <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
   <header class="post-header">
-    <h1 class="post-title">github sshkey添加</h1>
+    <h1 class="post-title">熟悉而又陌生的算法</h1>
     <div class="post-meta">
       <img src="/images/calendar.png" width="20px"/> 
-      <time datetime="2017-12-16 00:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2017-12-16</time>  
+      <time datetime="2018-03-14 00:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2018-03-14</time>  
          
       <span id="busuanzi_container_page_pv"> | 阅读：<span id="busuanzi_value_page_pv"></span>次</span>
     </p>
@@ -178,48 +178,7 @@
   </header>
 
   <section class="post">
-    <h2 id="ssh配置">SSH配置</h2>
-
-<p>ssh配置其实很简单，网上也有很多的教程，直接给个传送门吧，一步一步来就OK了，<a href="https://jingyan.baidu.com/article/a65957f4e91ccf24e77f9b11.html">windows下github ssh配置</a>，<a href="http://blog.csdn.net/yin1031468524/article/details/50096723">linux/mac下配置</a></p>
-
-<h2 id="git协议">git协议</h2>
-
-<p>通常使用git时，进行push，pull，clone等操作时，是使用https协议和SSH协议</p>
-
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code><span class="c">#通常将远程仓库拉到本地有以下两种方式</span>
-git clone git@github.com:dingmingcheng/dingmingcheng.github.io.git
-git clone https://github.com/dingmingcheng/dingmingcheng.github.io.git
-</code></pre>
-</div>
-
-<p>而在使用时，https协议可以说是非常不方便的，因为每次都需要输入密码，而git主要是使用SSH协议进行数据加密传输。</p>
-
-<h3 id="ssh协议">ssh协议</h3>
-
-<p>百度百科上是这么介绍ssh协议的：“SSH 为 <a href="https://baike.baidu.com/item/Secure%20Shell">Secure Shell</a> 的缩写，由 IETF 的网络小组（Network Working Group）所制定；SSH 为建立在应用层基础上的安全协议。SSH 是目前较可靠，专为<a href="https://baike.baidu.com/item/%E8%BF%9C%E7%A8%8B%E7%99%BB%E5%BD%95">远程登录</a>会话和其他网络服务提供安全性的协议。利用 SSH 协议可以有效防止远程管理过程中的信息泄露问题。SSH最初是UNIX系统上的一个程序，后来又迅速扩展到其他操作平台。SSH在正确使用时可弥补网络中的漏洞。SSH客户端适用于多种平台。几乎所有UNIX平台—包括<a href="https://baike.baidu.com/item/HP-UX">HP-UX</a>、<a href="https://baike.baidu.com/item/Linux">Linux</a>、<a href="https://baike.baidu.com/item/AIX">AIX</a>、<a href="https://baike.baidu.com/item/Solaris/3517">Solaris</a>、<a href="https://baike.baidu.com/item/Digital">Digital</a> <a href="https://baike.baidu.com/item/UNIX">UNIX</a>、<a href="https://baike.baidu.com/item/Irix">Irix</a>，以及其他平台，都可运行SSH”</p>
-
-<p>简单来说，当我们需要远程登录其他的机器时，ssh就起了很大的作用，使用登陆主要有两种方式，第一种是口令登陆，就是你知道远程机器的密码，每次连接时通过口令登陆即可。（服务端默认端口是22）</p>
-
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code>ssh user@host
-</code></pre>
-</div>
-
-<p>之后输入密码即可。</p>
-
-<p>还有一种就是通过公钥，首先需要在本机上生成一对密钥，mac/linux下时在当前用户的文件夹下</p>
-
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code><span class="nb">cd</span> ~/.ssh/
-ls
-</code></pre>
-</div>
-
-<p>里面会有id_rsa和id_rsa.pub，其中id_rsa.pub中的内容就是你生成公钥，也就是要存在远程主机上的秘钥。</p>
-
-<p>登陆原理很简单，就是用户将自己的公钥储存在远程主机上。登录的时候，远程主机将一个随机字符串发送给客户端，客户端根据自己的私钥加密这个随机字符串之后再发送给远程服务器。远程主机用事先储存的公钥进行解密，如果成功，就证明用户是可信的，直接允许登录shell，不再要求密码。</p>
-
-<h2 id="结尾">结尾</h2>
-
-<p>其实以上只是个人的一些简单的理解，如有错误希望提出，说到加密，其实涉及到了另外一个计算机分支网络安全，计算机发展太快，希望自己能脚踏实地，一点一滴去积累，异步一个脚印。</p>
+    
 
 
   </section>
@@ -289,15 +248,10 @@ ls
        <ul class="pager">
         
         <li class="previous">
-            <a href="/2017/12/death/" data-toggle="tooltip" data-placement="top" title="death">上一篇：  <span>death</span>
+            <a href="/2018/03/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/" data-toggle="tooltip" data-placement="top" title="策略模式">上一篇：  <span>策略模式</span>
             </a>
         </li>
         
-        
-        <li class="next">
-            <a href="/2017/12/mybatis%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E5%B7%A5%E5%85%B7/" data-toggle="tooltip" data-placement="top" title="mybatis自动生成工具">下一篇：  <span>mybatis自动生成工具</span>
-            </a>
-        </li>
         
     </ul>
 </section>
