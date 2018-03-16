@@ -6,17 +6,17 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <title>熟悉而又陌生的算法</title>
-  <meta name="description" content="">
+  <title>适配器模式</title>
+  <meta name="description" content="前言">
   <meta name="author" content="leopardpan">
 
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="熟悉而又陌生的算法">
-  <meta name="twitter:description" content="">
+  <meta name="twitter:title" content="适配器模式">
+  <meta name="twitter:description" content="前言">
   
   <meta property="og:type" content="article">
-  <meta property="og:title" content="熟悉而又陌生的算法">
-  <meta property="og:description" content="">
+  <meta property="og:title" content="适配器模式">
+  <meta property="og:description" content="前言">
   
   <link rel="icon" type="image/png" href="/images/favicon.png" />
   <link href="/images/favicon.png" rel="shortcut icon" type="image/png">
@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="/css/main.css">
   <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 
-  <link rel="canonical" href="http://localhost:4000/2018/03/%E7%86%9F%E6%82%89%E8%80%8C%E5%8F%88%E9%99%8C%E7%94%9F%E7%9A%84%E7%AE%97%E6%B3%95/">
+  <link rel="canonical" href="http://localhost:4000/2018/03/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/">
   <link rel="alternate" type="application/rss+xml" title="dmc" href="http://localhost:4000/feed.xml">
   
   <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
@@ -167,10 +167,10 @@
         <div class="content-wrapper__inner">
             <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
   <header class="post-header">
-    <h1 class="post-title">熟悉而又陌生的算法</h1>
+    <h1 class="post-title">适配器模式</h1>
     <div class="post-meta">
       <img src="/images/calendar.png" width="20px"/> 
-      <time datetime="2018-03-14 00:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2018-03-14</time>  
+      <time datetime="2018-03-15 00:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2018-03-15</time>  
          
       <span id="busuanzi_container_page_pv"> | 阅读：<span id="busuanzi_value_page_pv"></span>次</span>
     </p>
@@ -178,7 +178,120 @@
   </header>
 
   <section class="post">
-    
+    <h2 id="前言">前言</h2>
+
+<p>说起适配器模式，从字面上理解，还是做到一个适配的功能，笔记本电脑的硬件层面就有个很好的例子，记得刚买笔记本电脑时，特别不习惯笔记本键盘，打dota特别难受，那时候家里台式机上有个键盘，可惜是PS/2接口（就是那种圆形插口），然后去买了个转换口，顺利完成暴走：）。其实罗里吧嗦讲了一堆，还是回到代码层面，在进行代码重构时，老接口我们希望不再进行改动，在其基础上新增功能，就如usb接口一样，我们无法进行修改，这时就需要一个适配类。</p>
+
+<h2 id="适配器模式">适配器模式</h2>
+
+<p>适配器主要包括了三种适配器模式，1.类适配器2.对象适配器3.接口适配器。</p>
+
+<h3 id="类适配器">类适配器</h3>
+
+<p>想到这么一个例子，现在有一家公司，公司给员工制定了一些规定，比如上班时不能讲话聊天，现在来了个新的BOSS，新的BOSS懒啊，只想在旧的规定上新增一些规定，比如上班不能吃东西。就这个简单的场景进行了实现。</p>
+
+<p>实现方式是通过继承新接口，继承旧规则，编写新规则来实现。</p>
+
+<p>OldRules:</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">OldRules</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">dontTalk</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"old rule : do not talk...!"</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>NewRules:</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">NewRules</span> <span class="o">{</span>
+    <span class="kt">void</span> <span class="nf">dontTalk</span><span class="o">();</span>
+    <span class="kt">void</span> <span class="nf">dontEat</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>RuleAdapter:</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RuleAdapter</span> <span class="kd">extends</span> <span class="n">OldRules</span> <span class="kd">implements</span> <span class="n">NewRules</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">dontEat</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"new rule : do not eat...!"</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>测试：</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">RuleAdapter</span> <span class="n">adapter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RuleAdapter</span><span class="o">();</span>
+        <span class="n">adapter</span><span class="o">.</span><span class="na">dontEat</span><span class="o">();</span>
+        <span class="n">adapter</span><span class="o">.</span><span class="na">dontTalk</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<h3 id="对象适配器">对象适配器</h3>
+
+<p>就拿上面的情景来说，对象适配器和类适配器其实非常像，不过对象适配器的耦合度要低一些，不需要继承OldRules类，RuleAdapter的实现方式有所区别。</p>
+
+<p>RuleAdapter:</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RuleAdapter</span> <span class="kd">implements</span> <span class="n">NewRules</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="n">OldRules</span> <span class="n">oldRules</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">RuleAdapter</span><span class="o">(</span><span class="n">OldRules</span> <span class="n">oldRules</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">oldRules</span> <span class="o">=</span> <span class="n">oldRules</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">dontTalk</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">oldRules</span><span class="o">.</span><span class="na">dontTalk</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">dontEat</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"new rule : do not eat...!"</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<h3 id="接口适配器缺省适配器">接口适配器（缺省适配器）</h3>
+
+<p>其实在接触接口适配器之前，也一直有这么一个疑问，在开发过程中，如果说一个类继承了一个接口，那么必须覆盖这个接口中的所有方法，在一些情景下，肯定是不符合我们的需求的。为此有了一个接口适配器。</p>
+
+<p>比如有个规定的接口，而我只希望实现其中的部分</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Rules</span> <span class="o">{</span>
+    <span class="kt">void</span> <span class="nf">dontTalk</span><span class="o">();</span>
+    <span class="kt">void</span> <span class="nf">dontSmile</span><span class="o">();</span>
+    <span class="kt">void</span> <span class="nf">dontCry</span><span class="o">();</span>
+    <span class="kt">void</span> <span class="nf">dontEat</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>那么可以在实现类和接口之间写一个适配类</p>
+
+<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AbstractRules</span> <span class="kd">implements</span> <span class="n">Rules</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">dontTalk</span><span class="o">()</span> <span class="o">{}</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">dontSmile</span><span class="o">()</span> <span class="o">{}</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">dontCry</span><span class="o">()</span> <span class="o">{}</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">dontEat</span><span class="o">()</span> <span class="o">{}</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>实现类通过继承该适配类，选择需要重写的方法即可。</p>
+
+<p>说到缺点，还是拿笔记本电脑来说，如果说市场上对这类接口转换器的需求急剧增加，那么作为笔记本电脑厂商，是不是应该考虑电脑的制造呢？在代码层面，适配器的大量使用其实还是不利于代码阅读的，如果时间允许，我觉得重构甚至重写还是有必要的。</p>
 
 
   </section>
@@ -248,15 +361,10 @@
        <ul class="pager">
         
         <li class="previous">
-            <a href="/2018/03/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/" data-toggle="tooltip" data-placement="top" title="策略模式">上一篇：  <span>策略模式</span>
+            <a href="/2018/03/%E5%BB%BA%E9%80%A0%E8%80%85%E6%A8%A1%E5%BC%8F/" data-toggle="tooltip" data-placement="top" title="建造者模式">上一篇：  <span>建造者模式</span>
             </a>
         </li>
         
-        
-        <li class="next">
-            <a href="/2018/03/%E5%BB%BA%E9%80%A0%E8%80%85%E6%A8%A1%E5%BC%8F/" data-toggle="tooltip" data-placement="top" title="建造者模式">下一篇：  <span>建造者模式</span>
-            </a>
-        </li>
         
     </ul>
 </section>
