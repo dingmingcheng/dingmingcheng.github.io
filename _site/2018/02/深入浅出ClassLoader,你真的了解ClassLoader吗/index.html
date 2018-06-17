@@ -202,7 +202,7 @@
 
 <p>先大体了解一下ClassLoader的API：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kn">package</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">;</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">;</span>
 
 <span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">ClassLoader</span> <span class="o">{</span>
  <span class="kd">public</span> <span class="n">Class</span> <span class="nf">loadClass</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">);</span>
@@ -215,8 +215,7 @@
 
  <span class="kd">public</span> <span class="n">ClassLoader</span> <span class="nf">getParent</span><span class="o">();</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>    最重要的是ClassLoader的<code class="highlighter-rouge">loadClass</code>方法，它接受一个全类名，然后返回一个Class类型的实例。</p>
 
@@ -230,14 +229,13 @@
 
 <p>    考虑如下代码：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">A</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">A</span> <span class="o">{</span>
      <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doSomething</span><span class="o">()</span> <span class="o">{</span>
           <span class="n">B</span> <span class="n">b</span> <span class="o">=</span> <span class="k">new</span> <span class="n">B</span><span class="o">();</span>
           <span class="n">b</span><span class="o">.</span><span class="na">doSomethingElse</span><span class="o">();</span>
      <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>代码：B b = new B();等同于B b = Class.forName(“B”, false, A.class.getClassLoader()).newInstance();</p>
 
@@ -279,7 +277,7 @@
 
 <p>看看如下示例：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="cm">/**
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
  * @author weipeng2k 2015年3月27日 下午5:15:15
  */</span>
 <span class="nd">@WebServlet</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"NoClassDefFoundErrorServlet"</span><span class="o">,</span> <span class="n">urlPatterns</span> <span class="o">=</span> <span class="s">"/noClassDefFoundError.do"</span><span class="o">)</span>
@@ -293,12 +291,11 @@
     <span class="o">}</span>
 <span class="o">}</span>
 
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>    在看pom.xml中对于依赖的定义：</p>
 
-<div class="language-xml highlighter-rouge"><pre class="highlight"><code><span class="nt">&lt;dependencies&gt;</span>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependencies&gt;</span>
     <span class="nt">&lt;dependency&gt;</span>
         <span class="nt">&lt;groupId&gt;</span>junit<span class="nt">&lt;/groupId&gt;</span>
         <span class="nt">&lt;artifactId&gt;</span>junit<span class="nt">&lt;/artifactId&gt;</span>
@@ -317,8 +314,7 @@
         <span class="nt">&lt;version&gt;</span>2.5.6<span class="nt">&lt;/version&gt;</span>
     <span class="nt">&lt;/dependency&gt;</span>
 <span class="nt">&lt;/dependencies&gt;</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>其中对于junit的依赖是provided级别的，这里是为了能简化错误出现的条件。可以看到，在NoClassDefFoundErrorServlet中，使用了junit.jar中的TestCase，但是junit.jar在WEB-INF/lib中却没有，从而导致WebappClassLoader在进行加载TestCase时无法找到，从而抛出NoClassDefFoundError。我们需要从最终的war包中确定是否存在这个类，而不是在IDE中进行搜索。</p>
 
@@ -330,7 +326,7 @@
 
 <p>看如下示例：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">org.springframework.beans.factory.BeanFactoryUtils</span><span class="o">;</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">org.springframework.beans.factory.BeanFactoryUtils</span><span class="o">;</span>
 
 <span class="cm">/**
  * @author weipeng2k 2015年3月31日 上午9:09:58
@@ -347,12 +343,11 @@
         <span class="n">resp</span><span class="o">.</span><span class="na">getWriter</span><span class="o">().</span><span class="na">println</span><span class="o">(</span><span class="s">"done."</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>在doGet方法中调用了BeanFactoryUtils.isGeneratedBeanName(”xxx“);，看一下项目的pom依赖。</p>
 
-<div class="language-xml highlighter-rouge"><pre class="highlight"><code><span class="nt">&lt;dependencies&gt;</span>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependencies&gt;</span>
     <span class="nt">&lt;dependency&gt;</span>
         <span class="nt">&lt;groupId&gt;</span>junit<span class="nt">&lt;/groupId&gt;</span>
         <span class="nt">&lt;artifactId&gt;</span>junit<span class="nt">&lt;/artifactId&gt;</span>
@@ -383,8 +378,7 @@
     <span class="nt">&lt;/dependency&gt;</span>
 <span class="nt">&lt;/dependencies&gt;</span>
 
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>这里为了方便观察到结果，将org.springframework.context的 <strong>scope</strong> 改为了 <strong>provided</strong> ，目的是不将其打包入war包，而只是使用了sourceforge.spring中定义的2.0.7版本，这个版本肯定没有isGeneratedBeanName(String name)方法，但是在IDE中，由于应用依赖到了高版本的spring从而能够编译通过，但是在运行时却没有那么好运了。这种错误，常见于 <strong>Maven坐标</strong> 的变动，使得应用依赖了多个 <strong>相同内容，不同版本</strong> 的jar包，以致在运行时选择了非期望的版本。</p>
 
@@ -396,7 +390,7 @@
 
 <p>看如下示例：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">murdock</span><span class="o">.</span><span class="na">classloader</span><span class="o">.</span><span class="na">servlet</span><span class="o">;</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">murdock</span><span class="o">.</span><span class="na">classloader</span><span class="o">.</span><span class="na">servlet</span><span class="o">;</span>
 
 <span class="kn">import</span> <span class="nn">java.io.File</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
@@ -444,8 +438,7 @@
 
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>在ClassCastExceptionServlet中，构建了一个CachedClassLoader，利用这个ClassLoader加载<code class="highlighter-rouge">org.apache.mina.proxy.utils.MD4</code>，然后反射调用构造该类的实例，将其赋给<code class="highlighter-rouge">MD4</code>，最后将其打印到浏览器。</p>
 
@@ -453,19 +446,17 @@
 
 <p>响应页面，出现错误：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">RuntimeException</span><span class="o">:</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">ClassCastException</span><span class="o">:</span> <span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">mina</span><span class="o">.</span><span class="na">proxy</span><span class="o">.</span><span class="na">utils</span><span class="o">.</span><span class="na">MD4</span> <span class="n">cannot</span> <span class="n">be</span> <span class="n">cast</span> <span class="n">to</span> <span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">mina</span><span class="o">.</span><span class="na">proxy</span><span class="o">.</span><span class="na">utils</span><span class="o">.</span><span class="na">MD4</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">RuntimeException</span><span class="o">:</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">ClassCastException</span><span class="o">:</span> <span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">mina</span><span class="o">.</span><span class="na">proxy</span><span class="o">.</span><span class="na">utils</span><span class="o">.</span><span class="na">MD4</span> <span class="n">cannot</span> <span class="n">be</span> <span class="n">cast</span> <span class="n">to</span> <span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">mina</span><span class="o">.</span><span class="na">proxy</span><span class="o">.</span><span class="na">utils</span><span class="o">.</span><span class="na">MD4</span>
  <span class="n">com</span><span class="o">.</span><span class="na">murdock</span><span class="o">.</span><span class="na">classloader</span><span class="o">.</span><span class="na">servlet</span><span class="o">.</span><span class="na">ClassCastExceptionServlet</span><span class="o">.</span><span class="na">doGet</span><span class="o">(</span><span class="n">ClassCastExceptionServlet</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">42</span><span class="o">)</span>
  <span class="n">javax</span><span class="o">.</span><span class="na">servlet</span><span class="o">.</span><span class="na">http</span><span class="o">.</span><span class="na">HttpServlet</span><span class="o">.</span><span class="na">service</span><span class="o">(</span><span class="n">HttpServlet</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">622</span><span class="o">)</span> <span class="n">javax</span><span class="o">.</span><span class="na">servlet</span><span class="o">.</span><span class="na">http</span><span class="o">.</span><span class="na">HttpServlet</span><span class="o">.</span><span class="na">service</span><span class="o">(</span><span class="n">HttpServlet</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">729</span><span class="o">)</span>
 <span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">tomcat</span><span class="o">.</span><span class="na">websocket</span><span class="o">.</span><span class="na">server</span><span class="o">.</span><span class="na">WsFilter</span><span class="o">.</span><span class="na">doFilter</span><span class="o">(</span><span class="n">WsFilter</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">52</span><span class="o">)</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p><strong>请求URL</strong> ：http://localhost:8080/classCastException.do?localFirst=false
 响应页面，输出正常：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">mina</span><span class="o">.</span><span class="na">proxy</span><span class="o">.</span><span class="na">utils</span><span class="o">.</span><span class="na">MD4</span><span class="err">@</span><span class="mi">401</span><span class="n">c8af5</span>
-</code></pre>
-</div>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">mina</span><span class="o">.</span><span class="na">proxy</span><span class="o">.</span><span class="na">utils</span><span class="o">.</span><span class="na">MD4</span><span class="err">@</span><span class="mi">401</span><span class="n">c8af5</span>
+</code></pre></div></div>
 
 <p>    请求的URL加上了<code class="highlighter-rouge">localFirst=false</code>就可以正常的输出，而它也就是在CachedClassLoder上设置了一下，为什么有这么大的差别。<code class="highlighter-rouge">org.apache.mina.proxy.utils.MD4</code>全类名一致，为什么会出现ClassCastException呢？</p>
 
@@ -481,7 +472,7 @@
 
 <p>     <strong>CachedClassLoader</strong> 的loadClass逻辑：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="k">if</span> <span class="o">(</span><span class="n">localFirst</span><span class="o">)</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="o">(</span><span class="n">localFirst</span><span class="o">)</span> <span class="o">{</span>
     <span class="k">try</span> <span class="o">{</span>
         <span class="n">clazz</span> <span class="o">=</span> <span class="n">findClass</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">clazz</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
@@ -494,8 +485,7 @@
 <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
     <span class="k">return</span> <span class="kd">super</span><span class="o">.</span><span class="na">loadClass</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>可以看到在 <em>localFirst</em> 为true时，该类加载器会首先加载自身 <em>repository</em> 中的类型，如果加载不到，则会尝试默认的加载机制进行加载，也就是parent优先加载。这样就可以解释MD4 md4 = (MD4) klass.newInstance();，等式左边MD4 md4，这个类型是WebappClassLoader.org.apache.mina.proxy.utils.MD4，等式右边klass.newInstance()返回的类型是CachedClassLoader.org.apache.mina.proxy.utils.MD4，二者并不是同一个类型，所以无法完成类型转换，最终抛出 <strong>ClassCastException</strong> 。而当 <em>localFirst</em> 为false时，该类加载器遵循parent优先，从而会先委派给WebappClassLoader进行加载，当然转型也就不会有问题了。</p>
 
@@ -507,7 +497,7 @@
 
 <p>我们先看一下出错的异常信息，然后分析一下它产生的条件和原因：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">LinkageError</span><span class="o">:</span> <span class="n">loader</span> <span class="n">constraint</span> <span class="nl">violation:</span> <span class="n">when</span> <span class="n">resolving</span> <span class="n">overridden</span> <span class="n">method</span> <span class="s">"com.murdock.classloader.linkageerror.Param2.generate()Lcom/murdock/classloader/linkageerror/Param2;"</span> <span class="n">the</span> <span class="kd">class</span> <span class="nf">loader</span> <span class="o">(</span><span class="n">instance</span> <span class="n">of</span> <span class="n">com</span><span class="o">/</span><span class="n">murdock</span><span class="o">/</span><span class="n">classloader</span><span class="o">/</span><span class="n">linkageerror</span><span class="o">/</span><span class="n">LinkageErrorTest</span><span class="err">$</span><span class="mi">1</span><span class="o">)</span> <span class="n">of</span> <span class="n">the</span> <span class="n">current</span> <span class="kd">class</span><span class="err">,</span> <span class="nc">com</span><span class="o">/</span><span class="n">murdock</span><span class="o">/</span><span class="n">classloader</span><span class="o">/</span><span class="n">linkageerror</span><span class="o">/</span><span class="n">Param2</span><span class="o">,</span> <span class="n">and</span> <span class="n">its</span> <span class="n">superclass</span> <span class="nf">loader</span> <span class="o">(</span><span class="n">instance</span> <span class="n">of</span> <span class="n">sun</span><span class="o">/</span><span class="n">misc</span><span class="o">/</span><span class="n">Launcher$AppClassLoader</span><span class="o">),</span> <span class="n">have</span> <span class="n">different</span> <span class="n">Class</span> <span class="n">objects</span> <span class="k">for</span> <span class="n">the</span> <span class="n">type</span> <span class="n">com</span><span class="o">/</span><span class="n">murdock</span><span class="o">/</span><span class="n">classloader</span><span class="o">/</span><span class="n">linkageerror</span><span class="o">/</span><span class="n">Param2</span> <span class="n">used</span> <span class="n">in</span> <span class="n">the</span> <span class="n">signature</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">LinkageError</span><span class="o">:</span> <span class="n">loader</span> <span class="n">constraint</span> <span class="nl">violation:</span> <span class="n">when</span> <span class="n">resolving</span> <span class="n">overridden</span> <span class="n">method</span> <span class="s">"com.murdock.classloader.linkageerror.Param2.generate()Lcom/murdock/classloader/linkageerror/Param2;"</span> <span class="n">the</span> <span class="kd">class</span> <span class="nf">loader</span> <span class="o">(</span><span class="n">instance</span> <span class="n">of</span> <span class="n">com</span><span class="o">/</span><span class="n">murdock</span><span class="o">/</span><span class="n">classloader</span><span class="o">/</span><span class="n">linkageerror</span><span class="o">/</span><span class="n">LinkageErrorTest</span><span class="err">$</span><span class="mi">1</span><span class="o">)</span> <span class="n">of</span> <span class="n">the</span> <span class="n">current</span> <span class="kd">class</span><span class="err">,</span> <span class="nc">com</span><span class="o">/</span><span class="n">murdock</span><span class="o">/</span><span class="n">classloader</span><span class="o">/</span><span class="n">linkageerror</span><span class="o">/</span><span class="n">Param2</span><span class="o">,</span> <span class="n">and</span> <span class="n">its</span> <span class="n">superclass</span> <span class="nf">loader</span> <span class="o">(</span><span class="n">instance</span> <span class="n">of</span> <span class="n">sun</span><span class="o">/</span><span class="n">misc</span><span class="o">/</span><span class="n">Launcher$AppClassLoader</span><span class="o">),</span> <span class="n">have</span> <span class="n">different</span> <span class="n">Class</span> <span class="n">objects</span> <span class="k">for</span> <span class="n">the</span> <span class="n">type</span> <span class="n">com</span><span class="o">/</span><span class="n">murdock</span><span class="o">/</span><span class="n">classloader</span><span class="o">/</span><span class="n">linkageerror</span><span class="o">/</span><span class="n">Param2</span> <span class="n">used</span> <span class="n">in</span> <span class="n">the</span> <span class="n">signature</span>
     <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Class</span><span class="o">.</span><span class="na">getDeclaredConstructors0</span><span class="o">(</span><span class="n">Native</span> <span class="n">Method</span><span class="o">)</span>
     <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Class</span><span class="o">.</span><span class="na">privateGetDeclaredConstructors</span><span class="o">(</span><span class="n">Class</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">2671</span><span class="o">)</span>
     <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Class</span><span class="o">.</span><span class="na">getConstructor0</span><span class="o">(</span><span class="n">Class</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">3075</span><span class="o">)</span>
@@ -521,14 +511,13 @@
     <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">junit</span><span class="o">.</span><span class="na">internal</span><span class="o">.</span><span class="na">runners</span><span class="o">.</span><span class="na">model</span><span class="o">.</span><span class="na">ReflectiveCallable</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">ReflectiveCallable</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">12</span><span class="o">)</span>
     <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">junit</span><span class="o">.</span><span class="na">runners</span><span class="o">.</span><span class="na">model</span><span class="o">.</span><span class="na">FrameworkMethod</span><span class="o">.</span><span class="na">invokeExplosively</span><span class="o">(</span><span class="n">FrameworkMethod</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">44</span><span class="o">)</span>
     <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">junit</span><span class="o">.</span><span class="na">internal</span><span class="o">.</span><span class="na">runners</span><span class="o">.</span><span class="na">statements</span><span class="o">.</span><span class="na">InvokeMethod</span><span class="o">.</span><span class="na">evaluate</span><span class="o">(</span><span class="n">InvokeMethod</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">17</span><span class="o">)</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>​	看到一堆出错信息，但是不要紧张，慢慢的读一下出错信息，这种错误一般会让你直觉感觉不会出现。<code class="highlighter-rouge">loader constraint violation</code>表示类加载器冲突了，这句话暗示： <strong>相同的类，由不同的ClassLoader加载，但是在这里遇到了</strong>。<code class="highlighter-rouge">when resolving overridden method "com.murdock.classloader.linkageerror.Param2.generate()Lcom/murdock/classloader/linkageerror/Param2;"</code>表示在解析那条语句出现了问题，这里表示在<code class="highlighter-rouge">Param2.generate()</code>方法的解析过程中出现了问题。<code class="highlighter-rouge">the class loader (instance of com/murdock/classloader/linkageerror/LinkageErrorTest$1) of the current class, com/murdock/classloader/linkageerror/Param2,</code>表示解析的语句所在的类型<code class="highlighter-rouge">Param2</code>是<code class="highlighter-rouge">LinkageErrorTest$1</code>类加载器加载的。<code class="highlighter-rouge">and its superclass loader (instance of sun/misc/Launcher$AppClassLoader), have different Class objects for the type com/murdock/classloader/linkageerror/Param2 used in the signature</code>表示<code class="highlighter-rouge">Param2</code>的超类<code class="highlighter-rouge">Param</code>中被覆盖的方法返回的类型<code class="highlighter-rouge">Param2</code>为<code class="highlighter-rouge">Launcher$AppClassLoader</code>加载。</p>
 
 <p>    Linkage在常规情况下非常难以制造，只有在多个类加载器交互时才有可能出现，下面看一下问题代码。出现问题的类和参数：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">murdock</span><span class="o">.</span><span class="na">classloader</span><span class="o">.</span><span class="na">linkageerror</span><span class="o">;</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">murdock</span><span class="o">.</span><span class="na">classloader</span><span class="o">.</span><span class="na">linkageerror</span><span class="o">;</span>
 
 <span class="cm">/**
  * @author weipeng2k 2015年4月28日 上午10:04:26
@@ -555,12 +544,11 @@
         <span class="k">return</span> <span class="k">new</span> <span class="nf">Param2</span><span class="o">();</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>    测试用例如下：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="nd">@Test</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Test</span>
 <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
     <span class="c1">// cl1在加载HandleUtils和Param时将会使用AppClassLoader</span>
     <span class="n">URLClassLoader</span> <span class="n">cl1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">URLClassLoader</span><span class="o">(</span><span class="k">new</span> <span class="n">URL</span><span class="o">[]</span> <span class="o">{</span><span class="k">new</span> <span class="n">File</span><span class="o">(</span><span class="s">"target/test-classes"</span><span class="o">).</span><span class="na">toURI</span><span class="o">().</span><span class="na">toURL</span><span class="o">()},</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
@@ -583,8 +571,7 @@
     <span class="n">HandleUtils</span> <span class="n">hu</span> <span class="o">=</span> <span class="o">(</span><span class="n">HandleUtils</span><span class="o">)</span> <span class="n">cl1</span><span class="o">.</span><span class="na">loadClass</span><span class="o">(</span><span class="s">"com.murdock.classloader.linkageerror.HandleUtils"</span><span class="o">).</span><span class="na">newInstance</span><span class="o">();</span>
     <span class="n">hu</span><span class="o">.</span><span class="na">m</span><span class="o">((</span><span class="n">Param</span><span class="o">)</span> <span class="n">cl1</span><span class="o">.</span><span class="na">loadClass</span><span class="o">(</span><span class="s">"com.murdock.classloader.linkageerror.Param2"</span><span class="o">).</span><span class="na">newInstance</span><span class="o">());</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p><strong>LinkageError</strong> 需要观察哪个类被不同的类加载器加载了，在哪个方法或者调用处发生（交汇）的，然后才能想解决方法，解决方法无外乎两种。第一，还是不同的类加载器加载，但是相互不再交汇影响，这里需要针对发生问题的地方做一些改动，比如更换实现方式，避免出现上述问题；第二，冲突的类需要由一个Parent类加载器进行加载。<strong>LinkageError</strong> 和<strong>ClassCastException</strong> 本质是一样的，加载自不同类加载器的类型，在同一个类的方法或者调用中出现，如果有转型操作那么就会抛 <strong>ClassCastException</strong> ，如果是直接的方法调用处的参数或者返回值解析，那么就会产生 <strong>LinkageError</strong> 。</p>
 

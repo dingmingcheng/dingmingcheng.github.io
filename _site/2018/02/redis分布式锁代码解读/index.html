@@ -188,7 +188,7 @@
 
 <p>其实里面的东西也没有太多，相信大部分同学还是能比较快去消化，里面最主要的就是acquire函数的实现，涉及到一些容易出现问题的场景以及解决的方案。直接上代码吧。</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">protected</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">acquire</span><span class="o">(</span><span class="n">Jedis</span> <span class="n">jedis</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">protected</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">acquire</span><span class="o">(</span><span class="n">Jedis</span> <span class="n">jedis</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
     <span class="c1">//acquiryTimeoutInMillis为尝试获取锁超时时间</span>
     <span class="kt">int</span> <span class="n">timeout</span> <span class="o">=</span> <span class="n">acquiryTimeoutInMillis</span><span class="o">;</span>
     <span class="k">while</span> <span class="o">(</span><span class="n">timeout</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
@@ -230,8 +230,7 @@
 
     <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <h3 id="小坑">小坑</h3>
 

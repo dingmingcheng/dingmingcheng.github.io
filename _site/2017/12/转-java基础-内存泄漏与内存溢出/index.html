@@ -245,7 +245,7 @@
 
 <p>Java代码</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="n">Vector</span> <span class="n">v</span><span class="o">=</span><span class="k">new</span> <span class="n">Vector</span><span class="o">(</span><span class="mi">10</span><span class="o">);</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Vector</span> <span class="n">v</span><span class="o">=</span><span class="k">new</span> <span class="n">Vector</span><span class="o">(</span><span class="mi">10</span><span class="o">);</span>
 <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="o">;</span><span class="n">i</span><span class="o">&lt;</span><span class="mi">100</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
 <span class="o">{</span>
   <span class="n">Object</span> <span class="n">o</span><span class="o">=</span><span class="k">new</span> <span class="n">Object</span><span class="o">();</span>
@@ -254,8 +254,7 @@
 <span class="o">}</span> 
 <span class="c1">//此时，所有的Object对象都没有被释放，因为变量v引用这些对象。</span>
 <span class="c1">//对象加入到Vector后，还必须从Vector中删除，最简单释放方法就是将Vector对象设置为null。</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p><strong>2. Q: 内存泄露、溢出的异同？</strong></p>
 
@@ -283,13 +282,12 @@
 
 <p>​          因为每一个String对象都会独立占用内存一块区域，如：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="n">String</span> <span class="n">str</span> <span class="o">=</span> <span class="s">"aaa"</span><span class="o">;</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">String</span> <span class="n">str</span> <span class="o">=</span> <span class="s">"aaa"</span><span class="o">;</span>
 <span class="n">String</span> <span class="n">str2</span> <span class="o">=</span> <span class="s">"bbb"</span><span class="o">;</span>
 <span class="n">String</span> <span class="n">str3</span> <span class="o">=</span> <span class="n">str</span> <span class="n">str2</span><span class="o">;</span>
 <span class="c1">//假如执行此次之后str , str2再不被调用，那么它们就会在内存中等待GC回收;</span>
 <span class="c1">//假如程序中存在过多的类似情况就会出现内存错误；</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>​          3) 尽量少用静态变量。</p>
 
@@ -299,15 +297,14 @@
 
 <p>​         JVM会突然需要大量内存，这时会触发GC优化系统内存环境； 一个案例如下：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="c1">// 使用jspsmartUpload作文件上传，运行过程中经常出现java.outofMemoryError的错误，</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 使用jspsmartUpload作文件上传，运行过程中经常出现java.outofMemoryError的错误，</span>
 <span class="c1">// 检查之后发现问题：组件里的代码 </span>
 <span class="n">m_totalBytes</span> <span class="o">=</span> <span class="n">m_request</span><span class="o">.</span><span class="na">getContentLength</span><span class="o">();</span>
 <span class="n">m_binArray</span> <span class="o">=</span> <span class="n">newbyte</span><span class="o">[</span><span class="n">m_totalBytes</span><span class="o">];</span>
 <span class="c1">// totalBytes这个变量得到的数极大，导致该数组分配了很多内存空间，而且该数组不能及时释放。 </span>
 <span class="c1">// 解决办法只能换一种更合适的办法，至少是不会引发outofMemoryError的方式解决。</span>
 <span class="c1">// 参考：http://bbs.xml.org.cn/blog/more.asp?name=hongrui&amp;id=3747</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>​        5) 尽量运用对象池技术以提高系统性能。</p>
 
@@ -335,9 +332,8 @@
 
 <p>​             在“echo “Using CATALINA_BASE: $CATALINA_BASE””上面加入以下行：</p>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code><span class="nb">set </span><span class="nv">JAVA_OPTS</span><span class="o">=</span>-Xms800m -Xmx800m -XX:PermSize<span class="o">=</span>128M -XX:MaxNewSize<span class="o">=</span>256m -XX:MaxPermSize<span class="o">=</span>256m  
-</code></pre>
-</div>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">set </span><span class="nv">JAVA_OPTS</span><span class="o">=</span><span class="nt">-Xms800m</span> <span class="nt">-Xmx800m</span> <span class="nt">-XX</span>:PermSize<span class="o">=</span>128M <span class="nt">-XX</span>:MaxNewSize<span class="o">=</span>256m <span class="nt">-XX</span>:MaxPermSize<span class="o">=</span>256m  
+</code></pre></div></div>
 
 <hr />
 

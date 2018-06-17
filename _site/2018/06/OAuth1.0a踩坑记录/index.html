@@ -6,17 +6,17 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <title>come back</title>
-  <meta name="description" content="博客停了两个月，再打开时竟然感到有一丝陌生，看着最熟悉的键盘和屏幕也不知道该敲什么，脑海中竟然有想打出“int main()”的想法，呵，真是“无药可救”了。不过确实，十二年前那次数学竞赛的偶然获奖也注定了我是更爱那些数学公式的。">
+  <title>OAuth1.0a踩坑记录</title>
+  <meta name="description" content="前言">
   <meta name="author" content="leopardpan">
 
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="come back">
-  <meta name="twitter:description" content="博客停了两个月，再打开时竟然感到有一丝陌生，看着最熟悉的键盘和屏幕也不知道该敲什么，脑海中竟然有想打出“int main()”的想法，呵，真是“无药可救”了。不过确实，十二年前那次数学竞赛的偶然获奖也注定了我是更爱那些数学公式的。">
+  <meta name="twitter:title" content="OAuth1.0a踩坑记录">
+  <meta name="twitter:description" content="前言">
   
   <meta property="og:type" content="article">
-  <meta property="og:title" content="come back">
-  <meta property="og:description" content="博客停了两个月，再打开时竟然感到有一丝陌生，看着最熟悉的键盘和屏幕也不知道该敲什么，脑海中竟然有想打出“int main()”的想法，呵，真是“无药可救”了。不过确实，十二年前那次数学竞赛的偶然获奖也注定了我是更爱那些数学公式的。">
+  <meta property="og:title" content="OAuth1.0a踩坑记录">
+  <meta property="og:description" content="前言">
   
   <link rel="icon" type="image/png" href="/images/favicon.png" />
   <link href="/images/favicon.png" rel="shortcut icon" type="image/png">
@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="/css/main.css">
   <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 
-  <link rel="canonical" href="http://localhost:4000/2018/05/come-back/">
+  <link rel="canonical" href="http://localhost:4000/2018/06/OAuth1.0a%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/">
   <link rel="alternate" type="application/rss+xml" title="dmc" href="http://localhost:4000/feed.xml">
   
   <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
@@ -167,10 +167,10 @@
         <div class="content-wrapper__inner">
             <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
   <header class="post-header">
-    <h1 class="post-title">come back</h1>
+    <h1 class="post-title">OAuth1.0a踩坑记录</h1>
     <div class="post-meta">
       <img src="/images/calendar.png" width="20px"/> 
-      <time datetime="2018-05-20 00:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2018-05-20</time>  
+      <time datetime="2018-06-17 00:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2018-06-17</time>  
          
       <span id="busuanzi_container_page_pv"> | 阅读：<span id="busuanzi_value_page_pv"></span>次</span>
     </p>
@@ -178,15 +178,46 @@
   </header>
 
   <section class="post">
-    <p>博客停了两个月，再打开时竟然感到有一丝陌生，看着最熟悉的键盘和屏幕也不知道该敲什么，脑海中竟然有想打出“int main()”的想法，呵，真是“无药可救”了。不过确实，十二年前那次数学竞赛的偶然获奖也注定了我是更爱那些数学公式的。</p>
+    <h2 id="前言">前言</h2>
 
-<p>两个月前因为总总原因结束了三个多月的实习，回到了阔别已久的学校，和同学们好好聚了聚，也不知道下次毕业后再见到你们这帮<del>蠢逼</del>天才是什么时候了，不过大部分在杭州问题应该还是比较乐观的。另外，再加上头疼的毕业设计，和春招的准备，写了几篇设计模式，这笔一停，就是两个月。</p>
+<p>最近工作中接触到了OAuth1.0a，相比较OAuth2.0，1.0a确实是复杂了不少，中间也踩了不少的坑，特此记录。关于OAuth1.0，1.0a，2.0之间的区别，包括1.0的相关漏洞，可以看看知乎上这篇文章，<a href="https://www.zhihu.com/question/19851243">Oauth 1.0 1.0a 和 2.0 的之间的区别有哪些？</a>,我觉得还是比较详细的。</p>
 
-<p>回杭首个周末，好好整理了一番，翻翻日历，恰逢良辰吉日，便顺道重新打理起这个博客，之后周末或是有空时都会记录一下自己的学习。不过说到“5.20”，“11.11”这些节日，也是奇怪，自己竟是毫无兴趣，这么多年双11没买过一次东西，不过以后有了女朋友之后也许就不会这样了: )  ，不过应该和我的消费观念有比较大的关系。</p>
+<h2 id="踩坑记录">踩坑记录</h2>
 
-<p>文章名称叫做“come back”，“归来”的意思，若带点侠风，也可称“归来”。犹记高考那年，时不时就要来个宣誓，那时更多的感觉是一种“仪式感”，就像是一次次的倒计时，提醒自己不能懈怠。其实现在回过头来看，其实还是很有用的。特别是像我们学计算机的，学习真是一辈子的主格调，时不时得给自己打针鸡血，在迷茫困惑时，一定要缓缓，做好规划，这很重要！希望自己能坚定踏实得走下去，早日实现自己的人生价值，完成新的一个阶段的目标。忘了在哪里看到的“程序员职业生涯里肯定会碰到两个瓶颈，第一个是刚毕业时，会接触到大量的之前从未听过的术语，第二个阶段是工作多年后的迷茫，工作所需要的技术已十分熟悉，会感受到每天都干着类似的事”，很幸运，凭着大学期间acm的经历以及自认为还不错的自学能力，第一阶段算是快过了吧，这之中其实非常感谢师兄的指导，陈老师的知遇，还有屡屡失败时父母的鼓励。还记得初三那年我爸给我的话“身边的良师益友会是你一辈子的财富，愈久愈回味无穷”。人生本就不是一条直通光明的道路，一路上你会有痛苦，有喜悦，有遗憾，有无助，有自卑，但这并不会阻止你前进的步伐，并不会影响你成为一个更优秀的人，再说了，明天的太阳还是会照常升起。</p>
+<h3 id="生成签名">生成签名</h3>
 
-<p>come back！（点个题！收！）</p>
+<p>生成签名踩的坑还是比较多的，一个一个讲吧</p>
+
+<p>1.加密密钥</p>
+
+<p>签名时采用的算法要看具体的服务提供者，常见的有HMAC-SHA1，HMAC-SHA256，其中需要提供一个加密密钥，在OAuth1.0a的流程中，每次都要生成签名，防止url被恶意篡改。在申请request_token时，密钥为consumer_secret加上&amp;，比如consumer_secret=“kwyfq3grv8”，密钥就是“kwyfq3grv8&amp;”。</p>
+
+<p>而在申请accesstoken或者访问相关资源时，密钥为“consumer_secret&amp;oauth_token”，注意，在申请accesstoken和访问相关资源中，其oauth_token的值是不同的，前者的值会在访问request_token的结果的url中给予，而后者的oauth_token则是来自于申请accesstoken的返回结果。</p>
+
+<p>2.加密内容</p>
+
+<p>对于加密内容，其中也有很多需要注意的地方。总的来说，加密内容的结构是这样的：</p>
+
+<p>“请求方法&amp;请求url&amp;请求参数”</p>
+
+<p>请求方法是GET，POST，PUT，DELETE等。</p>
+
+<p>请求url，需要注意进行url编码，java中我是这么写的，一开始测试时是用网站在线编码的，但是特殊符号的编码字母全是小写的，导致生成了错误的签名，一直没认证成功。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">URLEncoder</span><span class="o">.</span><span class="na">encode</span><span class="o">(</span><span class="n">requestUri</span><span class="o">.</span><span class="na">toString</span><span class="o">(),</span> <span class="s">"utf-8"</span><span class="o">)</span>
+</code></pre></div></div>
+
+<p>对于请求参数，一般都包括这几个，oauth_timestamp，oauth_signature_method，oauth_version，oauth_nonce，oauth_consumer_key等，其余的参数根据接口情况进行添加。这边参数的拼接也有讲究，需要按照key的字典序来，例如：</p>
+
+<p>oauth_consumer_key=xxxxxxxxx&amp;oauth_nonce=xxxxxxx&amp;oauth_signature_method=HMAC-SHA1&amp;oauth_timestamp=xxxxxxx&amp;oauth_version=1.0a</p>
+
+<p>3.生成签名值</p>
+
+<p>javax相关包中有这些加密方法，直接用就可以了，别忘了对生成的byte[]数组进行Base64编码。将生成的签名加入到请求参数中，就没问题了。</p>
+
+<h3 id="总结">总结</h3>
+
+<p>相比较2.0，1.0a还是麻烦了不少的，不过随着https的普及以及http2.0的发展，相信正如社会进程一样，一切都会向着更安全更快捷的方向发展下去。本文也只是简单记录了一下1.0a中一些流程细节，包括1.0中的漏洞，还有oauth_timestamp和oauth_nonce以及相关的重放攻击也都未提及。有兴趣的兄弟可以自行去查阅了解。</p>
 
 
   </section>
@@ -256,15 +287,10 @@
        <ul class="pager">
         
         <li class="previous">
-            <a href="/2018/03/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/" data-toggle="tooltip" data-placement="top" title="适配器模式">上一篇：  <span>适配器模式</span>
+            <a href="/2018/06/fastjson%E5%AD%A6%E4%B9%A0/" data-toggle="tooltip" data-placement="top" title="fastjson学习">上一篇：  <span>fastjson学习</span>
             </a>
         </li>
         
-        
-        <li class="next">
-            <a href="/2018/06/fastjson%E5%AD%A6%E4%B9%A0/" data-toggle="tooltip" data-placement="top" title="fastjson学习">下一篇：  <span>fastjson学习</span>
-            </a>
-        </li>
         
     </ul>
 </section>

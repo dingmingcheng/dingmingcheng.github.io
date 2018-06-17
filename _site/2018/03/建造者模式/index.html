@@ -188,31 +188,29 @@
 
 <p>House:</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="c1">//省略了set，get等 </span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//省略了set，get等 </span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">House</span> <span class="o">{</span>
     <span class="kd">private</span> <span class="n">Integer</span> <span class="n">height</span><span class="o">;</span>
     <span class="kd">private</span> <span class="n">Integer</span> <span class="n">width</span><span class="o">;</span>
     <span class="kd">private</span> <span class="n">Integer</span> <span class="n">length</span><span class="o">;</span>
     <span class="kd">private</span> <span class="n">Integer</span> <span class="n">price</span><span class="o">;</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>Builder:</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Builder</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Builder</span> <span class="o">{</span>
     <span class="kt">void</span> <span class="nf">buildLength</span><span class="o">();</span>
     <span class="kt">void</span> <span class="nf">buildWidth</span><span class="o">();</span>
     <span class="kt">void</span> <span class="nf">buildHeight</span><span class="o">();</span>
     <span class="kt">void</span> <span class="nf">buildPrice</span><span class="o">();</span>
     <span class="n">House</span> <span class="nf">getHouse</span><span class="o">();</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>如果说要建一所大房子，那么就需要一个类去继承Builder接口，完成里面一些参数的赋值</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BigHouseBuilder</span> <span class="kd">implements</span> <span class="n">Builder</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BigHouseBuilder</span> <span class="kd">implements</span> <span class="n">Builder</span> <span class="o">{</span>
     <span class="kd">private</span> <span class="n">House</span> <span class="n">house</span> <span class="o">=</span> <span class="k">new</span> <span class="n">House</span><span class="o">();</span>
     <span class="nd">@Override</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">buildLength</span><span class="o">()</span> <span class="o">{</span>
@@ -235,12 +233,11 @@
         <span class="k">return</span> <span class="n">house</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>建造前的准备工作做好了，那不是需要建筑工人们施工去完成建造吗？</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Workers</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Workers</span> <span class="o">{</span>
     <span class="kd">private</span> <span class="n">Builder</span> <span class="n">builder</span><span class="o">;</span>
 
     <span class="kd">public</span> <span class="nf">Workers</span><span class="o">(</span><span class="n">Builder</span> <span class="n">builder</span><span class="o">)</span> <span class="o">{</span>
@@ -255,12 +252,11 @@
         <span class="k">return</span> <span class="n">builder</span><span class="o">.</span><span class="na">getHouse</span><span class="o">();</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>测试类：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">mainTest</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">mainTest</span> <span class="o">{</span>
     <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">BigHouseBuilder</span> <span class="n">builder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BigHouseBuilder</span><span class="o">();</span>
         <span class="n">Workers</span> <span class="n">workers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Workers</span><span class="o">(</span><span class="n">builder</span><span class="o">);</span>
@@ -268,8 +264,7 @@
         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">house</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>这时候主程序代码就很直观，很简洁。</p>
 
@@ -281,26 +276,24 @@
 
 <p>Base(成绩)(省略了get和set)</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Base</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Base</span> <span class="o">{</span>
     <span class="kd">private</span> <span class="n">Integer</span> <span class="n">chinese</span><span class="o">;</span>
     <span class="kd">private</span> <span class="n">Integer</span> <span class="n">maths</span><span class="o">;</span>
     <span class="kd">private</span> <span class="n">Integer</span> <span class="n">english</span><span class="o">;</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>基本信息Student</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Student</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Student</span> <span class="o">{</span>
     <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
     <span class="kd">private</span> <span class="n">String</span> <span class="n">id</span><span class="o">;</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>目标类StudentInfo</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">StudentInfo</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">StudentInfo</span> <span class="o">{</span>
     <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
     <span class="kd">private</span> <span class="n">String</span> <span class="n">id</span><span class="o">;</span>
     <span class="kd">private</span> <span class="n">Integer</span> <span class="n">chinese</span><span class="o">;</span>
@@ -340,14 +333,13 @@
         <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="na">name</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>目标类中还是需要注意的，对StudentInfo类的构造函数进行了私有化，通过内部静态类Builder的build()去调用构造函数。</p>
 
 <p>测试类：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">Student</span> <span class="n">student</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Student</span><span class="o">(</span><span class="s">"dmc"</span><span class="o">,</span> <span class="s">"1001"</span><span class="o">);</span>
         <span class="n">Base</span> <span class="n">base</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Base</span><span class="o">(</span><span class="mi">50</span><span class="o">,</span> <span class="mi">150</span><span class="o">,</span> <span class="mi">100</span><span class="o">);</span>
         <span class="n">StudentInfo</span> <span class="n">studentInfo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StudentInfo</span><span class="o">.</span><span class="na">Builder</span><span class="o">()</span>
@@ -356,8 +348,7 @@
                 <span class="o">.</span><span class="na">build</span><span class="o">();</span>
         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">studentInfo</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 
 

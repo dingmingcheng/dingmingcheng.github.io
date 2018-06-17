@@ -194,29 +194,25 @@
 
 <h4 id="rvm安装">rvm安装</h4>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code>curl -L https://get.rvm.io | bash -s stable
-</code></pre>
-</div>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-L</span> https://get.rvm.io | bash <span class="nt">-s</span> stable
+</code></pre></div></div>
 
 <p>载入rvm环境</p>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code><span class="nb">source</span> ~/.rvm/scripts/rvm
-</code></pre>
-</div>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">source</span> ~/.rvm/scripts/rvm
+</code></pre></div></div>
 
 <p>版本检查</p>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code>rvm -v
-</code></pre>
-</div>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rvm <span class="nt">-v</span>
+</code></pre></div></div>
 
 <h4 id="通过rvm安装ruby">通过rvm安装ruby</h4>
 
 <p>查看可以选择的版本</p>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code>rvm list known
-</code></pre>
-</div>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rvm list known
+</code></pre></div></div>
 
 <p>会出现下图</p>
 
@@ -224,30 +220,26 @@
 
 <p>接着开始安装，泡杯咖啡的时间就ok了</p>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code>rvm install 2.4
-</code></pre>
-</div>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rvm <span class="nb">install </span>2.4
+</code></pre></div></div>
 
 <p>确认是否安装成功</p>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code>ruby -v
-gem -v
-</code></pre>
-</div>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ruby <span class="nt">-v</span>
+gem <span class="nt">-v</span>
+</code></pre></div></div>
 
 <h3 id="jekyll">jekyll</h3>
 
 <p>jekyll的环境安装</p>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code>gem install jekyll
-</code></pre>
-</div>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gem <span class="nb">install </span>jekyll
+</code></pre></div></div>
 
 <p>确认jekyll已安装</p>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code>jekyll -v
-</code></pre>
-</div>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>jekyll <span class="nt">-v</span>
+</code></pre></div></div>
 
 <h3 id="bundler">bundler</h3>
 
@@ -258,17 +250,15 @@ gem -v
 
 <p>bundler查看</p>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code>bundler -v
-</code></pre>
-</div>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bundler <span class="nt">-v</span>
+</code></pre></div></div>
 
 <p>###以上用于本地环境的搭建，环境搭建好后就简单了</p>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code>jekyll new my-awesome-site
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>jekyll new my-awesome-site
 <span class="nb">cd </span>my-awesome-site
 jekyll server
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>窗口不能关闭，用浏览器访问localhost:4000就可以了</p>
 
@@ -304,17 +294,15 @@ jekyll server
 
 <p>复制其中的内容</p>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code>git clone 上面复制了的内容
-</code></pre>
-</div>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone 上面复制了的内容
+</code></pre></div></div>
 
 <p>然后通过cd命令到该文件夹的更目录下，将之前下载下来的主题替换这之中全部的文件</p>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code>git add .
-git commit -m <span class="s2">"update"</span>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git add <span class="nb">.</span>
+git commit <span class="nt">-m</span> <span class="s2">"update"</span>
 git push
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>等文件上传成功，这时，在安装ruby时泡的咖啡估计也冷了，可以倒了，杯子洗好再去看看你的主页</p>
 

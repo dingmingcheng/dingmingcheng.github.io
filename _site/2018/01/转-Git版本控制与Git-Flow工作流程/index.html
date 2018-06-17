@@ -288,17 +288,15 @@
   <li>
     <p>项目负责人在本地master基础上创建一个develop分支，然后，推送到服务器；</p>
 
-    <div class="highlighter-rouge"><pre class="highlight"><code>git branch developgit push -u origin develop
-</code></pre>
-    </div>
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git branch developgit push -u origin develop
+</code></pre></div>    </div>
   </li>
 </ul>
 
 <p>其他开发人员，需要克隆develop中央仓库的源码，创建一个develop的轨迹版本；如果，已经克隆过该项目，则，不需要执行以下第一条命令。</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>git clone git@bitbucket.org:ytx-dev/ytx-demo.gitgit checkout -b develop origin/develop
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone git@bitbucket.org:ytx-dev/ytx-demo.gitgit checkout -b develop origin/develop
+</code></pre></div></div>
 
 <p>develop这个分支将包含项目的完整历史记录，而master将包含缩略版本。</p>
 
@@ -312,21 +310,18 @@
  基于develop分支创建新功能分支：</li>
 </ol>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>git checkout -b feature/demo develop
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git checkout -b feature/demo develop
+</code></pre></div></div>
 
 <p>推送到远程仓库，共享：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>git push
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git push
+</code></pre></div></div>
 
 <p><strong>所有开发此新功能的人员，都在此分支上开发提交代码。</strong></p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>git statusgit add &lt;some-file&gt;git commit -m "Add some-file."
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git statusgit add &lt;some-file&gt;git commit -m "Add some-file."
+</code></pre></div></div>
 
 <p>完成新功能开发（合并feature分支到develop）
 <img src="pic8.svg" alt="" />
@@ -334,13 +329,12 @@
 
 <ol>
   <li>
-    <div class="highlighter-rouge"><pre class="highlight"><code>git pull origin develop
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git pull origin develop
    git checkout develop
 git merge feature/demo
 git push
 git branch -d feature/demo
-</code></pre>
-    </div>
+</code></pre></div>    </div>
 
     <p>第一条命令是确保在合并新功能之前，develop分支是最新的。
  注意：</p>
@@ -361,15 +355,13 @@ git branch -d feature/demo
  当主测试流程完成，源码已经趋近于稳定状态，应该准备一个发布版本，确立版本号：</li>
 </ol>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>git checkout -b release-0.1.0 develop
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git checkout -b release-0.1.0 develop
+</code></pre></div></div>
 
 <p>推送到远程仓库共享：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>git push
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git push
+</code></pre></div></div>
 
 <p>这个分支是清理准备发布、 整体回归测试、 更新文档，和做其他任何系统即将发布的事情。</p>
 
@@ -379,22 +371,19 @@ git branch -d feature/demo
 <img src="pic10.svg" alt="" />
 一旦已经满足发布条件（或已经到了预定发布日期），应该把release分支合并到master分支和develop分支中，然后，使用master发布新版本。合并release分支到develop分支是很重要的，要让release上修改的东西能在后续的开发分支中生效。</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>git checkout mastergit merge release-0.1.0git push
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git checkout mastergit merge release-0.1.0git push
+</code></pre></div></div>
 
 <p>release分支合并到develop</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>git checkout developgit merge release-0.1.0git pushgit branch -d release-0.1.0
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git checkout developgit merge release-0.1.0git pushgit branch -d release-0.1.0
+</code></pre></div></div>
 
 <p>打标签
  Release分支在功能开发分支（develop）和公共发布版（master）中，充当一个缓冲的作用。每当有源码合并到master中的时候，应该在master上打一个标签，以便后续跟踪查阅。</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>git tag -a 0.1.0.RELEASE -m "Initial public release" mastergit push --tags
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git tag -a 0.1.0.RELEASE -m "Initial public release" mastergit push --tags
+</code></pre></div></div>
 
 <h3 id="线上bug修复流程">线上Bug修复流程</h3>
 
@@ -404,9 +393,8 @@ git branch -d feature/demo
   <li>
     <p>创建hotfix分支</p>
 
-    <div class="highlighter-rouge"><pre class="highlight"><code>git checkout -b issue-#001 master
-</code></pre>
-    </div>
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git checkout -b issue-#001 master
+</code></pre></div>    </div>
   </li>
 </ol>
 
@@ -415,21 +403,18 @@ git branch -d feature/demo
 <p>完成修复，合并到master发布
 <img src="pic11.svg" alt="" /></p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>git checkout mastergit merge issue-#001git push
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git checkout mastergit merge issue-#001git push
+</code></pre></div></div>
 
 <p>打标签</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>git tag -a 0.1.1.RELEASE -m "Initial public release" mastergit push --tags
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git tag -a 0.1.1.RELEASE -m "Initial public release" mastergit push --tags
+</code></pre></div></div>
 
 <p>合并到develop</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>git checkout developgit merge issue-#001git push
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git checkout developgit merge issue-#001git push
+</code></pre></div></div>
 
 <h3 id="其他">其他</h3>
 

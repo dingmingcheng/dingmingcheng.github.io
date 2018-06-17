@@ -192,7 +192,7 @@
 
 <p>简单起见，为食物抽象出三个属性：成本，售价，名字。创建抽象类：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">Food</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">Food</span> <span class="o">{</span>
     <span class="kd">private</span> <span class="kt">int</span> <span class="n">price</span><span class="o">;</span>
     <span class="kd">private</span> <span class="kt">int</span> <span class="n">cost</span><span class="o">;</span>
     <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
@@ -239,14 +239,13 @@
                 <span class="sc">'}'</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>设想了两个类继承Food类，一个是“炒饭”，一个是“面条”。</p>
 
 <p>FriedRice:</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FriedRice</span> <span class="kd">extends</span> <span class="n">Food</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FriedRice</span> <span class="kd">extends</span> <span class="n">Food</span> <span class="o">{</span>
 
     <span class="kd">public</span> <span class="nf">FriedRice</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">(</span><span class="mi">100</span><span class="o">,</span> <span class="mi">20</span><span class="o">,</span> <span class="s">"FriedRice"</span><span class="o">);</span>
@@ -265,12 +264,11 @@
                 <span class="sc">'}'</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>Noodles:</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Noodles</span> <span class="kd">extends</span> <span class="n">Food</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Noodles</span> <span class="kd">extends</span> <span class="n">Food</span> <span class="o">{</span>
   
     <span class="kd">public</span> <span class="nf">Noodles</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">(</span><span class="mi">50</span><span class="o">,</span> <span class="mi">10</span><span class="o">,</span> <span class="s">"Noodles"</span><span class="o">);</span>
@@ -288,12 +286,11 @@
                 <span class="sc">'}'</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>对于简单工厂模式而言，只是提供了一个生产对象的工厂，看网上大部分通过switch或者if进行实例化对象，这里我是用了反射去实现，感觉代码的可维护性会更好，当然，反射的效率是个问题，factory中添加了缓存进行了适当的优化。</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FoodFactory</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FoodFactory</span> <span class="o">{</span>
 
     <span class="kd">private</span> <span class="n">ConcurrentHashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Class</span><span class="o">&gt;</span> <span class="n">classCache</span><span class="o">;</span>
 
@@ -311,12 +308,11 @@
         <span class="k">return</span> <span class="n">obj</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>测试类：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
     <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">FoodFactory</span> <span class="n">foodFactory</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FoodFactory</span><span class="o">();</span>
         <span class="n">String</span> <span class="n">foodName</span> <span class="o">=</span> <span class="s">"com.dmc.DesignPatterns.simpleFactory.FriedRice"</span><span class="o">;</span>
@@ -334,8 +330,7 @@
         <span class="k">return</span> <span class="n">food</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>写完觉得简单工厂模式还是觉得单个工厂难以维护，而且在效率上有一定的局限，结构也不是很清晰。就比如你一个车间要去加工所有类型的产品，给人的感觉就是“乱”。</p>
 
@@ -343,13 +338,12 @@
 
 <p>在简单工厂模式的基础上，抽象出“FoodFactory”的接口，每一种食物都交由相对应的工厂实现。比较好理解：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">FoodFactory</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">FoodFactory</span> <span class="o">{</span>
     <span class="n">Food</span> <span class="nf">createFood</span><span class="o">();</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="c1">//炒饭工厂</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//炒饭工厂</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">FriedRiceFactory</span> <span class="kd">implements</span> <span class="n">FoodFactory</span> <span class="o">{</span>
     <span class="nd">@Override</span>
     <span class="kd">public</span> <span class="n">Food</span> <span class="nf">createFood</span><span class="o">()</span> <span class="o">{</span>
@@ -357,10 +351,9 @@
         <span class="k">return</span> <span class="n">food</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="c1">//面条工厂</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//面条工厂</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">NoodlesFactory</span> <span class="kd">implements</span> <span class="n">FoodFactory</span> <span class="o">{</span>
     <span class="nd">@Override</span>
     <span class="kd">public</span> <span class="n">Food</span> <span class="nf">createFood</span><span class="o">()</span> <span class="o">{</span>
@@ -368,12 +361,11 @@
         <span class="k">return</span> <span class="n">food</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>测试类：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
     <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">FriedRiceFactory</span> <span class="n">friedRiceFactory</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FriedRiceFactory</span><span class="o">();</span>
         <span class="n">Food</span> <span class="n">friedRice</span> <span class="o">=</span> <span class="n">friedRiceFactory</span><span class="o">.</span><span class="na">createFood</span><span class="o">();</span>
@@ -384,8 +376,7 @@
         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">noodles</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <h2 id="抽象工厂模式">抽象工厂模式</h2>
 
@@ -393,17 +384,16 @@
 
 <p>抽象出一个”饭店接口”</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">AbstractRestaurant</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">AbstractRestaurant</span> <span class="o">{</span>
     <span class="n">Food</span> <span class="nf">createRice</span><span class="o">();</span>
 
     <span class="n">Food</span> <span class="nf">createNoodles</span><span class="o">();</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>分别实现A饭店和B饭店</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RestaurantA</span> <span class="kd">implements</span> <span class="n">AbstractRestaurant</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RestaurantA</span> <span class="kd">implements</span> <span class="n">AbstractRestaurant</span> <span class="o">{</span>
     <span class="nd">@Override</span>
     <span class="kd">public</span> <span class="n">Food</span> <span class="nf">createRice</span><span class="o">()</span> <span class="o">{</span>
         <span class="n">Food</span> <span class="n">food</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FriedRice</span><span class="o">(</span><span class="mi">20</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="s">"FriedRiceA"</span><span class="o">);</span>
@@ -416,10 +406,9 @@
         <span class="k">return</span> <span class="n">food</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RestaurantB</span> <span class="kd">implements</span> <span class="n">AbstractRestaurant</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RestaurantB</span> <span class="kd">implements</span> <span class="n">AbstractRestaurant</span> <span class="o">{</span>
     <span class="nd">@Override</span>
     <span class="kd">public</span> <span class="n">Food</span> <span class="nf">createRice</span><span class="o">()</span> <span class="o">{</span>
         <span class="n">Food</span> <span class="n">food</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FriedRice</span><span class="o">(</span><span class="mi">59</span><span class="o">,</span> <span class="mi">14</span><span class="o">,</span> <span class="s">"FriedRiceB"</span><span class="o">);</span>
@@ -432,12 +421,11 @@
         <span class="k">return</span> <span class="n">food</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>测试程序：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
     <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">RestaurantA</span> <span class="n">A</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RestaurantA</span><span class="o">();</span>
         <span class="n">RestaurantB</span> <span class="n">B</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RestaurantB</span><span class="o">();</span>
@@ -453,8 +441,7 @@
         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">BNoodles</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <h2 id="总结">总结</h2>
 

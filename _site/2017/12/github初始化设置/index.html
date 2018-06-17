@@ -186,11 +186,10 @@
 
 <p>通常使用git时，进行push，pull，clone等操作时，是使用https协议和SSH协议</p>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code><span class="c">#通常将远程仓库拉到本地有以下两种方式</span>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#通常将远程仓库拉到本地有以下两种方式</span>
 git clone git@github.com:dingmingcheng/dingmingcheng.github.io.git
 git clone https://github.com/dingmingcheng/dingmingcheng.github.io.git
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>而在使用时，https协议可以说是非常不方便的，因为每次都需要输入密码，而git主要是使用SSH协议进行数据加密传输。</p>
 
@@ -200,18 +199,16 @@ git clone https://github.com/dingmingcheng/dingmingcheng.github.io.git
 
 <p>简单来说，当我们需要远程登录其他的机器时，ssh就起了很大的作用，使用登陆主要有两种方式，第一种是口令登陆，就是你知道远程机器的密码，每次连接时通过口令登陆即可。（服务端默认端口是22）</p>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code>ssh user@host
-</code></pre>
-</div>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh user@host
+</code></pre></div></div>
 
 <p>之后输入密码即可。</p>
 
 <p>还有一种就是通过公钥，首先需要在本机上生成一对密钥，mac/linux下时在当前用户的文件夹下</p>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code><span class="nb">cd</span> ~/.ssh/
-ls
-</code></pre>
-</div>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd</span> ~/.ssh/
+<span class="nb">ls</span>
+</code></pre></div></div>
 
 <p>里面会有id_rsa和id_rsa.pub，其中id_rsa.pub中的内容就是你生成公钥，也就是要存在远程主机上的秘钥。</p>
 

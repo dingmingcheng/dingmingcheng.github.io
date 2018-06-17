@@ -188,7 +188,7 @@
 
 <p>主要包含客户端启动代码，之后的服务端使用同一个客户端代码，还有就是写字节函数。</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="c1">//AsysWriter.java</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//AsysWriter.java</span>
 <span class="c1">//写字节函数，之后服务端会使用该函数</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">AsysWriter</span> <span class="o">{</span>
     <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">doWrite</span><span class="o">(</span><span class="n">SocketChannel</span> <span class="n">channel</span><span class="o">,</span> <span class="n">String</span> <span class="n">response</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
@@ -199,10 +199,9 @@
         <span class="n">channel</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">writeBuffer</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="c1">//Client.java</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//Client.java</span>
 <span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">dmc</span><span class="o">.</span><span class="na">common</span><span class="o">;</span>
 
 <span class="kn">import</span> <span class="nn">com.sun.org.apache.xpath.internal.operations.Bool</span><span class="o">;</span>
@@ -300,10 +299,9 @@
         <span class="o">}</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="c1">//ClientStart.java</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//ClientStart.java</span>
 <span class="c1">//客户端启动代码</span>
 <span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">dmc</span><span class="o">.</span><span class="na">common</span><span class="o">;</span>
 
@@ -324,14 +322,13 @@
         <span class="o">}</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <h3 id="单线程">单线程</h3>
 
 <p><img src="pic4.png" alt="" /></p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="c1">//Server.java</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//Server.java</span>
 <span class="kn">package</span> <span class="n">dmcOneThread</span><span class="o">;</span>
 
 <span class="kn">import</span> <span class="nn">org.springframework.expression.spel.ast.Selection</span><span class="o">;</span>
@@ -408,8 +405,7 @@
         <span class="o">}</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>测试结果(之后就不放测试结果了，都是一样的)：</p>
 
@@ -425,7 +421,7 @@
 
 <p>Acceptor类</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kn">package</span> <span class="n">ThreadGroupTest</span><span class="o">;</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">ThreadGroupTest</span><span class="o">;</span>
 
 <span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.net.InetSocketAddress</span><span class="o">;</span>
@@ -476,12 +472,11 @@
         <span class="o">}</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>ReactorThreadGroup类</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kn">package</span> <span class="n">ThreadGroupTest</span><span class="o">;</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">ThreadGroupTest</span><span class="o">;</span>
 
 <span class="kn">import</span> <span class="nn">java.nio.channels.SocketChannel</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.util.ArrayList</span><span class="o">;</span>
@@ -525,12 +520,11 @@
     <span class="o">}</span>
 <span class="o">}</span>
 
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>Handler类</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kn">package</span> <span class="n">ThreadGroupTest</span><span class="o">;</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">ThreadGroupTest</span><span class="o">;</span>
 
 <span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.nio.ByteBuffer</span><span class="o">;</span>
@@ -629,8 +623,7 @@
         <span class="o">}</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <h3 id="主从">主从</h3>
 
@@ -638,7 +631,7 @@
 
 <p>ServerStart.java</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kn">package</span> <span class="n">MasterSlaveReactor</span><span class="o">;</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">MasterSlaveReactor</span><span class="o">;</span>
 
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">ServerStart</span> <span class="o">{</span>
     <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
@@ -646,8 +639,7 @@
         <span class="k">new</span> <span class="nf">Thread</span><span class="o">(</span><span class="n">mainReactor</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>MainReactor.java</p>
 
@@ -765,7 +757,7 @@ public class MainReactor implements Runnable, CallBack{
 
 <p>Acceptor.java</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kn">package</span> <span class="n">MasterSlaveReactor</span><span class="o">;</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">MasterSlaveReactor</span><span class="o">;</span>
 
 <span class="kn">import</span> <span class="nn">ThreadGroupTest.ReactorThreadGroup</span><span class="o">;</span>
 
@@ -806,12 +798,11 @@ public class MainReactor implements Runnable, CallBack{
     <span class="o">}</span>
 
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>SubReactor.java</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kn">package</span> <span class="n">MasterSlaveReactor</span><span class="o">;</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">MasterSlaveReactor</span><span class="o">;</span>
 
 <span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.nio.ByteBuffer</span><span class="o">;</span>
@@ -893,20 +884,18 @@ public class MainReactor implements Runnable, CallBack{
         <span class="o">}</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>callback接口</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kn">package</span> <span class="n">MasterSlaveReactor</span><span class="o">;</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">MasterSlaveReactor</span><span class="o">;</span>
 
 <span class="kn">import</span> <span class="nn">java.nio.channels.SocketChannel</span><span class="o">;</span>
 
 <span class="kd">public</span> <span class="kd">interface</span> <span class="nc">CallBack</span> <span class="o">{</span>
     <span class="kt">void</span> <span class="nf">Dispatch</span><span class="o">(</span><span class="n">SocketChannel</span> <span class="n">socketChannel</span><span class="o">);</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <h2 id="结尾">结尾</h2>
 

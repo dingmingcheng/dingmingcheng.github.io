@@ -188,7 +188,7 @@
 
 <h3 id="懒汉式">懒汉式</h3>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">lazy</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">lazy</span> <span class="o">{</span>
     <span class="kd">private</span> <span class="kd">static</span> <span class="kd">volatile</span> <span class="n">lazy</span> <span class="n">instance</span><span class="o">;</span>
 
     <span class="kd">private</span> <span class="nf">lazy</span><span class="o">()</span> <span class="o">{</span>
@@ -206,8 +206,7 @@
         <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>在学习懒汉式的时候还是遇到一些问题的</p>
 
@@ -215,7 +214,7 @@
 
 <p>以正常的思维，我们开始去写newInstance很容易想成是这样的：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="n">lazy</span> <span class="nf">newInstance</span><span class="o">()</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="n">lazy</span> <span class="nf">newInstance</span><span class="o">()</span> <span class="o">{</span>
     <span class="kd">synchronized</span> <span class="o">(</span><span class="n">lazy</span><span class="o">.</span><span class="na">class</span><span class="o">)</span> <span class="o">{</span>
       <span class="k">if</span> <span class="o">(</span><span class="kc">null</span> <span class="o">==</span> <span class="n">instance</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">lazy</span><span class="o">();</span>
@@ -223,8 +222,7 @@
     <span class="o">}</span>
     <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>不过如果在这种情况下，就会出现这么一种情况，在大量线程同时调用newInstance()时，就会出现很严重的锁竞争的问题，而改进的办法，就是在同步代码块外部再添加一个null的判断，那么在实例创建好后，之后进来的线程就可以直接返回此实例。</p>
 
@@ -236,7 +234,7 @@
 
 <p>饿汉式相对较简单</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">hungry</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">hungry</span> <span class="o">{</span>
     <span class="kd">private</span> <span class="kd">static</span> <span class="n">hungry</span> <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">hungry</span><span class="o">();</span>
 
     <span class="kd">private</span> <span class="nf">hungry</span><span class="o">()</span> <span class="o">{</span> <span class="o">}</span>
@@ -245,8 +243,7 @@
         <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 
 

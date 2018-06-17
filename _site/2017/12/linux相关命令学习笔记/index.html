@@ -186,7 +186,7 @@
 
 <p>###系统工作命令</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>echo($HOSTNAME,$SHELL,asdas,...)
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>echo($HOSTNAME,$SHELL,asdas,...)
 data("+...")
 reboot
 wget
@@ -236,8 +236,7 @@ tar [options] [file] {c压缩,x解压,z Gzip,v显示过程,f目标文件名，C�
 grep [options] [file](grep -R "" .  查找文件中的内容)
 awk
 find [查找路径] 寻找条件 操作(find . -name ""  查找文件名) 管道命令符 将前一个命令的标准输出当作后一个命令的标准输入
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>###输入输出重定向</p>
 
@@ -247,7 +246,7 @@ stderr 2</p>
 
 <p>输出重定向</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>命令 &gt; 文件 ，标准输出重定向到文件中（clear）
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>命令 &gt; 文件 ，标准输出重定向到文件中（clear）
 命令 2&gt; 文件 ，错误输出重定向到文件中（clear）
 命令 &gt;&gt; 文件，附加
 命令 2&gt;&gt; 文件，附加
@@ -256,8 +255,7 @@ stderr 2</p>
 命令 &lt;&lt; 文件 追加	
 命令 &lt;&lt; 分界符 追加，遇到分界符停止
 命令 &lt; 文件1 &gt; 文件2 将文件1作为输入并输出到文件2 命令行通配符
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>###实用的PATH变量</p>
 
@@ -266,15 +264,14 @@ stderr 2</p>
 3.bash判断其是否为“内部命令”还是“外部命令”
 4.通过$PATH中的路径进行命令查找</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>env
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>env
 $HOME
 export,提升为全局变量
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <h3 id="其他命令">其他命令</h3>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>read -p [提示语句] 变量名
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>read -p [提示语句] 变量名
 at [date]
 at [-l/c] atrm 序号
 crontab [-u 用户] file/[-l/e/r]
@@ -291,8 +288,7 @@ nmcli
 ssh 连接远程主机-keygen
 scp文件传送
 lsof
-</code></pre>
-</div>
+</code></pre></div></div>
 
 
   </section>

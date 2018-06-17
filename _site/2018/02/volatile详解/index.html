@@ -196,7 +196,7 @@
 
 <p>以下是测试可见性的一个程序</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">volatileTest</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">volatileTest</span> <span class="o">{</span>
 
     <span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="n">flag</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
 
@@ -218,8 +218,7 @@
         <span class="n">flag</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>上述程序一眼望去，完全ok，1s后，控制台输出“finished……”，然而，事实是程序无法终止。其原因就是Task线程没有读取到主内存中已经修改的flag变量，换言之Task线程的工作内存中flag变量依然是true，一直处于while循环当中。</p>
 
@@ -231,7 +230,7 @@
 
 <p>还是先放张问题出现的情况吧：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">volatileTest</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">volatileTest</span> <span class="o">{</span>
 
     <span class="kd">static</span> <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span><span class="o">,</span> <span class="n">a1</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
     <span class="kd">static</span> <span class="kt">int</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">0</span><span class="o">,</span> <span class="n">b1</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
@@ -273,8 +272,7 @@
         <span class="o">}</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>以上代码经过测试，在执行到第100w+次时，程序结束。显然，按照正常逻辑不可能出现a1,b1均等于0的情况，然而它就是这样发生了，这简直比“墨菲定律”还不靠谱，你觉得不可能发生的事它都发生了，哈哈。其实这就是指令重排序做的梗。在机器看来，a=1和a1=b实际上是两个互不干涉的指令，于是它擅作主张，将a1=b提到了a=1之前执行。此时完整的执行过程是这样的:(a1=b, b=1, b1=a, a=1)。</p>
 

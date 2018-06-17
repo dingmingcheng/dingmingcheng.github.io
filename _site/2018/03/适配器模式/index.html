@@ -194,43 +194,39 @@
 
 <p>OldRules:</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">OldRules</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">OldRules</span> <span class="o">{</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">dontTalk</span><span class="o">()</span> <span class="o">{</span>
         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"old rule : do not talk...!"</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>NewRules:</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">NewRules</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">NewRules</span> <span class="o">{</span>
     <span class="kt">void</span> <span class="nf">dontTalk</span><span class="o">();</span>
     <span class="kt">void</span> <span class="nf">dontEat</span><span class="o">();</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>RuleAdapter:</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RuleAdapter</span> <span class="kd">extends</span> <span class="n">OldRules</span> <span class="kd">implements</span> <span class="n">NewRules</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RuleAdapter</span> <span class="kd">extends</span> <span class="n">OldRules</span> <span class="kd">implements</span> <span class="n">NewRules</span> <span class="o">{</span>
     <span class="nd">@Override</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">dontEat</span><span class="o">()</span> <span class="o">{</span>
         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"new rule : do not eat...!"</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>测试：</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">RuleAdapter</span> <span class="n">adapter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RuleAdapter</span><span class="o">();</span>
         <span class="n">adapter</span><span class="o">.</span><span class="na">dontEat</span><span class="o">();</span>
         <span class="n">adapter</span><span class="o">.</span><span class="na">dontTalk</span><span class="o">();</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <h3 id="对象适配器">对象适配器</h3>
 
@@ -238,7 +234,7 @@
 
 <p>RuleAdapter:</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RuleAdapter</span> <span class="kd">implements</span> <span class="n">NewRules</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RuleAdapter</span> <span class="kd">implements</span> <span class="n">NewRules</span> <span class="o">{</span>
 
     <span class="kd">private</span> <span class="n">OldRules</span> <span class="n">oldRules</span><span class="o">;</span>
 
@@ -256,8 +252,7 @@
         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"new rule : do not eat...!"</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <h3 id="接口适配器缺省适配器">接口适配器（缺省适配器）</h3>
 
@@ -265,18 +260,17 @@
 
 <p>比如有个规定的接口，而我只希望实现其中的部分</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Rules</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Rules</span> <span class="o">{</span>
     <span class="kt">void</span> <span class="nf">dontTalk</span><span class="o">();</span>
     <span class="kt">void</span> <span class="nf">dontSmile</span><span class="o">();</span>
     <span class="kt">void</span> <span class="nf">dontCry</span><span class="o">();</span>
     <span class="kt">void</span> <span class="nf">dontEat</span><span class="o">();</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>那么可以在实现类和接口之间写一个适配类</p>
 
-<div class="language-java highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AbstractRules</span> <span class="kd">implements</span> <span class="n">Rules</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AbstractRules</span> <span class="kd">implements</span> <span class="n">Rules</span> <span class="o">{</span>
     <span class="nd">@Override</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">dontTalk</span><span class="o">()</span> <span class="o">{}</span>
     <span class="nd">@Override</span>
@@ -286,8 +280,7 @@
     <span class="nd">@Override</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">dontEat</span><span class="o">()</span> <span class="o">{}</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>实现类通过继承该适配类，选择需要重写的方法即可。</p>
 

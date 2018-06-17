@@ -200,7 +200,7 @@
 
 <p>2.generatorConfig.xml文件，还是比较好修改的</p>
 
-<div class="language-xml highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
 <span class="cp">&lt;!DOCTYPE generatorConfiguration
   PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
   "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd"&gt;</span>
@@ -235,14 +235,12 @@
         <span class="nt">&lt;table</span> <span class="na">tableName=</span><span class="s">"testtable"</span> <span class="na">domainObjectName=</span><span class="s">"Testtable"</span> <span class="na">enableCountByExample=</span><span class="s">"false"</span> <span class="na">enableUpdateByExample=</span><span class="s">"false"</span> <span class="na">enableDeleteByExample=</span><span class="s">"false"</span> <span class="na">enableSelectByExample=</span><span class="s">"false"</span> <span class="na">selectByExampleQueryId=</span><span class="s">"false"</span><span class="nt">&gt;&lt;/table&gt;</span>
     <span class="nt">&lt;/context&gt;</span>
 <span class="nt">&lt;/generatorConfiguration&gt;</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>3.在lib文件夹下输入以下命令</p>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code>java -jar mybatis-generator-core-1.3.5.jar -configfile generatorConfig.xml -overwrite
-</code></pre>
-</div>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java <span class="nt">-jar</span> mybatis-generator-core-1.3.5.jar <span class="nt">-configfile</span> generatorConfig.xml <span class="nt">-overwrite</span>
+</code></pre></div></div>
 
 <p>4.完成</p>
 
