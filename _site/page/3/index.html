@@ -170,6 +170,90 @@
   <ol class="post-list">
     
     <li>
+      <h2 class="post-list__post-title post-title"><a href="/2018/02/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E4%BB%A3%E7%A0%81%E8%A7%A3%E8%AF%BB/" title="访问 redis分布式锁代码解读">redis分布式锁代码解读</a></h2>
+      <p class="excerpt">前言说起锁，其实还是一个很宽泛的概念，在java中，基础的就是synchronized关键字，ReentrantLock，但是就这两个就可以引出非常多的知识点，包括操作系统层面的monitor锁，AQS，volatile等等。不过在分布式环境中，在对共享资源进行操作时（最常见的就是一个秒杀的场景），单机的锁肯定是行不通的，于是就引申出了分布式锁的概念，分布式锁的实现方式主要有3种，这篇只讲讲redis实现的版本。具体实现redis实现的分布式锁网上还是有很多的，我看自己公司也有一个redi...&hellip;</p>
+      <div class="post-list__meta">        
+        <time datetime="2018-02-04 00:00:00 +0800" class="post-list__meta--date date">
+          <img src="/images/calendar.png" width="20px" /> 
+          2018-02-04</time> 
+        <div class = "tag-img-icon">
+          <img src="/images/tag-icon.svg" width="20px" /> 
+        </div>
+        <a href="/tags">
+          <div class = "post-list-icon-mate">
+            <span class="post-list__meta--tags-right">redis</span>
+          </div>
+          <div class = "post-list-small-mate">
+          <a class="btn-border-small" href=/2018/02/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E4%BB%A3%E7%A0%81%E8%A7%A3%E8%AF%BB/>阅读全文 » </a>
+          </div>
+      </div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
+      <h2 class="post-list__post-title post-title"><a href="/2018/01/%E8%BD%AC-Git%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6%E4%B8%8EGit-Flow%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B/" title="访问 [转]Git版本控制与Git Flow工作流程">[转]Git版本控制与Git Flow工作流程</a></h2>
+      <p class="excerpt">本文出处：原文引言编写的目的  通过规范化的流程，使得产品、开发与测试等各个部门更高效的协同工作。  通过规范化的流程使得产品高效稳定运行。背景在多组员，多项目等环境进行协同工作时，如果没有统一规范、统一流程，则会导致额外的工作量，甚至会做无用功。所以要减少版本冲突，减轻不必要的工作，就需要规范化的工作流程。总则  统一使用Git作为版本控制的主要工具。  统一使用GitFlow流程管理控制版本。提交的准则  除了源码相关的东西之外，其他build产生的东西（如：maven的target文...&hellip;</p>
+      <div class="post-list__meta">        
+        <time datetime="2018-01-27 00:00:00 +0800" class="post-list__meta--date date">
+          <img src="/images/calendar.png" width="20px" /> 
+          2018-01-27</time> 
+        <div class = "tag-img-icon">
+          <img src="/images/tag-icon.svg" width="20px" /> 
+        </div>
+        <a href="/tags">
+          <div class = "post-list-icon-mate">
+            <span class="post-list__meta--tags-right">git</span>
+          </div>
+          <div class = "post-list-small-mate">
+          <a class="btn-border-small" href=/2018/01/%E8%BD%AC-Git%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6%E4%B8%8EGit-Flow%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B/>阅读全文 » </a>
+          </div>
+      </div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
+      <h2 class="post-list__post-title post-title"><a href="/2018/01/reactor%E5%8D%95%E7%BA%BF%E7%A8%8B-%E5%A4%9A%E7%BA%BF%E7%A8%8B-%E4%B8%BB%E4%BB%8E%E7%9A%84java%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/" title="访问 reactor单线程，多线程，主从的java代码实现">reactor单线程，多线程，主从的java代码实现</a></h2>
+      <p class="excerpt">前言从最初，自己就对网络编程比较感兴趣，这段时间看了netty权威指南，收获很多。我觉得所有的知识都是要落地才能体现其价值，也为了加深自己对reactor模式的理解，自己也就敲了一遍，当然中间也遇到了很多困难，废话不多说，上代码。以下代码使用java原生nio实现，未考虑半包，粘包等问题common类主要包含客户端启动代码，之后的服务端使用同一个客户端代码，还有就是写字节函数。//AsysWriter.java//写字节函数，之后服务端会使用该函数public class AsysWrit...&hellip;</p>
+      <div class="post-list__meta">        
+        <time datetime="2018-01-23 00:00:00 +0800" class="post-list__meta--date date">
+          <img src="/images/calendar.png" width="20px" /> 
+          2018-01-23</time> 
+        <div class = "tag-img-icon">
+          <img src="/images/tag-icon.svg" width="20px" /> 
+        </div>
+        <a href="/tags">
+          <div class = "post-list-icon-mate">
+            <span class="post-list__meta--tags-right">网络</span>
+          </div>
+          <div class = "post-list-small-mate">
+          <a class="btn-border-small" href=/2018/01/reactor%E5%8D%95%E7%BA%BF%E7%A8%8B-%E5%A4%9A%E7%BA%BF%E7%A8%8B-%E4%B8%BB%E4%BB%8E%E7%9A%84java%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/>阅读全文 » </a>
+          </div>
+      </div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
+      <h2 class="post-list__post-title post-title"><a href="/2018/01/mysql%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95%E4%B8%8Esysbench/" title="访问 mysql基准测试与sysbench">mysql基准测试与sysbench</a></h2>
+      <p class="excerpt">前言之前常常会看到QPS，TPS这些字样，确实这些指标也是衡量数据库性能的非常重要的指标，而基准测试则是抛开业务，对机子上的数据库进行测试，自己也尝试用sysbench做了一遍，废话少说。##测试过程测试主要依赖自带的oltp.lua这个脚本文件，不同系统应该会在不同文件夹下，我的是mac，位于/usr/local/Cellar/sysbench/1.0.11_1/share/sysbench/tests/include/oltp_legacy/oltp.lua，文件搜索一下也能找到。其次...&hellip;</p>
+      <div class="post-list__meta">        
+        <time datetime="2018-01-13 00:00:00 +0800" class="post-list__meta--date date">
+          <img src="/images/calendar.png" width="20px" /> 
+          2018-01-13</time> 
+        <div class = "tag-img-icon">
+          <img src="/images/tag-icon.svg" width="20px" /> 
+        </div>
+        <a href="/tags">
+          <div class = "post-list-icon-mate">
+            <span class="post-list__meta--tags-right">mysql</span>
+          </div>
+          <div class = "post-list-small-mate">
+          <a class="btn-border-small" href=/2018/01/mysql%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95%E4%B8%8Esysbench/>阅读全文 » </a>
+          </div>
+      </div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
       <h2 class="post-list__post-title post-title"><a href="/2018/01/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%AE%80%E5%8D%95OOM%E5%88%86%E6%9E%90/" title="访问 记一次简单OOM分析">记一次简单OOM分析</a></h2>
       <p class="excerpt">前言说到OOM，out of memory也是一个广泛存在的问题，如果线上出了问题，临时抱佛脚肯定是不行的，所以未雨绸缪是必须的。测试过程首先是程序的准备准备了两个OOM的程序import java.util.concurrent.ExecutorService;import java.util.concurrent.Executors;/** * @Author: dingmingcheng * @Description * @Date: Created in 下午8:15 2018/1...&hellip;</p>
       <div class="post-list__meta">        
@@ -290,90 +374,6 @@
           </div>
           <div class = "post-list-small-mate">
           <a class="btn-border-small" href=/2017/12/mybatis%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E5%B7%A5%E5%85%B7/>阅读全文 » </a>
-          </div>
-      </div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2017/12/github%E5%88%9D%E5%A7%8B%E5%8C%96%E8%AE%BE%E7%BD%AE/" title="访问 github sshkey添加">github sshkey添加</a></h2>
-      <p class="excerpt">SSH配置ssh配置其实很简单，网上也有很多的教程，直接给个传送门吧，一步一步来就OK了，windows下github ssh配置，linux/mac下配置git协议通常使用git时，进行push，pull，clone等操作时，是使用https协议和SSH协议#通常将远程仓库拉到本地有以下两种方式git clone git@github.com:dingmingcheng/dingmingcheng.github.io.gitgit clone https://github.com/din...&hellip;</p>
-      <div class="post-list__meta">        
-        <time datetime="2017-12-16 00:00:00 +0800" class="post-list__meta--date date">
-          <img src="/images/calendar.png" width="20px" /> 
-          2017-12-16</time> 
-        <div class = "tag-img-icon">
-          <img src="/images/tag-icon.svg" width="20px" /> 
-        </div>
-        <a href="/tags">
-          <div class = "post-list-icon-mate">
-            <span class="post-list__meta--tags-right">git</span>
-          </div>
-          <div class = "post-list-small-mate">
-          <a class="btn-border-small" href=/2017/12/github%E5%88%9D%E5%A7%8B%E5%8C%96%E8%AE%BE%E7%BD%AE/>阅读全文 » </a>
-          </div>
-      </div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2017/12/death/" title="访问 death">death</a></h2>
-      <p class="excerpt">正常下班点，在地铁上无聊，写点东西，题目有些沉重，主要是关于一个贴吧老哥。很久没逛过dota2吧了，一时无聊进去看了看，看到一个很伤感的帖子，题目是“刀友们，这次撑不住了，能为我亮起tp吗”，emmm，这兄弟和我同年出生，一直备战考研，不过出了点事，鼻咽癌，真的感觉挺可惜的，从字里行间感觉的出来是个很不错的小伙子，长得也帅。在他决定面对死亡后，做了这几件事，第一件事就是和他的喜欢的女孩子表白，女孩是他的高中同学，大学也同一个学校，女孩子也同意了。。。。。第二件事是写下想说的话，主要是对父母...&hellip;</p>
-      <div class="post-list__meta">        
-        <time datetime="2017-12-14 00:00:00 +0800" class="post-list__meta--date date">
-          <img src="/images/calendar.png" width="20px" /> 
-          2017-12-14</time> 
-        <div class = "tag-img-icon">
-          <img src="/images/tag-icon.svg" width="20px" /> 
-        </div>
-        <a href="/tags">
-          <div class = "post-list-icon-mate">
-            <span class="post-list__meta--tags-right">杂记</span>
-          </div>
-          <div class = "post-list-small-mate">
-          <a class="btn-border-small" href=/2017/12/death/>阅读全文 » </a>
-          </div>
-      </div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2017/12/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/" title="访问 个人博客搭建教程">个人博客搭建教程</a></h2>
-      <p class="excerpt">  先写写我的博客的搭建教程吧，希望能帮到需要的人。总体情况  我的博客搭建环境是在mac，主要是使用了jekyll框架搭建，之前看网上的教程都是使用hexo，自己之前也是用hexo试过，不过看到一个很不错的模版，也有一定的扩展性，于是就用了jekyll来搭建，网站部署在github上，就是加载速度有点慢…。主题模板也是使用了网上的一个模板。环境搭建  以下的搭建是在mac环境下进行的Ruby首先是ruby的环境安装，mac自带ruby环境，不过自己用时发现版本过低，是要2.1以上，于是重...&hellip;</p>
-      <div class="post-list__meta">        
-        <time datetime="2017-12-10 00:00:00 +0800" class="post-list__meta--date date">
-          <img src="/images/calendar.png" width="20px" /> 
-          2017-12-10</time> 
-        <div class = "tag-img-icon">
-          <img src="/images/tag-icon.svg" width="20px" /> 
-        </div>
-        <a href="/tags">
-          <div class = "post-list-icon-mate">
-            <span class="post-list__meta--tags-right">杂记</span>
-          </div>
-          <div class = "post-list-small-mate">
-          <a class="btn-border-small" href=/2017/12/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E6%95%99%E7%A8%8B/>阅读全文 » </a>
-          </div>
-      </div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2017/12/%E5%87%BA%E5%8F%91%E4%BA%86-%E5%B0%91%E5%B9%B4/" title="访问 出发了，少年">出发了，少年</a></h2>
-      <p class="excerpt">    这是我的第一篇的博客，趁着今天周六，想写一篇杂记，写点东西，但一时对着电脑，竟不知如何提笔，算了，还是想到什么写什么了。   还是先讲讲为何会想到搭建这个博客吧。要说初衷，是因为专业，因为职业，作为计算机行业，不断学习肯定是必须的，想到之前在微博上看见这么一句话，“比你聪明的人比你还努力，为什么还要努力”，虽说是个段子，别的行业我不清楚，前半句来形容我们专业是再恰当不过的了，无论是之前acm在役时，还是之后转服务器，转工程之后，总是会碰见许多的问题，遇到问题也更多是去百度去谷歌，不...&hellip;</p>
-      <div class="post-list__meta">        
-        <time datetime="2017-12-09 00:00:00 +0800" class="post-list__meta--date date">
-          <img src="/images/calendar.png" width="20px" /> 
-          2017-12-09</time> 
-        <div class = "tag-img-icon">
-          <img src="/images/tag-icon.svg" width="20px" /> 
-        </div>
-        <a href="/tags">
-          <div class = "post-list-icon-mate">
-            <span class="post-list__meta--tags-right">杂记</span>
-          </div>
-          <div class = "post-list-small-mate">
-          <a class="btn-border-small" href=/2017/12/%E5%87%BA%E5%8F%91%E4%BA%86-%E5%B0%91%E5%B9%B4/>阅读全文 » </a>
           </div>
       </div>
       <hr class="post-list__divider" />
