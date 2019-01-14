@@ -170,8 +170,71 @@
   <ol class="post-list">
     
     <li>
+      <h2 class="post-list__post-title post-title"><a href="/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(4)-mq%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%9C%8D%E5%8A%A1/" title="访问 rocketmq源码阅读(4)——mq负载均衡服务">rocketmq源码阅读(4)——mq负载均衡服务</a></h2>
+      <p class="excerpt">前言上一文在消费者初始化中，提到了客户端的负载均衡服务。再简单介绍一下负载均衡服务rebalance服务主要用于每个消费者实例匹配一个或者多个queue，以保证broker端的queue只对应一个实例，避免多个实例消费相同的queue。rebalance主要包括RebalancePullImpl和RebalancePushImpl，位于org.apache.rocketmq.client.impl.consumer下，还有就是队列分配算法，在org.apache.rocketmq.clie...&hellip;</p>
+      <div class="post-list__meta">        
+        <time datetime="2019-01-13 00:00:00 +0800" class="post-list__meta--date date">
+          <img src="/images/calendar.png" width="20px" /> 
+          2019-01-13</time> 
+        <div class = "tag-img-icon">
+          <img src="/images/tag-icon.svg" width="20px" /> 
+        </div>
+        <a href="/tags">
+          <div class = "post-list-icon-mate">
+            <span class="post-list__meta--tags-right">rocketmq</span>
+          </div>
+          <div class = "post-list-small-mate">
+          <a class="btn-border-small" href=/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(4)-mq%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%9C%8D%E5%8A%A1/>阅读全文 » </a>
+          </div>
+      </div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
+      <h2 class="post-list__post-title post-title"><a href="/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(3)-mq%E6%B6%88%E8%B4%B9%E8%80%85%E5%88%9D%E5%A7%8B%E5%8C%96/" title="访问 rocketmq源码阅读(3)——mq消费者初始化">rocketmq源码阅读(3)——mq消费者初始化</a></h2>
+      <p class="excerpt">写在前面最近开始看了一些rocketmq的源码，在正式讲消费者初始化过程之前先写写自己的感受吧。虽说已经写了两篇了，但阅读以及整理的时候，还是感觉有很多问题。之前看源码更多的是去了解相关的流程。在写文章时，还是能体会到自己太弱，无法理解相关设计的精妙之处，仅仅是能看明白流程。说到精妙之处，比如说其中设计模式的应用，相关锁的使用原因，带着问题去看才会发现不懂的还有很多。另外，在整理的时候，感觉似乎是太抠一些不太重要的细节了，个人感觉效率太低，没有太大的必要。不可置否，像rocketmq这么精...&hellip;</p>
+      <div class="post-list__meta">        
+        <time datetime="2019-01-13 00:00:00 +0800" class="post-list__meta--date date">
+          <img src="/images/calendar.png" width="20px" /> 
+          2019-01-13</time> 
+        <div class = "tag-img-icon">
+          <img src="/images/tag-icon.svg" width="20px" /> 
+        </div>
+        <a href="/tags">
+          <div class = "post-list-icon-mate">
+            <span class="post-list__meta--tags-right">rocketmq</span>
+          </div>
+          <div class = "post-list-small-mate">
+          <a class="btn-border-small" href=/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(3)-mq%E6%B6%88%E8%B4%B9%E8%80%85%E5%88%9D%E5%A7%8B%E5%8C%96/>阅读全文 » </a>
+          </div>
+      </div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
+      <h2 class="post-list__post-title post-title"><a href="/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(2)-MQClientInstance%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/" title="访问 rocketmq源码阅读(2)——MQClientInstance的初始化">rocketmq源码阅读(2)——MQClientInstance的初始化</a></h2>
+      <p class="excerpt">前言上篇在读mq生成者相关的代码时。在DefaultMQProducer的初始化最后一步时，代码是mQClientFactory.start();。至于MQClientInstance的关键性在上篇文章中也提到了。这篇就从mQClientFactory.start();开始吧。先放上相关的代码吧###字段分析先来看看MQClientInstance中的重要的变量吧//该clientInstance配置，主要包括nameSrv，unitName之类的private final ClientC...&hellip;</p>
+      <div class="post-list__meta">        
+        <time datetime="2019-01-07 00:00:00 +0800" class="post-list__meta--date date">
+          <img src="/images/calendar.png" width="20px" /> 
+          2019-01-07</time> 
+        <div class = "tag-img-icon">
+          <img src="/images/tag-icon.svg" width="20px" /> 
+        </div>
+        <a href="/tags">
+          <div class = "post-list-icon-mate">
+            <span class="post-list__meta--tags-right">rocketmq</span>
+          </div>
+          <div class = "post-list-small-mate">
+          <a class="btn-border-small" href=/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(2)-MQClientInstance%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/>阅读全文 » </a>
+          </div>
+      </div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
       <h2 class="post-list__post-title post-title"><a href="/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(1)-%E7%94%9F%E4%BA%A7%E8%80%85%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E6%B6%88%E6%81%AF%E7%9A%84%E5%8F%91%E9%80%81/" title="访问 rocketmq源码阅读(1)——生产者初始化与消息的发送">rocketmq源码阅读(1)——生产者初始化与消息的发送</a></h2>
-      <p class="excerpt">前言其实这开头还是在全部写完才加上去的。其实这篇文章也不是那么入门了，毕竟也涉及到源码了。不说熟练掌握rocketmq的架构，至少得熟悉rocketmq的整体流程，包括broker，queue，namesrv。当然，本文并未涵盖事务消息，VIPChannel，延迟消息，一些高级用法的源码会在之后慢慢补充起来。不过话说，估计也没人看——、先放个最简单的producer的demo吧，其实org.apache.rocketmq.client.producer.DefaultMQProducerT...&hellip;</p>
+      <p class="excerpt">前言其实这开头还是在全部写完才加上去的。其实这篇文章也不是那么入门了，毕竟也涉及到源码了。不说熟练掌握rocketmq的架构，至少得熟悉rocketmq的整体流程，包括broker，queue，namesrv。当然，本文并未涵盖事务消息，VIPChannel，延迟消息，队列选择算法的选择等，一些高级用法的源码会在之后慢慢补充起来。不过话说，估计也没人看——、先放个最简单的producer的demo吧，其实org.apache.rocketmq.client.producer.Default...&hellip;</p>
       <div class="post-list__meta">        
         <time datetime="2019-01-05 00:00:00 +0800" class="post-list__meta--date date">
           <img src="/images/calendar.png" width="20px" /> 
@@ -311,69 +374,6 @@
           </div>
           <div class = "post-list-small-mate">
           <a class="btn-border-small" href=/2018/06/OAuth1.0a%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/>阅读全文 » </a>
-          </div>
-      </div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2018/06/fastjson%E5%AD%A6%E4%B9%A0/" title="访问 fastjson学习">fastjson学习</a></h2>
-      <p class="excerpt">前言额，json的介绍就不多说了，非常方便。对于json相关的处理也是工作中非常基础的一部分。不过之前非常乱，最近搜了搜资料，对fastjson做了一个总结，相信以后的json格式上应该是没什么问题了。主要内容概括先概括一下主要的知识点，理一理思绪，对下一步的学习还是十分关键的。1.测试中我们会接触到三种对象，分别的JSON对象，json串，javabean。JSON对象就是JSONObject，fastjson框架中提供的json对象，剩下2个就不说了。2.测试的对象主要包括：简单jso...&hellip;</p>
-      <div class="post-list__meta">        
-        <time datetime="2018-06-09 00:00:00 +0800" class="post-list__meta--date date">
-          <img src="/images/calendar.png" width="20px" /> 
-          2018-06-09</time> 
-        <div class = "tag-img-icon">
-          <img src="/images/tag-icon.svg" width="20px" /> 
-        </div>
-        <a href="/tags">
-          <div class = "post-list-icon-mate">
-            <span class="post-list__meta--tags-right">java</span>
-          </div>
-          <div class = "post-list-small-mate">
-          <a class="btn-border-small" href=/2018/06/fastjson%E5%AD%A6%E4%B9%A0/>阅读全文 » </a>
-          </div>
-      </div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2018/05/come-back/" title="访问 come back">come back</a></h2>
-      <p class="excerpt">博客停了两个月，再打开时竟然感到有一丝陌生，看着最熟悉的键盘和屏幕也不知道该敲什么，脑海中竟然有想打出“int main()”的想法，呵，真是“无药可救”了。不过确实，十二年前那次数学竞赛的偶然获奖也注定了我是更爱那些数学公式的。两个月前因为总总原因结束了三个多月的实习，回到了阔别已久的学校，和同学们好好聚了聚，也不知道下次毕业后再见到你们这帮蠢逼天才是什么时候了，不过大部分在杭州问题应该还是比较乐观的。另外，再加上头疼的毕业设计，和春招的准备，写了几篇设计模式，这笔一停，就是两个月。回杭...&hellip;</p>
-      <div class="post-list__meta">        
-        <time datetime="2018-05-20 00:00:00 +0800" class="post-list__meta--date date">
-          <img src="/images/calendar.png" width="20px" /> 
-          2018-05-20</time> 
-        <div class = "tag-img-icon">
-          <img src="/images/tag-icon.svg" width="20px" /> 
-        </div>
-        <a href="/tags">
-          <div class = "post-list-icon-mate">
-            <span class="post-list__meta--tags-right">杂记</span>
-          </div>
-          <div class = "post-list-small-mate">
-          <a class="btn-border-small" href=/2018/05/come-back/>阅读全文 » </a>
-          </div>
-      </div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2018/03/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/" title="访问 适配器模式">适配器模式</a></h2>
-      <p class="excerpt">前言说起适配器模式，从字面上理解，还是做到一个适配的功能，笔记本电脑的硬件层面就有个很好的例子，记得刚买笔记本电脑时，特别不习惯笔记本键盘，打dota特别难受，那时候家里台式机上有个键盘，可惜是PS/2接口（就是那种圆形插口），然后去买了个转换口，顺利完成暴走：）。其实罗里吧嗦讲了一堆，还是回到代码层面，在进行代码重构时，老接口我们希望不再进行改动，在其基础上新增功能，就如usb接口一样，我们无法进行修改，这时就需要一个适配类。适配器模式适配器主要包括了三种适配器模式，1.类适配器2.对象...&hellip;</p>
-      <div class="post-list__meta">        
-        <time datetime="2018-03-15 00:00:00 +0800" class="post-list__meta--date date">
-          <img src="/images/calendar.png" width="20px" /> 
-          2018-03-15</time> 
-        <div class = "tag-img-icon">
-          <img src="/images/tag-icon.svg" width="20px" /> 
-        </div>
-        <a href="/tags">
-          <div class = "post-list-icon-mate">
-            <span class="post-list__meta--tags-right">设计模式</span>
-          </div>
-          <div class = "post-list-small-mate">
-          <a class="btn-border-small" href=/2018/03/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/>阅读全文 » </a>
           </div>
       </div>
       <hr class="post-list__divider" />
