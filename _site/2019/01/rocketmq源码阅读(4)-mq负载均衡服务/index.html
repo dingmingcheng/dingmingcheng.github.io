@@ -548,6 +548,10 @@
 
 <p>代码也比较直白，初始化的过程到这里也差不多了。接下来就是看看PullMessageService是怎么处理PullRequest的。</p>
 
+<h3 id="思考">思考</h3>
+
+<p>1.最近一直在想负载均衡服务为什么要放在客户端做，而不放在服务端做？rocketmq的设计是让客户端拉取所有的消费者组信息，然后根据相应的算法做负载均衡。如果让服务端来做分配算法，再分发给所有的消费者，感觉会更合适？其实不然，其实上面我们也提到，会有多种分配算法，如果我们要修改策略，只需要让客户端重启即可。如果负载均衡放在broker，那可就得重启broker了！！！</p>
+
 
   </section>
 </article>
@@ -620,6 +624,11 @@
             </a>
         </li>
         
+        
+        <li class="next">
+            <a href="/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(5)-%E6%B6%88%E8%B4%B9%E8%80%85%E6%B6%88%E8%B4%B9%E6%B5%81%E7%A8%8B/" data-toggle="tooltip" data-placement="top" title="rocketmq源码阅读(5)——消费者消费流程">下一篇：  <span>rocketmq源码阅读(5)——消费者消费流程</span>
+            </a>
+        </li>
         
     </ul>
 </section>

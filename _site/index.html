@@ -170,6 +170,27 @@
   <ol class="post-list">
     
     <li>
+      <h2 class="post-list__post-title post-title"><a href="/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(5)-%E6%B6%88%E8%B4%B9%E8%80%85%E6%B6%88%E8%B4%B9%E6%B5%81%E7%A8%8B/" title="访问 rocketmq源码阅读(5)——消费者消费流程">rocketmq源码阅读(5)——消费者消费流程</a></h2>
+      <p class="excerpt">前言在消费者初始化过程中，我们看到了PullRequest的分发，接下来就是看看具体的消费流程。大体的流程是这样的：  PullRequest的处理  回调PullCallBack处理pullResult  ConsumeMessageService处理消息PullRequest的处理PullMessageService在拿到PullRequest后，直接转发给DefauleMQPushConsumerImpl进行处理：在拿到PullRequest后，DefauleMQPushConsum...&hellip;</p>
+      <div class="post-list__meta">        
+        <time datetime="2019-01-20 00:00:00 +0800" class="post-list__meta--date date">
+          <img src="/images/calendar.png" width="20px" /> 
+          2019-01-20</time> 
+        <div class = "tag-img-icon">
+          <img src="/images/tag-icon.svg" width="20px" /> 
+        </div>
+        <a href="/tags">
+          <div class = "post-list-icon-mate">
+            <span class="post-list__meta--tags-right">rocketmq</span>
+          </div>
+          <div class = "post-list-small-mate">
+          <a class="btn-border-small" href=/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(5)-%E6%B6%88%E8%B4%B9%E8%80%85%E6%B6%88%E8%B4%B9%E6%B5%81%E7%A8%8B/>阅读全文 » </a>
+          </div>
+      </div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
       <h2 class="post-list__post-title post-title"><a href="/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(4)-mq%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%9C%8D%E5%8A%A1/" title="访问 rocketmq源码阅读(4)——mq负载均衡服务">rocketmq源码阅读(4)——mq负载均衡服务</a></h2>
       <p class="excerpt">前言上一文在消费者初始化中，提到了客户端的负载均衡服务。再简单介绍一下负载均衡服务rebalance服务主要用于每个消费者实例匹配一个或者多个queue，以保证broker端的queue只对应一个实例，避免多个实例消费相同的queue。rebalance主要包括RebalancePullImpl和RebalancePushImpl，位于org.apache.rocketmq.client.impl.consumer下，还有就是队列分配算法，在org.apache.rocketmq.clie...&hellip;</p>
       <div class="post-list__meta">        
@@ -358,27 +379,6 @@
       <hr class="post-list__divider" />
     </li>
     
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2018/06/OAuth1.0a%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/" title="访问 OAuth1.0a踩坑记录">OAuth1.0a踩坑记录</a></h2>
-      <p class="excerpt">前言最近工作中接触到了OAuth1.0a，相比较OAuth2.0，1.0a确实是复杂了不少，中间也踩了不少的坑，特此记录。关于OAuth1.0，1.0a，2.0之间的区别，包括1.0的相关漏洞，可以看看知乎上这篇文章，Oauth 1.0 1.0a 和 2.0 的之间的区别有哪些？,我觉得还是比较详细的。踩坑记录生成签名生成签名踩的坑还是比较多的，一个一个讲吧1.加密密钥签名时采用的算法要看具体的服务提供者，常见的有HMAC-SHA1，HMAC-SHA256，其中需要提供一个加密密钥，在OA...&hellip;</p>
-      <div class="post-list__meta">        
-        <time datetime="2018-06-17 00:00:00 +0800" class="post-list__meta--date date">
-          <img src="/images/calendar.png" width="20px" /> 
-          2018-06-17</time> 
-        <div class = "tag-img-icon">
-          <img src="/images/tag-icon.svg" width="20px" /> 
-        </div>
-        <a href="/tags">
-          <div class = "post-list-icon-mate">
-            <span class="post-list__meta--tags-right">网络</span>
-          </div>
-          <div class = "post-list-small-mate">
-          <a class="btn-border-small" href=/2018/06/OAuth1.0a%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/>阅读全文 » </a>
-          </div>
-      </div>
-      <hr class="post-list__divider" />
-    </li>
-    
   </ol>
 
   <hr class="post-list__divider " />
@@ -390,7 +390,7 @@
 	</script>
 	
     
-    <span class="pagination__page-number">1 / 4</span>
+    <span class="pagination__page-number">1 / 5</span>
     
         <a class="older-posts pagination__older btn btn-small btn-tertiary" href="/page/2/#blog">更早 &rarr;</a>
     

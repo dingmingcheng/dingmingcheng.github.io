@@ -170,6 +170,27 @@
   <ol class="post-list">
     
     <li>
+      <h2 class="post-list__post-title post-title"><a href="/2018/06/OAuth1.0a%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/" title="访问 OAuth1.0a踩坑记录">OAuth1.0a踩坑记录</a></h2>
+      <p class="excerpt">前言最近工作中接触到了OAuth1.0a，相比较OAuth2.0，1.0a确实是复杂了不少，中间也踩了不少的坑，特此记录。关于OAuth1.0，1.0a，2.0之间的区别，包括1.0的相关漏洞，可以看看知乎上这篇文章，Oauth 1.0 1.0a 和 2.0 的之间的区别有哪些？,我觉得还是比较详细的。踩坑记录生成签名生成签名踩的坑还是比较多的，一个一个讲吧1.加密密钥签名时采用的算法要看具体的服务提供者，常见的有HMAC-SHA1，HMAC-SHA256，其中需要提供一个加密密钥，在OA...&hellip;</p>
+      <div class="post-list__meta">        
+        <time datetime="2018-06-17 00:00:00 +0800" class="post-list__meta--date date">
+          <img src="/images/calendar.png" width="20px" /> 
+          2018-06-17</time> 
+        <div class = "tag-img-icon">
+          <img src="/images/tag-icon.svg" width="20px" /> 
+        </div>
+        <a href="/tags">
+          <div class = "post-list-icon-mate">
+            <span class="post-list__meta--tags-right">网络</span>
+          </div>
+          <div class = "post-list-small-mate">
+          <a class="btn-border-small" href=/2018/06/OAuth1.0a%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/>阅读全文 » </a>
+          </div>
+      </div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
       <h2 class="post-list__post-title post-title"><a href="/2018/06/fastjson%E5%AD%A6%E4%B9%A0/" title="访问 fastjson学习">fastjson学习</a></h2>
       <p class="excerpt">前言额，json的介绍就不多说了，非常方便。对于json相关的处理也是工作中非常基础的一部分。不过之前非常乱，最近搜了搜资料，对fastjson做了一个总结，相信以后的json格式上应该是没什么问题了。主要内容概括先概括一下主要的知识点，理一理思绪，对下一步的学习还是十分关键的。1.测试中我们会接触到三种对象，分别的JSON对象，json串，javabean。JSON对象就是JSONObject，fastjson框架中提供的json对象，剩下2个就不说了。2.测试的对象主要包括：简单jso...&hellip;</p>
       <div class="post-list__meta">        
@@ -358,27 +379,6 @@
       <hr class="post-list__divider" />
     </li>
     
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2018/02/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%E5%AE%9E%E7%8E%B0/" title="访问 单例模式实现">单例模式实现</a></h2>
-      <p class="excerpt">前言说起单例模式，应该设计模式中算是代码比较短，其主要作用是保证一个类只有一个实例，节省内存空间，也避免了频繁的创建与销毁对象，比如在spring中bean的创建时，就默认采取了单例模式。单例模式主要包括懒汉式和饿汉式。顾名思义，懒汉式就是“懒”，在你需要的时候我再给你创建对象，而对于饿汉式，则在于“饿”，在类加载时就就生成实例对象。实现为了不让外部类创建对象，一般是通过对构造函数的私有化来实现，懒汉式public class lazy {    private static volati...&hellip;</p>
-      <div class="post-list__meta">        
-        <time datetime="2018-02-14 00:00:00 +0800" class="post-list__meta--date date">
-          <img src="/images/calendar.png" width="20px" /> 
-          2018-02-14</time> 
-        <div class = "tag-img-icon">
-          <img src="/images/tag-icon.svg" width="20px" /> 
-        </div>
-        <a href="/tags">
-          <div class = "post-list-icon-mate">
-            <span class="post-list__meta--tags-right">设计模式</span>
-          </div>
-          <div class = "post-list-small-mate">
-          <a class="btn-border-small" href=/2018/02/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%E5%AE%9E%E7%8E%B0/>阅读全文 » </a>
-          </div>
-      </div>
-      <hr class="post-list__divider" />
-    </li>
-    
   </ol>
 
   <hr class="post-list__divider " />
@@ -392,7 +392,7 @@
     
         <a class="newer-posts pagination__newer btn btn-small btn-tertiary" href="/#blog">&larr; 最近</a>
     
-    <span class="pagination__page-number">2 / 4</span>
+    <span class="pagination__page-number">2 / 5</span>
     
         <a class="older-posts pagination__older btn btn-small btn-tertiary" href="/page/3/#blog">更早 &rarr;</a>
     

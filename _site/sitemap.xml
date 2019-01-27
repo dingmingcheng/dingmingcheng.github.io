@@ -161,6 +161,10 @@
 <lastmod>2019-01-13T00:00:00+08:00</lastmod>
 </url>
 <url>
+<loc>http://localhost:4000/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(5)-%E6%B6%88%E8%B4%B9%E8%80%85%E6%B6%88%E8%B4%B9%E6%B5%81%E7%A8%8B/</loc>
+<lastmod>2019-01-20T00:00:00+08:00</lastmod>
+</url>
+<url>
 <loc>http://localhost:4000/archive/</loc>
 </url>
 <url>
@@ -177,5 +181,8 @@
 </url>
 <url>
 <loc>http://localhost:4000/page/4/</loc>
+</url>
+<url>
+<loc>http://localhost:4000/page/5/</loc>
 </url>
 </urlset>

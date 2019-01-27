@@ -170,6 +170,27 @@
   <ol class="post-list">
     
     <li>
+      <h2 class="post-list__post-title post-title"><a href="/2018/02/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%E5%AE%9E%E7%8E%B0/" title="访问 单例模式实现">单例模式实现</a></h2>
+      <p class="excerpt">前言说起单例模式，应该设计模式中算是代码比较短，其主要作用是保证一个类只有一个实例，节省内存空间，也避免了频繁的创建与销毁对象，比如在spring中bean的创建时，就默认采取了单例模式。单例模式主要包括懒汉式和饿汉式。顾名思义，懒汉式就是“懒”，在你需要的时候我再给你创建对象，而对于饿汉式，则在于“饿”，在类加载时就就生成实例对象。实现为了不让外部类创建对象，一般是通过对构造函数的私有化来实现，懒汉式public class lazy {    private static volati...&hellip;</p>
+      <div class="post-list__meta">        
+        <time datetime="2018-02-14 00:00:00 +0800" class="post-list__meta--date date">
+          <img src="/images/calendar.png" width="20px" /> 
+          2018-02-14</time> 
+        <div class = "tag-img-icon">
+          <img src="/images/tag-icon.svg" width="20px" /> 
+        </div>
+        <a href="/tags">
+          <div class = "post-list-icon-mate">
+            <span class="post-list__meta--tags-right">设计模式</span>
+          </div>
+          <div class = "post-list-small-mate">
+          <a class="btn-border-small" href=/2018/02/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%E5%AE%9E%E7%8E%B0/>阅读全文 » </a>
+          </div>
+      </div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
       <h2 class="post-list__post-title post-title"><a href="/2018/02/volatile%E8%AF%A6%E8%A7%A3/" title="访问 volatile详解">volatile详解</a></h2>
       <p class="excerpt">前言说到volatile关键字，应该是个很古老的关键字，然而这是一个很关键的一个关键字，从暑假接触到开始，看了许多的文章，也渐渐有了一些自己的理解。就来讲讲volatile这个东西。参考：Java内存访问重排序的研究volatile特性总的来说，volatile具有两个特性，一个是可见性，一个是禁止指令重排序可见性关于可见性的，之前忘记在哪本书上截了一张图，讲的是工作内存和主内存的关系以及volatile的可见性实现。以下是测试可见性的一个程序public class volatileTe...&hellip;</p>
       <div class="post-list__meta">        
@@ -358,27 +379,6 @@
       <hr class="post-list__divider" />
     </li>
     
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2018/01/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%AE%80%E5%8D%95OOM%E5%88%86%E6%9E%90/" title="访问 记一次简单OOM分析">记一次简单OOM分析</a></h2>
-      <p class="excerpt">前言说到OOM，out of memory也是一个广泛存在的问题，如果线上出了问题，临时抱佛脚肯定是不行的，所以未雨绸缪是必须的。测试过程首先是程序的准备准备了两个OOM的程序import java.util.concurrent.ExecutorService;import java.util.concurrent.Executors;/** * @Author: dingmingcheng * @Description * @Date: Created in 下午8:15 2018/1...&hellip;</p>
-      <div class="post-list__meta">        
-        <time datetime="2018-01-08 00:00:00 +0800" class="post-list__meta--date date">
-          <img src="/images/calendar.png" width="20px" /> 
-          2018-01-08</time> 
-        <div class = "tag-img-icon">
-          <img src="/images/tag-icon.svg" width="20px" /> 
-        </div>
-        <a href="/tags">
-          <div class = "post-list-icon-mate">
-            <span class="post-list__meta--tags-right">java</span>
-          </div>
-          <div class = "post-list-small-mate">
-          <a class="btn-border-small" href=/2018/01/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%AE%80%E5%8D%95OOM%E5%88%86%E6%9E%90/>阅读全文 » </a>
-          </div>
-      </div>
-      <hr class="post-list__divider" />
-    </li>
-    
   </ol>
 
   <hr class="post-list__divider " />
@@ -392,7 +392,7 @@
     
         <a class="newer-posts pagination__newer btn btn-small btn-tertiary" href="/page/2/#blog">&larr; 最近</a>
     
-    <span class="pagination__page-number">3 / 4</span>
+    <span class="pagination__page-number">3 / 5</span>
     
         <a class="older-posts pagination__older btn btn-small btn-tertiary" href="/page/4/#blog">更早 &rarr;</a>
     
