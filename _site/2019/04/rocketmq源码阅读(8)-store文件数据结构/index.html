@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>rocketmq源码阅读(8)——store文件数据结构</title>
+  <meta name="description" content="##前言">
+  <meta name="author" content="leopardpan">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="rocketmq源码阅读(8)——store文件数据结构">
+  <meta name="twitter:description" content="##前言">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="rocketmq源码阅读(8)——store文件数据结构">
+  <meta property="og:description" content="##前言">
+  
+  <link rel="icon" type="image/png" href="/images/favicon.png" />
+  <link href="/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2019/04/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(8)-store%E6%96%87%E4%BB%B6%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
+  <link rel="alternate" type="application/rss+xml" title="dmc" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+
+<!-- 站点统计 -->
+  <script 
+  async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+  </script>  
+
+<!-- 百度统计 -->
+  
+  <script>
+      var _hmt = _hmt || [];
+      (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?2cda0649a3e97c5f4bf7c98c59a40949";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+      })();
+  </script>
+  
+
+
+  <!-- google 统计 -->
+  
+
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-9005224472374751",
+    enable_page_level_ads: true
+  });
+</script>
+
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">        
+      <div class="nav_container">
+         <nav class="nav-menu-item" style = "float:right">
+            <i class="nav-menu-item">
+              <a href="/#blog" title="" class="blog-button">  博客主页
+              </a>
+            </i>
+            
+                <i class="nav-menu-item">
+
+                  <a href="/archive" title="archive" class="btn-mobile-menu__icon">
+                      所有文章
+                  </a>
+                </i>
+            
+                <i class="nav-menu-item">
+
+                  <a href="/tags" title="tags" class="btn-mobile-menu__icon">
+                      标签
+                  </a>
+                </i>
+            
+                <i class="nav-menu-item">
+
+                  <a href="/about" title="about" class="btn-mobile-menu__icon">
+                      关于我
+                  </a>
+                </i>
+            
+          </nav>
+      </div>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+        <!-- 头像效果-start -->
+        <div class="ih-item circle effect right_to_left">            
+            <a href="/#blog" title="前往 dmc 的主页" class="blog-button">
+                <div class="img"><img src="/images/avatar.jpg" alt="img"></div>
+                <div class="info">
+                    <div class="info-back">
+                        <h2> 
+                            
+                                article
+                            
+                        </h2>
+                        <p>
+                           
+                                Personal
+                            
+                        </p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <!-- 头像效果-end -->
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for dmc" class="blog-button">dmc</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">个人站</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">欢迎来到我的博客</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="" class="blog-button">博客主页</a></li>
+                
+                  <li class="navigation__item"><a href="/archive" title="archive">所有文章</a></li>
+                
+                  <li class="navigation__item"><a href="/tags" title="tags">标签</a></li>
+                
+                  <li class="navigation__item"><a href="/about" title="about">关于我</a></li>
+                
+              </ul>
+            </nav>
+          </div>          
+        </div>
+
+
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-clear"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <h1 class="post-title">rocketmq源码阅读(8)——store文件数据结构</h1>
+    <div class="post-meta">
+      <img src="/images/calendar.png" width="20px"/> 
+      <time datetime="2019-04-27 00:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2019-04-27</time>  
+         
+      <span id="busuanzi_container_page_pv"> | 阅读：<span id="busuanzi_value_page_pv"></span>次</span>
+    </p>
+    </div>
+  </header>
+
+  <section class="post">
+    <p>##前言</p>
+
+<p>上文简单分析了一下rocketmq中的存储部分，本文中，我们来看看主要的存储文件中的数据结构。包括CommitLog，ConsumerQueue以及IndexFile，可以试着去读取这些文件</p>
+
+<h2 id="文件结构">文件结构</h2>
+
+<h3 id="commitlog">CommitLog</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">readCommitlog</span><span class="o">(</span><span class="kt">int</span><span class="cm">/*读取的消息数量*/</span> <span class="n">t</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">{</span>
+  <span class="n">String</span> <span class="n">file</span> <span class="o">=</span> <span class="s">"/Users/dingmc/store/commitlog/00000000000000000000"</span><span class="o">;</span>
+  <span class="n">RandomAccessFile</span> <span class="n">accessFile</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RandomAccessFile</span><span class="o">(</span><span class="n">file</span><span class="o">,</span> <span class="s">"r"</span><span class="o">);</span>
+
+  <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">t</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"----------------第"</span> <span class="o">+</span> <span class="n">j</span> <span class="o">+</span> <span class="s">"条消息----------------"</span><span class="o">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"msgLength:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readInt</span><span class="o">());</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"MESSAGE_MAGIC_CODE:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readInt</span><span class="o">());</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"bodyCRC:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readInt</span><span class="o">());</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"queueId:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readInt</span><span class="o">());</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"flag:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readInt</span><span class="o">());</span>
+
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"QUEUEOFFSET:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readLong</span><span class="o">());</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"PHYSICALOFFSET:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readLong</span><span class="o">());</span>
+
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"SYSFLAG:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readInt</span><span class="o">());</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"BORNTIMESTAMP:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readLong</span><span class="o">());</span>
+    <span class="kt">byte</span><span class="o">[]</span> <span class="n">b</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">4</span><span class="o">];</span>
+    <span class="n">accessFile</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">b</span><span class="o">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="s">"born host:"</span><span class="o">);</span>
+    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="n">b</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="o">);</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="s">"."</span><span class="o">);</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">();</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"born port:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readInt</span><span class="o">());</span>
+
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"STORETIMESTAMP:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readLong</span><span class="o">());</span>
+
+    <span class="n">accessFile</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">b</span><span class="o">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="s">"store host:"</span><span class="o">);</span>
+    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="n">b</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="o">);</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="s">"."</span><span class="o">);</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">();</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"store port:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readInt</span><span class="o">());</span>
+
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"RECONSUMETIMES:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readInt</span><span class="o">());</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Prepared Transaction Offset："</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readLong</span><span class="o">());</span>
+    <span class="c1">//bodyLength</span>
+    <span class="kt">int</span> <span class="n">bodyLength</span><span class="o">;</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"bodyLength:"</span> <span class="o">+</span> <span class="o">(</span><span class="n">bodyLength</span> <span class="o">=</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readInt</span><span class="o">()));</span>
+
+    <span class="c1">//大于4k会进行压缩</span>
+    <span class="kt">byte</span><span class="o">[]</span> <span class="n">b1</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">bodyLength</span><span class="o">];</span>
+    <span class="n">accessFile</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">b1</span><span class="o">);</span>
+    <span class="n">String</span> <span class="n">bodyStr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">b1</span><span class="o">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"body:"</span> <span class="o">+</span> <span class="n">bodyStr</span><span class="o">);</span>
+
+    <span class="c1">//topiclength</span>
+    <span class="kt">byte</span><span class="o">[]</span> <span class="n">b2</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">1</span><span class="o">];</span>
+    <span class="n">accessFile</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">b2</span><span class="o">);</span>
+    <span class="kt">int</span> <span class="n">topicLength</span> <span class="o">=</span> <span class="n">byteArrayToInt</span><span class="o">(</span><span class="n">b2</span><span class="o">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"topic length:"</span> <span class="o">+</span> <span class="n">topicLength</span><span class="o">);</span>
+
+    <span class="c1">//topic</span>
+    <span class="kt">byte</span><span class="o">[]</span> <span class="n">b3</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">topicLength</span><span class="o">];</span>
+    <span class="n">accessFile</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">b3</span><span class="o">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"topic name:"</span> <span class="o">+</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">b3</span><span class="o">));</span>
+
+    <span class="c1">//properties</span>
+    <span class="kt">int</span> <span class="n">propertiesLen</span> <span class="o">=</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readShort</span><span class="o">();</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"PROPERTIESLen:"</span> <span class="o">+</span> <span class="n">propertiesLen</span><span class="o">);</span>
+    <span class="kt">byte</span><span class="o">[]</span> <span class="n">b4</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">propertiesLen</span><span class="o">];</span>
+    <span class="n">accessFile</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">b4</span><span class="o">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"PROPERTIES:"</span> <span class="o">+</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">b4</span><span class="o">));</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+</code></pre></div></div>
+
+<p>没什么好说的，就按rocketmq源码中怎么写进去的，这边就怎么读出来，多看看多试试就行，再附上一段控制台结果：</p>
+
+<p><img src="6.png" alt="" /></p>
+
+<h3 id="consumerqueue">ConsumerQueue</h3>
+
+<p>consumerQueue就更简单了</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">readConsumerQueue</span><span class="o">(</span><span class="kt">int</span> <span class="n">sum</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">{</span>
+  <span class="n">String</span> <span class="n">file</span> <span class="o">=</span> <span class="s">"/Users/dingmc/store/consumequeue/test_topic/1/00000000000000000000"</span><span class="o">;</span>
+  <span class="n">RandomAccessFile</span> <span class="n">accessFile</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RandomAccessFile</span><span class="o">(</span><span class="n">file</span><span class="o">,</span> <span class="s">"r"</span><span class="o">);</span>
+  <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">sum</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"------------------"</span><span class="o">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"offset:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readLong</span><span class="o">());</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"size:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readInt</span><span class="o">());</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"tagcode:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readLong</span><span class="o">());</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>附上控制台输出结果</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">------------------</span>
+<span class="nl">offset:</span><span class="mi">263</span>
+<span class="nl">size:</span><span class="mi">263</span>
+<span class="nl">tagcode:</span><span class="mi">0</span>
+<span class="o">------------------</span>
+<span class="nl">offset:</span><span class="mi">526</span>
+<span class="nl">size:</span><span class="mi">319</span>
+<span class="nl">tagcode:</span><span class="o">-</span><span class="mi">1143080936</span><span class="err">、</span>
+</code></pre></div></div>
+
+<h3 id="indexfile">IndexFile</h3>
+
+<p>最后是indexFile的读取，indexFile数据结构稍微复杂些。我这边发送了两条key一样的消息，这样就会造成hash冲突，我试着从index文件中找这个key：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">readIndex</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">{</span>
+  <span class="n">String</span> <span class="n">key</span> <span class="o">=</span> <span class="s">"test_topic#keys"</span><span class="o">;</span>
+  <span class="kt">int</span> <span class="n">absSlotPos</span> <span class="o">=</span> <span class="mi">40</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">*</span> <span class="o">(</span><span class="n">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">hashCode</span><span class="o">())</span> <span class="o">%</span> <span class="mi">5000000</span><span class="o">);</span>
+  <span class="n">String</span> <span class="n">file</span> <span class="o">=</span> <span class="s">"/Users/dingmc/store/index/20190304141342419"</span><span class="o">;</span>
+  <span class="n">RandomAccessFile</span> <span class="n">accessFile</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RandomAccessFile</span><span class="o">(</span><span class="n">file</span><span class="o">,</span> <span class="s">"r"</span><span class="o">);</span>
+  <span class="c1">//MappedByteBuffer方式</span>
+  <span class="c1">//        FileChannel channel = accessFile.getChannel();</span>
+  <span class="c1">//        MappedByteBuffer mappedByteBuffer = channel.map(MapMode.READ_ONLY, 0, 20000000);</span>
+  <span class="c1">//        System.out.println(mappedByteBuffer.getInt(absSlotPos));</span>
+
+  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"keyHash:"</span> <span class="o">+</span> <span class="n">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">hashCode</span><span class="o">()));</span>
+  <span class="n">accessFile</span><span class="o">.</span><span class="na">skipBytes</span><span class="o">(</span><span class="n">absSlotPos</span><span class="o">);</span>
+  <span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readInt</span><span class="o">();</span>
+  <span class="k">while</span> <span class="o">(</span><span class="n">index</span> <span class="o">!=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"-----------------------"</span><span class="o">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"slot index:"</span> <span class="o">+</span> <span class="n">index</span><span class="o">);</span>
+    <span class="kt">int</span> <span class="n">absIndexPos</span> <span class="o">=</span> <span class="mi">40</span> <span class="o">+</span> <span class="mi">5000000</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">+</span> <span class="n">index</span> <span class="o">*</span> <span class="mi">20</span><span class="o">;</span>
+
+    <span class="n">RandomAccessFile</span> <span class="n">accessFile2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RandomAccessFile</span><span class="o">(</span><span class="n">file</span><span class="o">,</span> <span class="s">"r"</span><span class="o">);</span>
+    <span class="n">accessFile2</span><span class="o">.</span><span class="na">skipBytes</span><span class="o">(</span><span class="n">absIndexPos</span><span class="o">);</span>
+
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"keyhash:"</span> <span class="o">+</span> <span class="n">accessFile2</span><span class="o">.</span><span class="na">readInt</span><span class="o">());</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"commitLogOffset:"</span> <span class="o">+</span> <span class="n">accessFile2</span><span class="o">.</span><span class="na">readLong</span><span class="o">());</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"timeDiff(storeTime - indexFileBegintime):"</span> <span class="o">+</span> <span class="n">accessFile2</span><span class="o">.</span><span class="na">readInt</span><span class="o">());</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="n">accessFile2</span><span class="o">.</span><span class="na">readInt</span><span class="o">();</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"lastSlotIndex:"</span> <span class="o">+</span> <span class="n">index</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+</code></pre></div></div>
+
+<p>果然读出来两条记录：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">keyHash:</span><span class="mi">2128978283</span>
+<span class="o">-----------------------</span>
+<span class="n">slot</span> <span class="nl">index:</span><span class="mi">4</span>
+<span class="nl">keyhash:</span><span class="mi">2128978283</span>
+<span class="nl">commitLogOffset:</span><span class="mi">263</span>
+<span class="n">timeDiff</span><span class="o">(</span><span class="n">storeTime</span> <span class="o">-</span> <span class="n">indexFileBegintime</span><span class="o">):</span><span class="mi">143</span>
+<span class="nl">lastSlotIndex:</span><span class="mi">2</span>
+<span class="o">-----------------------</span>
+<span class="n">slot</span> <span class="nl">index:</span><span class="mi">2</span>
+<span class="nl">keyhash:</span><span class="mi">2128978283</span>
+<span class="nl">commitLogOffset:</span><span class="mi">0</span>
+<span class="n">timeDiff</span><span class="o">(</span><span class="n">storeTime</span> <span class="o">-</span> <span class="n">indexFileBegintime</span><span class="o">):</span><span class="mi">0</span>
+<span class="nl">lastSlotIndex:</span><span class="mi">0</span>
+</code></pre></div></div>
+
+<h2 id="总结">总结</h2>
+
+<p>本文主要试着去读了读几个存储文件，果然正如所预料的那样</p>
+
+
+  </section>
+</article>
+
+<section>
+
+            <div class="content-play">
+              <!--<p><a href="javascript:void(0)" onclick="dashangToggle()" class="dashang" title="打赏，支持一下">打赏一个呗</a></p>-->
+              <div class="hide_box-play"></div>
+              <div class="shang_box-play">
+                <a class="shang_close-play" href="javascript:void(0)" onclick="dashangToggle()" title="关闭"><img src="/images/payimg/close.jpg" alt="取消" /></a>
+                <div class="shang_tit-play">
+                  <p>感谢您的支持，我会继续努力的!</p>
+                </div>
+                <div class="shang_payimg">
+                    <img src="/images/payimg/alipayimg.jpg" alt="扫码支持" title="扫一扫" />
+                </div>
+              <div class="shang_payimg">    
+                    <img src="/images/payimg/weipayimg.jpg" alt="扫码支持" title="扫一扫" />
+                </div>
+                <div class="pay_explain">扫码打赏，你说多少就多少</div>
+                <div class="shang_payselect">
+                  <div class="pay_item checked" data-id="alipay">
+                    <span class="pay_logo"><img src="/images/payimg/alipay.jpg" alt="支付宝" /></span>
+                  </div>
+                  <div class="pay_item" data-id="weipay">
+                    <span class="pay_logo"><img src="/images/payimg/wechat.jpg" alt="微信" /></span>
+                  </div>
+                </div>
+                <div class="shang_info-play">
+                  <p>打开<span id="shang_pay_txt">支付宝</span>扫一扫，即可进行扫码打赏哦</p>
+                </div>
+              </div>
+            </div>
+            <script type="text/javascript">
+            function dashangToggle(){
+              $(".hide_box-play").fadeToggle();
+              $(".shang_box-play").fadeToggle();
+            }
+            </script>
+
+            <div style="text-align:center;margin:50px 0; font:normal 14px/24px 'MicroSoft YaHei';"></div>
+
+            <style type="text/css">
+              .content-play{width:80%;margin-top: 20px;margin-bottom: 10px;height:40px;}
+              .hide_box-play{z-index:999;filter:alpha(opacity=50);background:#666;opacity: 0.5;-moz-opacity: 0.5;left:0;top:0;height:99%;width:100%;position:fixed;display:none;}
+              .shang_box-play{width:540px;height:540px;padding:10px;background-color:#fff;border-radius:10px;position:fixed;z-index:1000;left:50%;top:50%;margin-left:-280px;margin-top:-280px;border:1px dotted #dedede;display:none;}
+              .shang_box-play img{border:none;border-width:0;}
+              .dashang{display:block;width:100px;margin:5px auto;height:25px;line-height:25px;padding:10px;background-color:#E74851;color:#fff;text-align:center;text-decoration:none;border-radius:10px;font-weight:bold;font-size:16px;transition: all 0.3s;}
+              .dashang:hover{opacity:0.8;padding:15px;font-size:18px;}
+              .shang_close-play{float:right;display:inline-block;
+                margin-right: 10px;margin-top: 20px;
+              }
+              .shang_logo{display:block;text-align:center;margin:20px auto;}
+              .shang_tit-play{width: 100%;height: 75px;text-align: center;line-height: 66px;color: #a3a3a3;font-size: 16px;background: url('/images/payimg/cy-reward-title-bg.jpg');font-family: 'Microsoft YaHei';margin-top: 7px;margin-right:2px;}
+              .shang_tit-play p{color:#a3a3a3;text-align:center;font-size:16px;}
+              .shang_payimg{width:140px;padding:10px;padding-left: 80px; /*border:6px solid #EA5F00;**/margin:0 auto;border-radius:3px;height:140px;display:inline-block;}
+              .shang_payimg img{display:inline-block;margin-right:10px;float:left;text-align:center;width:140px;height:140px; }
+              .pay_explain{text-align:center;margin:10px auto;font-size:12px;color:#545454;}
+              .shang_payselect{text-align:center;margin:0 auto;margin-top:40px;cursor:pointer;height:60px;width:500px;margin-left:110px;}
+              .shang_payselect .pay_item{display:inline-block;margin-right:140px;float:left;}
+              .shang_info-play{clear:both;}
+              .shang_info-play p,.shang_info-play a{color:#C3C3C3;text-align:center;font-size:12px;text-decoration:none;line-height:2em;}
+            </style>
+
+       <ul class="pager">
+        
+        <li class="previous">
+            <a href="/2019/04/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(7)-store%E6%A8%A1%E5%9D%97/" data-toggle="tooltip" data-placement="top" title="rocketmq源码阅读(7)——store模块">上一篇：  <span>rocketmq源码阅读(7)——store模块</span>
+            </a>
+        </li>
+        
+        
+    </ul>
+</section>
+
+<section class="post-comments">
+
+  
+
+</section>
+
+
+            <section class="footer">
+    <footer>
+        <div class = "footer_div">  
+        <nav class="cover-navigation navigation--social">
+          <ul class="navigation">
+
+          
+
+          
+          
+          
+
+          
+
+          <!-- RSS -->
+          <li class="navigation__item_social">
+            <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+              <i class='social fa fa-rss fa-2x'></i>
+              <span class="label">RSS</span>
+            </a>
+          </li>
+
+          
+
+          </ul>
+        </nav>
+
+        </div>
+
+        <div class = "footer_div">  
+           <p class="copyright text-muted">
+            Copyright &copy; dmc 2019
+               <!--Theme by <a href="http://baixin.io/">leopardpan</a> -->
+               |
+            </p>
+        	<div align="right">
+    			<link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+        </div>
+        <div>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+<script type="text/javascript" src="/js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+  </body>
+
+</html>
