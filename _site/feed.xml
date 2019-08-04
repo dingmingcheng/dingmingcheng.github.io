@@ -1,13 +1,110 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>dmc</title>
-    <description>欢迎来到我的博客</description>
+    <title>New Boy</title>
+    <description></description>
     <link>http://localhost:4000/</link>
-    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 23 Jun 2019 17:17:02 +0800</pubDate>
-    <lastBuildDate>Sun, 23 Jun 2019 17:17:02 +0800</lastBuildDate>
+    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
+    <pubDate>Sun, 04 Aug 2019 17:21:43 +0800</pubDate>
+    <lastBuildDate>Sun, 04 Aug 2019 17:21:43 +0800</lastBuildDate>
     <generator>Jekyll v3.8.3</generator>
+    
+      <item>
+        <title>消息队列在data中的应用</title>
+        <description>&lt;p&gt;在不久前，在data和exchange项目中，我们将所有用到rocketmq的地方全部切换到了kafka上。在结汇项目中，消息队列也已经用了近一年多，期间也踩过几个坑，此wiki用以记录消息队列在data和exchange中的实践&lt;/p&gt;
+
+&lt;h2 id=&quot;不经意的timeout_clean_queue&quot;&gt;不经意的TIMEOUT_CLEAN_QUEUE&lt;/h2&gt;
+
+&lt;p&gt;记得在去年11月初的时候，确切来说是在ebay API的限流正式放开之后。某日早上，日常检查线上error日志，发现了几条之前从未出现过的信息&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;sendKernelImpl&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;exception&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;resend&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;at&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;once&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;InvokeID:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;6395301748774370577&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;RT:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;213&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ms&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;Broker:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MessageQueue&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;topic&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ORDER&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;brokerName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prd&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;idc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;broker&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;queueId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;org&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;apache&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;rocketmq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;client&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;exception&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;MQBrokerException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;CODE:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;  &lt;span class=&quot;nl&quot;&gt;DESC:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TIMEOUT_CLEAN_QUEUE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;broker&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;busy&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;start&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;flow&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;control&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;period&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;queue:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;209&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ms&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;size&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;of&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;queue:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;....(&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;具体的消息体&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;可以简单看出来，broker太繁忙了，消息发送失败了！去hbase中查了一下（应用在消费这些消息后会入hbase），果然没有找到这些消息！为了暂时减少这种情况的发生，先降低了拉取数据的频率。&lt;/p&gt;
+
+&lt;p&gt;本着“翻山越岭，纵横四海”的精神，从git拉下了4.2.0版本的rocketmq源码，还是有必要确定一下为什么会发生这种情况，这样才能采取适合的措施。&lt;/p&gt;
+
+&lt;h3 id=&quot;溯源&quot;&gt;溯源&lt;/h3&gt;
+
+&lt;p&gt;在&lt;strong&gt;org.apache.rocketmq.broker.latency.BrokerFastFailure#cleanExpiredRequestInQueue&lt;/strong&gt;方法中，我找到了这条日志&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;[TIMEOUT_CLEAN_QUEUE]broker busy, start flow control for a while....
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;再接着分析之前，先简单提一下rocketmq中的通信模块。rocketmq中的RPC也是基于netty来实现的。抛开别的细节，当我们的producer端掉用sendMessage方法时，对应就会有个broker接收到这个请求，之后broker会把这个请求丢到与之相对应的线程池中进行异步处理。&lt;/p&gt;
+
+&lt;p&gt;那什么时候会触发[TIMEOUT_CLEAN_QUEUE]呢？broker在启动的时候，会开启很多的异步服务，其中就包括一个BrokerFastFailure服务，这个服务有个功能就是定时去清理“过期”的请求。“过期”请求被干掉后，就会抛出[TIMEOUT_CLEAN_QUEUE]相关异常&lt;/p&gt;
+
+&lt;p&gt;怎么才算“过期”请求呢？在请求丢进对应的线程池处理之前，会生成一个时间戳，记录这个请求创建的时间。当触发&lt;strong&gt;cleanExpiredRequestInQueue&lt;/strong&gt;方法时，会从线程池的阻塞队列中取出首个请求，如果当前时间比请求创建时间多200ms（默认设为200ms），则会干掉该请求，并抛出异常&lt;/p&gt;
+
+&lt;p&gt;然后再来看看相应的处理生产者请求的线程池的配置（相关参数均为默认参数）&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sendMessageExecutor&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BrokerFixedThreadPoolExecutor&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;
+  &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;mi&quot;&gt;1000&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;60&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;TimeUnit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;MILLISECONDS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;LinkedBlockingQueue&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Runnable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10000&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ThreadFactoryImpl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;SendMessageThread_&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;我刚看到的时候，我比较疑惑的是，它的核心线程数和最大线程数竟然只设为了1！这不就相当于单线程去处理请求了吗？在多核处理器的时代，我不得不怀疑这样设置真的好吗？不过很快，我又注意到在这个核心线程数配置上方有这么一行注释&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/**
+* thread numbers for send message thread pool, since spin lock will be used by default since 4.0.x, the default
+* value is 1.
+*/
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;到这里，就不得不提一下rockemtq的存储了，rocketmq是直接使用了磁盘文件来作为底层的存储，所有topic，所有queue的消息都会写入到&lt;strong&gt;~/store/commitLog&lt;/strong&gt;这个文件夹下。众所周知，rocketmq默认使用了异步刷盘的方式，很大程度上提高了系统的吞吐量。而所谓异步刷盘，即消息先写入到ByteBuffer中，然后由FlushRealTimeService服务异步刷新到磁盘上。&lt;/p&gt;
+
+&lt;p&gt;因此，消息写入到ByteBuffer的过程就必须保证是线程安全的！那么就需要用到锁，在rocketmq 4.0版本之前，默认是使用了ReentrantLock来保证线程安全，但在4.0版本之后，默认是通过AtomicBoolean来实现的自旋锁以保证线程安全。那么核心线程数设为1以及上面那段注释也就好理解了。自旋锁虽然效率要远高于互斥锁，但自旋锁会一直占用CPU，如果其余线程短时间内没有获取到，会降低CPU的性能，我想这应该就是broker中将核心线程数设为1的原因&lt;/p&gt;
+
+&lt;h3 id=&quot;broker服务可用性&quot;&gt;broker服务可用性&lt;/h3&gt;
+
+&lt;p&gt;broker要保证服务的可用性，很容易想到，主要就是要保证内存(这里主要指jvm)和外存(这里主要指磁盘，因为broker的数据是直接写入到文件中的)在容量上不会出现问题，保证中间件可以持续提供服务。&lt;/p&gt;
+
+&lt;p&gt;在外存的处理上&lt;/p&gt;
+
+&lt;p&gt;1.定时清理磁盘文件&lt;/p&gt;
+
+&lt;p&gt;在内存的处理上&lt;/p&gt;
+
+&lt;p&gt;1.阻塞队列设置了大小&lt;/p&gt;
+
+&lt;p&gt;2.定时清理阻塞队列中的&lt;/p&gt;
+
+&lt;p&gt;3.beginTimeInLock&lt;/p&gt;
+
+&lt;h3 id=&quot;问题解决方案&quot;&gt;问题解决方案&lt;/h3&gt;
+
+&lt;p&gt;当时有准备了以下几个方案：&lt;/p&gt;
+
+&lt;p&gt;1.最显而易见的方法就是直接增大BrokerConfig中的waitTimeMillsInSendQueue这个字段的值&lt;/p&gt;
+
+&lt;p&gt;2.切换中间件。回归到业务本身，data用于拉取店铺的订单数据，通过rocketmq发送给下游的结汇业务。而rocketmq最早是阿里借鉴了kafka的设计，为交易系统做的一套中间件，4.2.0版本还不支持对大数据的处理。这么来看，其实号称百万级的并发写入的kafka似乎更符合我们的业务场景。&lt;/p&gt;
+
+&lt;p&gt;其实可以单单从底层的存储来看看kafka和rocketmq的区别。&lt;/p&gt;
+
+&lt;p&gt;1.偷张rocketmq的图&lt;/p&gt;
+
+&lt;p&gt;2.讲讲kafka的底层存储的区别&lt;/p&gt;
+
+&lt;p&gt;因为正好kafka已经在项目的其他地方有用到，所以抽时间把rocketmq的流量全切到了kafka上。一是保证rocketmq的稳定，保证其他的业务系统的稳定使用，二也是为了我们data-exchange系统的稳定&lt;/p&gt;
+
+&lt;h3 id=&quot;kafka在data-exchange中的实践&quot;&gt;kafka在data-exchange中的实践&lt;/h3&gt;
+
+</description>
+        <pubDate>Sun, 30 Jun 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/06/30/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%9C%A8data%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/06/30/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%9C%A8data%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/</guid>
+        
+        <category>rocketmq</category>
+        
+        
+      </item>
     
       <item>
         <title>rocketmq源码阅读(8)——store文件数据结构</title>
@@ -97,7 +194,7 @@
 
 &lt;p&gt;没什么好说的，就按rocketmq源码中怎么写进去的，这边就怎么读出来，多看看多试试就行，再附上一段控制台结果：&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;6.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/img/in-post/rocketmq-8-store/6.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;consumerqueue&quot;&gt;ConsumerQueue&lt;/h3&gt;
 
@@ -184,8 +281,8 @@
 &lt;p&gt;本文主要试着去读了读几个存储文件，果然正如所预料的那样&lt;/p&gt;
 </description>
         <pubDate>Sat, 27 Apr 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/04/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(8)-store%E6%96%87%E4%BB%B6%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/04/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(8)-store%E6%96%87%E4%BB%B6%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/</guid>
+        <link>http://localhost:4000/2019/04/27/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(8)-store%E6%96%87%E4%BB%B6%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/04/27/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(8)-store%E6%96%87%E4%BB%B6%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/</guid>
         
         <category>rocketmq</category>
         
@@ -204,7 +301,7 @@
 
 &lt;p&gt;先看看rocketmq的存储架构(图来源于&lt;a href=&quot;https://www.jianshu.com/p/b73fdd893f98&quot;&gt;此博文&lt;/a&gt;)&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;2.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/img/in-post/rocketmq-7-store/2.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;可以看到在broker接收到消息后，首先会把消息写入到commitLog中，之后会异步将消息分发给ConsumerQueue和IndexFile，之后相关的细节也将主要围绕commitLog，consumerQueue，indexFIle来讲&lt;/p&gt;
 
@@ -212,13 +309,13 @@
 
 &lt;p&gt;在部署broker的机器上，rocketmq相关数据都存储在了&lt;strong&gt;~/store&lt;/strong&gt;文件夹下，相关日志都存储在&lt;strong&gt;~/logs/rocketmqlogs&lt;/strong&gt;文件夹下。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;1.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/img/in-post/rocketmq-7-store/1.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;主要包含4个文件夹，逐个来看看&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;commitlog&lt;/strong&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;3.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/img/in-post/rocketmq-7-store/3.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;可以看到commitLog只有个大小为1G，名称为全数字的一个文件。&lt;/p&gt;
 
@@ -232,7 +329,7 @@
 
 &lt;p&gt;顾名思义，代表着消费情况，可以看看树形目录图&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;4.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/img/in-post/rocketmq-7-store/4.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;很明显，它为每个topic创建了一个文件夹，为每个topic的每个queue也创建了一个文件夹，内部的文件也存储了该队列的消费情况。consumerQueue文件的数据结构在等会也会尝试去解读&lt;/p&gt;
 
@@ -399,7 +496,7 @@
 
 &lt;p&gt;接着来看看默认的index文件数据结构&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;5.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/img/in-post/rocketmq-7-store/5.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;总共420000040bytes，大约是400.5M&lt;/p&gt;
 
@@ -421,8 +518,8 @@
 
 </description>
         <pubDate>Sun, 07 Apr 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/04/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(7)-store%E6%A8%A1%E5%9D%97/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/04/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(7)-store%E6%A8%A1%E5%9D%97/</guid>
+        <link>http://localhost:4000/2019/04/07/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(7)-store%E6%A8%A1%E5%9D%97/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/04/07/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(7)-store%E6%A8%A1%E5%9D%97/</guid>
         
         <category>rocketmq</category>
         
@@ -645,7 +742,7 @@
 
 &lt;p&gt;再来看看相关协议格式的设计，分为4部分，第1部分的length指2，3，4部分的总字节数，第2部分包括第3部分的序列化方式以及第3部分的字节数&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;../../../../test.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/img/in-post/rocketmq-6-remoting/pic1.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;编码&quot;&gt;编码&lt;/h3&gt;
 
@@ -939,8 +1036,8 @@
 &lt;p&gt;至此，已经看完了rocketmq中remoting模块中一些基本功能的实现。在对于netty的使用上，还是很有收获的，复杂的网络问题都在netty中得到了很好的解决。之前简单了解过netty，感觉以后还是要再拜读一下。&lt;/p&gt;
 </description>
         <pubDate>Sun, 24 Feb 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/02/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(6)-remoting%E6%A8%A1%E5%9D%97/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/02/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(6)-remoting%E6%A8%A1%E5%9D%97/</guid>
+        <link>http://localhost:4000/2019/02/24/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(6)-remoting%E6%A8%A1%E5%9D%97/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/02/24/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(6)-remoting%E6%A8%A1%E5%9D%97/</guid>
         
         <category>rocketmq</category>
         
@@ -1418,8 +1515,8 @@
 
 </description>
         <pubDate>Sun, 20 Jan 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(5)-%E6%B6%88%E8%B4%B9%E8%80%85%E6%B6%88%E8%B4%B9%E6%B5%81%E7%A8%8B/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(5)-%E6%B6%88%E8%B4%B9%E8%80%85%E6%B6%88%E8%B4%B9%E6%B5%81%E7%A8%8B/</guid>
+        <link>http://localhost:4000/2019/01/20/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(5)-%E6%B6%88%E8%B4%B9%E8%80%85%E6%B6%88%E8%B4%B9%E6%B5%81%E7%A8%8B/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/01/20/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(5)-%E6%B6%88%E8%B4%B9%E8%80%85%E6%B6%88%E8%B4%B9%E6%B5%81%E7%A8%8B/</guid>
         
         <category>rocketmq</category>
         
@@ -1803,8 +1900,8 @@
 &lt;p&gt;1.最近一直在想负载均衡服务为什么要放在客户端做，而不放在服务端做？rocketmq的设计是让客户端拉取所有的消费者组信息，然后根据相应的算法做负载均衡。如果让服务端来做分配算法，再分发给所有的消费者，感觉会更合适？其实不然，其实上面我们也提到，会有多种分配算法，如果我们要修改策略，只需要让客户端重启即可。如果负载均衡放在broker，那可就得重启broker了！！！&lt;/p&gt;
 </description>
         <pubDate>Sun, 13 Jan 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(4)-mq%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%9C%8D%E5%8A%A1/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(4)-mq%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%9C%8D%E5%8A%A1/</guid>
+        <link>http://localhost:4000/2019/01/13/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(4)-mq%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%9C%8D%E5%8A%A1/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/01/13/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(4)-mq%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%9C%8D%E5%8A%A1/</guid>
         
         <category>rocketmq</category>
         
@@ -1936,8 +2033,8 @@
 &lt;p&gt;因为本文只涉及到初始化部分，和Producer类似，所以主要讲了讲相关的概念以及个人的理解，为后面的内容做好铺垫。之后会针对消费分为两块来写，&lt;strong&gt;客户端的负载均衡&lt;/strong&gt;以及&lt;strong&gt;消息消费的流程&lt;/strong&gt;。&lt;/p&gt;
 </description>
         <pubDate>Sun, 13 Jan 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(3)-mq%E6%B6%88%E8%B4%B9%E8%80%85%E5%88%9D%E5%A7%8B%E5%8C%96/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(3)-mq%E6%B6%88%E8%B4%B9%E8%80%85%E5%88%9D%E5%A7%8B%E5%8C%96/</guid>
+        <link>http://localhost:4000/2019/01/13/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(3)-mq%E6%B6%88%E8%B4%B9%E8%80%85%E5%88%9D%E5%A7%8B%E5%8C%96/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/01/13/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(3)-mq%E6%B6%88%E8%B4%B9%E8%80%85%E5%88%9D%E5%A7%8B%E5%8C%96/</guid>
         
         <category>rocketmq</category>
         
@@ -2190,8 +2287,8 @@
 
 </description>
         <pubDate>Mon, 07 Jan 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(2)-MQClientInstance%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(2)-MQClientInstance%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/</guid>
+        <link>http://localhost:4000/2019/01/07/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(2)-MQClientInstance%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/01/07/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(2)-MQClientInstance%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/</guid>
         
         <category>rocketmq</category>
         
@@ -2974,8 +3071,8 @@
 &lt;p&gt;花了一天多的时间，粗略整理了一份最基本的producer的源码，竟然这么多，再加上在下实力也实在有限，定不能很好参透精髓，仅仅是个人粗鄙的理解。如有理解错误之处，非常欢迎指正。&lt;/p&gt;
 </description>
         <pubDate>Sat, 05 Jan 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(1)-%E7%94%9F%E4%BA%A7%E8%80%85%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E6%B6%88%E6%81%AF%E7%9A%84%E5%8F%91%E9%80%81/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(1)-%E7%94%9F%E4%BA%A7%E8%80%85%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E6%B6%88%E6%81%AF%E7%9A%84%E5%8F%91%E9%80%81/</guid>
+        <link>http://localhost:4000/2019/01/05/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(1)-%E7%94%9F%E4%BA%A7%E8%80%85%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E6%B6%88%E6%81%AF%E7%9A%84%E5%8F%91%E9%80%81/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/01/05/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(1)-%E7%94%9F%E4%BA%A7%E8%80%85%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E6%B6%88%E6%81%AF%E7%9A%84%E5%8F%91%E9%80%81/</guid>
         
         <category>rocketmq</category>
         
@@ -3057,346 +3154,8 @@
 &lt;p&gt;其实本该8月就能弄好的，奈何这段时间公司项目需求比较多，迭代很快，忙到模糊。时至今日，中秋即将到来之际才匆匆整理出来。最后，祝各位中秋快乐，心想事成。&lt;/p&gt;
 </description>
         <pubDate>Sat, 22 Sep 2018 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2018/09/java%E4%B8%AD%E7%9A%84%E6%97%B6%E9%97%B4/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/09/java%E4%B8%AD%E7%9A%84%E6%97%B6%E9%97%B4/</guid>
-        
-        <category>java</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>[转]深入理解Java Stream流水线</title>
-        <description>&lt;blockquote&gt;
-  &lt;p&gt;来本文转载于http://www.cnblogs.com/CarpenterLee/p/6637118.html，十分感谢&lt;a href=&quot;http://www.cnblogs.com/CarpenterLee/&quot;&gt;CarpenterLee&lt;/a&gt;写出如此棒的文章。&lt;/p&gt;
-
-  &lt;p&gt;来到了毕业后真正意义上的第一家公司，要说这近两个月在技术层面最大的感受，一是授权方式的演变，这里暂不讨论。第二个就是java8引入的Lambda，Stream，彻底改变了我对编程的理解。不过，在开始接触时，对于写下的每一行是没底的，因为根本不清楚其运行的原理，其效率。最近想写几篇文章强迫自己加深一下印象，不过恰巧看到几篇很棒的blog，由浅入深，理解十分透彻，难以望其项背，遂转之。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;前面我们已经学会&lt;a href=&quot;http://www.cnblogs.com/CarpenterLee/p/6545321.html&quot;&gt;如何使用Stream API&lt;/a&gt;，用起来真的很爽，但简洁的方法下面似乎隐藏着无尽的秘密，如此强大的API是如何实现的呢？Pipeline是怎么执行的，每次方法调用都会导致一次迭代吗？自动并行又是怎么做到的，线程个数是多少？本节我们学习Stream流水线的原理，这是Stream实现的关键所在。&lt;/p&gt;
-
-&lt;p&gt;首先回顾一下容器执行Lambda表达式的方式，以&lt;code class=&quot;highlighter-rouge&quot;&gt;ArrayList.forEach()&lt;/code&gt;方法为例，具体代码如下：&lt;/p&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// ArrayList.forEach()&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;forEach&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Consumer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;?&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;super&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;E&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;action&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;modCount&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;expectedModCount&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;action&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;accept&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;elementData&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]);&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;// 回调方法&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;我们看到&lt;code class=&quot;highlighter-rouge&quot;&gt;ArrayList.forEach()&lt;/code&gt;方法的主要逻辑就是一个&lt;em&gt;for&lt;/em&gt;循环，在该&lt;em&gt;for&lt;/em&gt;循环里不断调用&lt;code class=&quot;highlighter-rouge&quot;&gt;action.accept()&lt;/code&gt;回调方法完成对元素的遍历。这完全没有什么新奇之处，回调方法在Java GUI的监听器中广泛使用。Lambda表达式的作用就是相当于一个回调方法，这很好理解。&lt;/p&gt;
-
-&lt;p&gt;Stream API中大量使用Lambda表达式作为回调方法，但这并不是关键。理解Stream我们更关心的是另外两个问题：流水线和自动并行。使用Stream或许很容易写入如下形式的代码：&lt;/p&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;longestStringLengthStartingWithA&lt;/span&gt;
-        &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;strings&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;stream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
-              &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;startsWith&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;A&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
-              &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;mapToInt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;String:&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-              &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;上述代码求出以字母&lt;em&gt;A&lt;/em&gt;开头的字符串的最大长度，一种直白的方式是为每一次函数调用都执一次迭代，这样做能够实现功能，但效率上肯定是无法接受的。类库的实现着使用流水线（&lt;em&gt;Pipeline&lt;/em&gt;）的方式巧妙的避免了多次迭代，其基本思想是在一次迭代中尽可能多的执行用户指定的操作。为讲解方便我们汇总了Stream的所有操作。&lt;/p&gt;
-
-&lt;table&gt;
-  &lt;thead&gt;
-    &lt;tr&gt;
-      &lt;th&gt;Stream操作分类&lt;/th&gt;
-      &lt;th&gt; &lt;/th&gt;
-      &lt;th&gt; &lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;td&gt;中间操作(Intermediate operations)&lt;/td&gt;
-      &lt;td&gt;无状态(Stateless)&lt;/td&gt;
-      &lt;td&gt;unordered() filter() map() mapToInt() mapToLong() mapToDouble() flatMap() flatMapToInt() flatMapToLong() flatMapToDouble() peek()&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;有状态(Stateful)&lt;/td&gt;
-      &lt;td&gt;distinct() sorted() sorted() limit() skip()&lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;结束操作(Terminal operations)&lt;/td&gt;
-      &lt;td&gt;非短路操作&lt;/td&gt;
-      &lt;td&gt;forEach() forEachOrdered() toArray() reduce() collect() max() min() count()&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;短路操作(short-circuiting)&lt;/td&gt;
-      &lt;td&gt;anyMatch() allMatch() noneMatch() findFirst() findAny()&lt;/td&gt;
-      &lt;td&gt; &lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;p&gt;Stream上的所有操作分为两类：中间操作和结束操作，中间操作只是一种标记，只有结束操作才会触发实际计算。中间操作又可以分为无状态的(&lt;em&gt;Stateless&lt;/em&gt;)和有状态的(&lt;em&gt;Stateful&lt;/em&gt;)，无状态中间操作是指元素的处理不受前面元素的影响，而有状态的中间操作必须等到所有元素处理之后才知道最终结果，比如排序是有状态操作，在读取所有元素之前并不能确定排序结果；结束操作又可以分为短路操作和非短路操作，短路操作是指不用处理全部元素就可以返回结果，比如&lt;em&gt;找到第一个满足条件的元素&lt;/em&gt;。之所以要进行如此精细的划分，是因为底层对每一种情况的处理方式不同。&lt;/p&gt;
-
-&lt;h2 id=&quot;一种直白的实现方式&quot;&gt;一种直白的实现方式&lt;/h2&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://images2015.cnblogs.com/blog/939998/201703/939998-20170328220216904-281721275.png&quot; alt=&quot;Stream_pipeline_naive&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;仍然考虑上述求最长字符串的程序，一种直白的流水线实现方式是为每一次函数调用都执一次迭代，并将处理中间结果放到某种数据结构中（比如数组，容器等）。具体说来，就是调用&lt;code class=&quot;highlighter-rouge&quot;&gt;filter()&lt;/code&gt;方法后立即执行，选出所有以&lt;em&gt;A&lt;/em&gt;开头的字符串并放到一个列表list1中，之后让list1传递给&lt;code class=&quot;highlighter-rouge&quot;&gt;mapToInt()&lt;/code&gt;方法并立即执行，生成的结果放到list2中，最后遍历list2找出最大的数字作为最终结果。程序的执行流程如如所示：&lt;/p&gt;
-
-&lt;p&gt;这样做实现起来非常简单直观，但有两个明显的弊端：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;迭代次数多。迭代次数跟函数调用的次数相等。&lt;/li&gt;
-  &lt;li&gt;频繁产生中间结果。每次函数调用都产生一次中间结果，存储开销无法接受。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;这些弊端使得效率底下，根本无法接受。如果不使用Stream API我们都知道上述代码该如何在一次迭代中完成，大致是如下形式：&lt;/p&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;longest&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;str&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;strings&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;){&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;str&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;startsWith&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;A&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)){&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;// 1. filter(), 保留以A开头的字符串&lt;/span&gt;
-        &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;len&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;str&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;// 2. mapToInt(), 转换成长度&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;longest&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Math&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;longest&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;// 3. max(), 保留最长的长度&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;采用这种方式我们不但减少了迭代次数，也避免了存储中间结果，显然这就是流水线，因为我们把三个操作放在了一次迭代当中。只要我们事先知道用户意图，总是能够采用上述方式实现跟Stream API等价的功能，但问题是Stream类库的设计者并不知道用户的意图是什么。如何在无法假设用户行为的前提下实现流水线，是类库的设计者要考虑的问题。&lt;/p&gt;
-
-&lt;h2 id=&quot;stream流水线解决方案&quot;&gt;Stream流水线解决方案&lt;/h2&gt;
-
-&lt;p&gt;我们大致能够想到，应该采用某种方式记录用户每一步的操作，当用户调用结束操作时将之前记录的操作叠加到一起在一次迭代中全部执行掉。沿着这个思路，有几个问题需要解决：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;用户的操作如何记录？&lt;/li&gt;
-  &lt;li&gt;操作如何叠加？&lt;/li&gt;
-  &lt;li&gt;叠加之后的操作如何执行？&lt;/li&gt;
-  &lt;li&gt;执行后的结果（如果有）在哪里？&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h3 id=&quot;-操作如何记录&quot;&gt;» 操作如何记录&lt;/h3&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://images2015.cnblogs.com/blog/939998/201703/939998-20170328220309045-1952777908.png&quot; alt=&quot;Java_stream_pipeline_classes&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;注意这里使用的是“&lt;em&gt;操作(operation)&lt;/em&gt;”一词，指的是“Stream中间操作”的操作，很多Stream操作会需要一个回调函数（Lambda表达式），因此一个完整的操作是&amp;lt;&lt;em&gt;数据来源，操作，回调函数&lt;/em&gt;&amp;gt;构成的三元组。Stream中使用Stage的概念来描述一个完整的操作，并用某种实例化后的&lt;em&gt;PipelineHelper&lt;/em&gt;来代表Stage，将具有先后顺序的各个Stage连到一起，就构成了整个流水线。跟Stream相关类和接口的继承关系图示。&lt;/p&gt;
-
-&lt;p&gt;还有&lt;em&gt;IntPipeline, LongPipeline, DoublePipeline&lt;/em&gt;没在图中画出，这三个类专门为三种基本类型（不是包装类型）而定制的，跟&lt;em&gt;ReferencePipeline&lt;/em&gt;是并列关系。图中&lt;em&gt;Head&lt;/em&gt;用于表示第一个Stage，即调用调用诸如&lt;em&gt;Collection.stream()&lt;/em&gt;方法产生的Stage，很显然这个Stage里不包含任何操作；&lt;em&gt;StatelessOp&lt;/em&gt;和&lt;em&gt;StatefulOp&lt;/em&gt;分别表示无状态和有状态的Stage，对应于无状态和有状态的中间操作。&lt;/p&gt;
-
-&lt;p&gt;Stream流水线组织结构示意图如下：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://images2015.cnblogs.com/blog/939998/201703/939998-20170328220336326-882287689.png&quot; alt=&quot;Stream_pipeline_example&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;图中通过&lt;code class=&quot;highlighter-rouge&quot;&gt;Collection.stream()&lt;/code&gt;方法得到&lt;em&gt;Head&lt;/em&gt;也就是stage0，紧接着调用一系列的中间操作，不断产生新的Stream。&lt;strong&gt;这些Stream对象以双向链表的形式组织在一起，构成整个流水线，由于每个Stage都记录了前一个Stage和本次的操作以及回调函数，依靠这种结构就能建立起对数据源的所有操作&lt;/strong&gt;。这就是Stream记录操作的方式。&lt;/p&gt;
-
-&lt;h3 id=&quot;-操作如何叠加&quot;&gt;» 操作如何叠加&lt;/h3&gt;
-
-&lt;p&gt;以上只是解决了操作记录的问题，要想让流水线起到应有的作用我们需要一种将所有操作叠加到一起的方案。你可能会觉得这很简单，只需要从流水线的head开始依次执行每一步的操作（包括回调函数）就行了。这听起来似乎是可行的，但是你忽略了前面的Stage并不知道后面Stage到底执行了哪种操作，以及回调函数是哪种形式。换句话说，只有当前Stage本身才知道该如何执行自己包含的动作。这就需要有某种协议来协调相邻Stage之间的调用关系。&lt;/p&gt;
-
-&lt;p&gt;这种协议由&lt;em&gt;Sink&lt;/em&gt;接口完成，&lt;em&gt;Sink&lt;/em&gt;接口包含的方法如下表所示：&lt;/p&gt;
-
-&lt;table&gt;
-  &lt;thead&gt;
-    &lt;tr&gt;
-      &lt;th&gt;方法名&lt;/th&gt;
-      &lt;th&gt;作用&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;td&gt;void begin(long size)&lt;/td&gt;
-      &lt;td&gt;开始遍历元素之前调用该方法，通知Sink做好准备。&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;void end()&lt;/td&gt;
-      &lt;td&gt;所有元素遍历完成之后调用，通知Sink没有更多的元素了。&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;boolean cancellationRequested()&lt;/td&gt;
-      &lt;td&gt;是否可以结束操作，可以让短路操作尽早结束。&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;void accept(T t)&lt;/td&gt;
-      &lt;td&gt;遍历元素时调用，接受一个待处理元素，并对元素进行处理。Stage把自己包含的操作和回调方法封装到该方法里，前一个Stage只需要调用当前Stage.accept(T t)方法就行了。&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;p&gt;有了上面的协议，相邻Stage之间调用就很方便了，每个Stage都会将自己的操作封装到一个Sink里，前一个Stage只需调用后一个Stage的&lt;code class=&quot;highlighter-rouge&quot;&gt;accept()&lt;/code&gt;方法即可，并不需要知道其内部是如何处理的。当然对于有状态的操作，Sink的&lt;code class=&quot;highlighter-rouge&quot;&gt;begin()&lt;/code&gt;和&lt;code class=&quot;highlighter-rouge&quot;&gt;end()&lt;/code&gt;方法也是必须实现的。比如Stream.sorted()是一个有状态的中间操作，其对应的Sink.begin()方法可能创建一个乘放结果的容器，而accept()方法负责将元素添加到该容器，最后end()负责对容器进行排序。对于短路操作，&lt;code class=&quot;highlighter-rouge&quot;&gt;Sink.cancellationRequested()&lt;/code&gt;也是必须实现的，比如Stream.findFirst()是短路操作，只要找到一个元素，cancellationRequested()就应该返回&lt;em&gt;true&lt;/em&gt;，以便调用者尽快结束查找。Sink的四个接口方法常常相互协作，共同完成计算任务。&lt;strong&gt;实际上Stream API内部实现的的本质，就是如何重载Sink的这四个接口方法&lt;/strong&gt;。&lt;/p&gt;
-
-&lt;p&gt;有了Sink对操作的包装，Stage之间的调用问题就解决了，执行时只需要从流水线的head开始对数据源依次调用每个Stage对应的Sink.{begin(), accept(), cancellationRequested(), end()}方法就可以了。一种可能的Sink.accept()方法流程是这样的：&lt;/p&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;accept&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;U&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;u&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;){&lt;/span&gt;
-    &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;使用当前&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Sink&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;包装的回调函数处理&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;u&lt;/span&gt;
-    &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;将处理结果传递给流水线下游的&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Sink&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Sink接口的其他几个方法也是按照这种[处理-&amp;gt;转发]的模型实现。下面我们结合具体例子看看Stream的中间操作是如何将自身的操作包装成Sink以及Sink是如何将处理结果转发给下一个Sink的。先看Stream.map()方法：&lt;/p&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// Stream.map()，调用该方法将产生一个新的Stream&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Stream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Function&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;?&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;super&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;P_OUT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mapper&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;StatelessOp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;P_OUT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;StreamShape&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;REFERENCE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
-                                 &lt;span class=&quot;n&quot;&gt;StreamOpFlag&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;NOT_SORTED&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;StreamOpFlag&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;NOT_DISTINCT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/*opWripSink()方法返回由回调函数包装而成Sink*/&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;Sink&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;P_OUT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;opWrapSink&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;flags&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Sink&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;downstream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Sink&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;ChainedReference&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;P_OUT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;downstream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-                &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-                &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;accept&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;P_OUT&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;u&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-                    &lt;span class=&quot;n&quot;&gt;R&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mapper&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;apply&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;u&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;// 1. 使用当前Sink包装的回调函数mapper处理u&lt;/span&gt;
-                    &lt;span class=&quot;n&quot;&gt;downstream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;accept&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;// 2. 将处理结果传递给流水线下游的Sink&lt;/span&gt;
-                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-            &lt;span class=&quot;o&quot;&gt;};&lt;/span&gt;
-        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;};&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;上述代码看似复杂，其实逻辑很简单，就是将回调函数&lt;em&gt;mapper&lt;/em&gt;包装到一个Sink当中。由于Stream.map()是一个无状态的中间操作，所以map()方法返回了一个StatelessOp内部类对象（一个新的Stream），调用这个新Stream的opWripSink()方法将得到一个包装了当前回调函数的Sink。&lt;/p&gt;
-
-&lt;p&gt;再来看一个复杂一点的例子。Stream.sorted()方法将对Stream中的元素进行排序，显然这是一个有状态的中间操作，因为读取所有元素之前是没法得到最终顺序的。抛开模板代码直接进入问题本质，sorted()方法是如何将操作封装成Sink的呢？sorted()一种可能封装的Sink代码如下：&lt;/p&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// Stream.sort()方法用到的Sink实现&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;RefSortingSink&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AbstractRefSortingSink&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ArrayList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;list&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;// 存放用于排序的元素&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;RefSortingSink&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Sink&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;?&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;super&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;downstream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Comparator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;?&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;super&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;comparator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;kd&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;downstream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;comparator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;begin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;// 创建一个存放排序元素的列表&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;list&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ArrayList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;((&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ArrayList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;();&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;end&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;list&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sort&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;comparator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;// 只有元素全部接收之后才能开始排序&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;downstream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;begin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;list&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cancellationWasRequested&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;// 下游Sink不包含短路操作&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;list&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;forEach&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;downstream:&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;accept&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;// 2. 将处理结果传递给流水线下游的Sink&lt;/span&gt;
-        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;// 下游Sink包含短路操作&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;t&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;list&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;// 每次都调用cancellationRequested()询问是否可以结束处理。&lt;/span&gt;
-                &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;downstream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;cancellationRequested&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;break&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-                &lt;span class=&quot;n&quot;&gt;downstream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;accept&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;// 2. 将处理结果传递给流水线下游的Sink&lt;/span&gt;
-            &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;downstream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;end&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;list&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;accept&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;list&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;// 1. 使用当前Sink包装动作处理t，只是简单的将元素添加到中间列表当中&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;上述代码完美的展现了Sink的四个接口方法是如何协同工作的：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;首先beging()方法告诉Sink参与排序的元素个数，方便确定中间结果容器的的大小；&lt;/li&gt;
-  &lt;li&gt;之后通过accept()方法将元素添加到中间结果当中，最终执行时调用者会不断调用该方法，直到遍历所有元素；&lt;/li&gt;
-  &lt;li&gt;最后end()方法告诉Sink所有元素遍历完毕，启动排序步骤，排序完成后将结果传递给下游的Sink；&lt;/li&gt;
-  &lt;li&gt;如果下游的Sink是短路操作，将结果传递给下游时不断询问下游cancellationRequested()是否可以结束处理。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h3 id=&quot;-叠加之后的操作如何执行&quot;&gt;» 叠加之后的操作如何执行&lt;/h3&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://images2015.cnblogs.com/blog/939998/201703/939998-20170328220418951-1517446139.png&quot; alt=&quot;Stream_pipeline_Sink&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Sink完美封装了Stream每一步操作，并给出了[处理-&amp;gt;转发]的模式来叠加操作。这一连串的齿轮已经咬合，就差最后一步拨动齿轮启动执行。是什么启动这一连串的操作呢？也许你已经想到了启动的原始动力就是结束操作(Terminal Operation)，一旦调用某个结束操作，就会触发整个流水线的执行。&lt;/p&gt;
-
-&lt;p&gt;结束操作之后不能再有别的操作，所以结束操作不会创建新的流水线阶段(Stage)，直观的说就是流水线的链表不会在往后延伸了。结束操作会创建一个包装了自己操作的Sink，这也是流水线中最后一个Sink，这个Sink只需要处理数据而不需要将结果传递给下游的Sink（因为没有下游）。对于Sink的[处理-&amp;gt;转发]模型，结束操作的Sink就是调用链的出口。&lt;/p&gt;
-
-&lt;p&gt;我们再来考察一下上游的Sink是如何找到下游Sink的。一种可选的方案是在&lt;em&gt;PipelineHelper&lt;/em&gt;中设置一个Sink字段，在流水线中找到下游Stage并访问Sink字段即可。但Stream类库的设计者没有这么做，而是设置了一个&lt;code class=&quot;highlighter-rouge&quot;&gt;Sink AbstractPipeline.opWrapSink(int flags, Sink downstream)&lt;/code&gt;方法来得到Sink，该方法的作用是返回一个新的包含了当前Stage代表的操作以及能够将结果传递给downstream的Sink对象。为什么要产生一个新对象而不是返回一个Sink字段？这是因为使用opWrapSink()可以将当前操作与下游Sink（上文中的downstream参数）结合成新Sink。试想只要从流水线的最后一个Stage开始，不断调用上一个Stage的opWrapSink()方法直到最开始（不包括stage0，因为stage0代表数据源，不包含操作），就可以得到一个代表了流水线上所有操作的Sink，用代码表示就是这样：&lt;/p&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// AbstractPipeline.wrapSink()&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;// 从下游向上游不断包装Sink。如果最初传入的sink代表结束操作，&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;// 函数返回时就可以得到一个代表了流水线上所有操作的Sink。&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;P_IN&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Sink&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;P_IN&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;wrapSink&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Sink&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;E_OUT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sink&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;AbstractPipeline&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;AbstractPipeline&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;depth&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;previousStage&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;sink&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;opWrapSink&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;previousStage&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;combinedFlags&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sink&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Sink&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;P_IN&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sink&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;现在流水线上从开始到结束的所有的操作都被包装到了一个Sink里，执行这个Sink就相当于执行整个流水线，执行Sink的代码如下：&lt;/p&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// AbstractPipeline.copyInto(), 对spliterator代表的数据执行wrappedSink代表的操作。&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;P_IN&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;copyInto&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Sink&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;P_IN&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;wrappedSink&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Spliterator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;P_IN&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;spliterator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;StreamOpFlag&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;SHORT_CIRCUIT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;isKnown&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getStreamAndOpFlags&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;wrappedSink&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;begin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;spliterator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getExactSizeIfKnown&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;// 通知开始遍历&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;spliterator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;forEachRemaining&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;wrappedSink&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;// 迭代&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;wrappedSink&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;end&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;// 通知遍历结束&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;上述代码首先调用wrappedSink.begin()方法告诉Sink数据即将到来，然后调用spliterator.forEachRemaining()方法对数据进行迭代（Spliterator是容器的一种迭代器，&lt;a href=&quot;https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/3-Lambda%20and%20Collections.md#spliterator&quot;&gt;参阅&lt;/a&gt;），最后调用wrappedSink.end()方法通知Sink数据处理结束。逻辑如此清晰。&lt;/p&gt;
-
-&lt;h3 id=&quot;-执行后的结果在哪里&quot;&gt;» 执行后的结果在哪里&lt;/h3&gt;
-
-&lt;p&gt;最后一个问题是流水线上所有操作都执行后，用户所需要的结果（如果有）在哪里？首先要说明的是不是所有的Stream结束操作都需要返回结果，有些操作只是为了使用其副作用(&lt;em&gt;Side-effects&lt;/em&gt;)，比如使用&lt;code class=&quot;highlighter-rouge&quot;&gt;Stream.forEach()&lt;/code&gt;方法将结果打印出来就是常见的使用副作用的场景（事实上，除了打印之外其他场景都应避免使用副作用），对于真正需要返回结果的结束操作结果存在哪里呢？&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;特别说明：副作用不应该被滥用，也许你会觉得在Stream.forEach()里进行元素收集是个不错的选择，就像下面代码中那样，但遗憾的是这样使用的正确性和效率都无法保证，因为Stream可能会并行执行。大多数使用副作用的地方都可以使用&lt;a href=&quot;http://www.cnblogs.com/CarpenterLee/p/5-Streams%20API(II).md&quot;&gt;归约操作&lt;/a&gt;更安全和有效的完成。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// 错误的收集方式&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;ArrayList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;results&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ArrayList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;gt;();&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;stream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pattern&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;matcher&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;matches&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt;
-      &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;forEach&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;results&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;// Unnecessary use of side-effects!&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;// 正确的收集方式&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;results&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;
-     &lt;span class=&quot;n&quot;&gt;stream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pattern&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;matcher&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;matches&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt;
-             &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;collect&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Collectors&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;toList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;// No side-effects!&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;回到流水线执行结果的问题上来，需要返回结果的流水线结果存在哪里呢？这要分不同的情况讨论，下表给出了各种有返回结果的Stream结束操作。&lt;/p&gt;
-
-&lt;table&gt;
-  &lt;thead&gt;
-    &lt;tr&gt;
-      &lt;th&gt;返回类型&lt;/th&gt;
-      &lt;th&gt;对应的结束操作&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;td&gt;boolean&lt;/td&gt;
-      &lt;td&gt;anyMatch() allMatch() noneMatch()&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;Optional&lt;/td&gt;
-      &lt;td&gt;findFirst() findAny()&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;归约结果&lt;/td&gt;
-      &lt;td&gt;reduce() collect()&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;数组&lt;/td&gt;
-      &lt;td&gt;toArray()&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;对于表中返回boolean或者Optional的操作（Optional是存放 一个 值的容器）的操作，由于值返回一个值，只需要在对应的Sink中记录这个值，等到执行结束时返回就可以了。&lt;/li&gt;
-  &lt;li&gt;对于归约操作，最终结果放在用户调用时指定的容器中（容器类型通过&lt;a href=&quot;http://www.cnblogs.com/CarpenterLee/p/5-Streams%20API(II).md#%E6%94%B6%E9%9B%86%E5%99%A8&quot;&gt;收集器&lt;/a&gt;指定）。collect(), reduce(), max(), min()都是归约操作，虽然max()和min()也是返回一个Optional，但事实上底层是通过调用&lt;a href=&quot;http://www.cnblogs.com/CarpenterLee/p/5-Streams%20API(II).md#%E5%A4%9A%E9%9D%A2%E6%89%8Breduce&quot;&gt;reduce()&lt;/a&gt;方法实现的。&lt;/li&gt;
-  &lt;li&gt;对于返回是数组的情况，毫无疑问的结果会放在数组当中。这么说当然是对的，但在最终返回数组之前，结果其实是存储在一种叫做&lt;em&gt;Node&lt;/em&gt;的数据结构中的。Node是一种多叉树结构，元素存储在树的叶子当中，并且一个叶子节点可以存放多个元素。这样做是为了并行执行方便。关于Node的具体结构，我们会在下一节探究Stream如何并行执行时给出详细说明。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h2 id=&quot;结语&quot;&gt;结语&lt;/h2&gt;
-
-&lt;p&gt;本文详细介绍了Stream流水线的组织方式和执行过程，学习本文将有助于理解原理并写出正确的Stream代码，同时打消你对Stream API效率方面的顾虑。如你所见，Stream API实现如此巧妙，即使我们使用外部迭代手动编写等价代码，也未必更加高效。&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/6-Stream%20Pipelines.md&quot;&gt;本文github地址&lt;/a&gt;&lt;/p&gt;
-</description>
-        <pubDate>Wed, 11 Jul 2018 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2018/07/%E8%BD%AC-%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java-Stream%E6%B5%81%E6%B0%B4%E7%BA%BF/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/07/%E8%BD%AC-%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java-Stream%E6%B5%81%E6%B0%B4%E7%BA%BF/</guid>
+        <link>http://localhost:4000/2018/09/22/java%E4%B8%AD%E7%9A%84%E6%97%B6%E9%97%B4/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/09/22/java%E4%B8%AD%E7%9A%84%E6%97%B6%E9%97%B4/</guid>
         
         <category>java</category>
         

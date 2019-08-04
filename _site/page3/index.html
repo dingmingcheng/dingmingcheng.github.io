@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>New Boy</title>
+
+    <link rel="canonical" href="http://localhost:4000/page3/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="http://cdn.staticfile.org/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">New Boy</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/about/">About</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/demo/">Example Post</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Page Header -->
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 ">
+                <div class="site-heading">
+                    <h1>New Boy</h1>
+                    <!--<hr class="small">-->
+                    <span class="subheading">a new blog for a new boy</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<div class="container">
+	<div class="row">
+        
+
+<!-- USE SIDEBAR -->
+    <!-- Post Container -->
+    		<div class="
+                col-lg-8 col-lg-offset-1
+                col-md-8 col-md-offset-1
+                col-sm-12
+                col-xs-12
+                post-container
+            ">
+    			
+<div class="post-preview">
+    <a href="/2018/03/09/%E5%A4%9A%E4%BE%8B%E6%A8%A1%E5%BC%8F/">
+        <h2 class="post-title">
+            多例模式
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+其实之前也写过单例模式，说起单例模式，通过将构造函数私有化防止被外部类创建，保证一个类只有一个实例。而多例模式也很简明，就是一个类只有有一定上限个实例。
+
+代码实现
+
+感觉比较简单吧。。
+
+public class Multition {
+    public static final int COUNT = 10;
+
+    private int index;
+
+    priv...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on March 9, 2018
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2018/03/08/%E4%B8%89%E7%A7%8D%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/">
+        <h2 class="post-title">
+            三种工厂模式
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+之前在网上看了很多关于工厂模式的文章，之前看完就觉得懂了，可之后又忘了，上周把实习结束了，匆匆告别，匆匆回校。很棒的实习经历，有空再写。回校后打算理一遍设计模式，自己实现一遍，当是加深一下记忆，为之后正式的工作打好基础。先写写工厂模式。
+
+工厂模式主要分为三种，简单工厂模式，工厂模式，以及抽象工厂模式。说到工厂模式，其实我觉得在类和类之间的解耦起到了比较关键的作用，还是要在适当的场景...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on March 8, 2018
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2018/02/28/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAClassLoader,%E4%BD%A0%E7%9C%9F%E7%9A%84%E4%BA%86%E8%A7%A3ClassLoader%E5%90%97/">
+        <h2 class="post-title">
+            [转]深入浅出ClassLoader,你真的了解ClassLoader吗
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+
+  转载自并发编程网 – ifeve.com本文链接地址: 深入浅出ClassLoader
+
+
+在之前的实习中，也接触到一些包依赖冲突的问题，确实非常麻烦，最近在复习jvm类加载时，看见一篇很不错的文章，9除了理论也结合了实践，故转载之。
+
+你真的了解ClassLoader吗？
+
+这篇文章翻译自zeroturnaround.com的 Do You Really Get Classl...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on February 28, 2018
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2018/02/27/%E9%9A%8F%E4%BE%BF%E5%86%99%E9%9A%8F%E4%BE%BF%E7%9C%8B/">
+        <h2 class="post-title">
+            随便写随便看
+        </h2>
+        
+        <div class="post-content-preview">
+            
+  本来文章是发在微博上的，不过政治原因，第二天被干掉了，于是打算把之前的文章都移到博客上。由于本人知识浅薄，只是希望记录下这段时间的所思所想，里面的一些观点也很片面，就当笑话一样随便看看吧:D
+
+
+说起这篇长文，真是令人难过，昨晚文思泉涌，写了这段时间的所闻所想。奈何最近真值风口，估计渣浪的关键字库中加了很多的敏感词汇，一早起来就发现中招了，长文被渣浪干掉了。
+
+我这人有点倔，也不喜欢做...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on February 27, 2018
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2018/02/14/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%E5%AE%9E%E7%8E%B0/">
+        <h2 class="post-title">
+            单例模式实现
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+说起单例模式，应该设计模式中算是代码比较短，其主要作用是保证一个类只有一个实例，节省内存空间，也避免了频繁的创建与销毁对象，比如在spring中bean的创建时，就默认采取了单例模式。单例模式主要包括懒汉式和饿汉式。顾名思义，懒汉式就是“懒”，在你需要的时候我再给你创建对象，而对于饿汉式，则在于“饿”，在类加载时就就生成实例对象。
+
+实现
+
+为了不让外部类创建对象，一般是通过对构造函...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on February 14, 2018
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2018/02/14/volatile%E8%AF%A6%E8%A7%A3/">
+        <h2 class="post-title">
+            volatile详解
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+说到volatile关键字，应该是个很古老的关键字，然而这是一个很关键的一个关键字，从暑假接触到开始，看了许多的文章，也渐渐有了一些自己的理解。就来讲讲volatile这个东西。参考：Java内存访问重排序的研究
+
+volatile特性
+
+总的来说，volatile具有两个特性，一个是可见性，一个是禁止指令重排序
+
+可见性
+
+关于可见性的，之前忘记在哪本书上截了一张图，讲的是工作内存...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on February 14, 2018
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2018/02/12/%E8%BD%AC-OAuth2.0%E6%8E%88%E6%9D%83%E7%AE%A1%E7%90%86/">
+        <h2 class="post-title">
+            [转]OAuth2.0授权管理
+        </h2>
+        
+        <div class="post-content-preview">
+            
+  本文转载于OAuth2.0授权管理
+
+  注：
+
+  原文发表于2013年，所以也有一些问题，其中安全漏洞那块所引用的链接已挂，可以参考这篇文章针对近期“博全球眼球OAuth漏洞”的分析与防范建议,也是比较全面的。另外在新浪微博相关的地方，使用的也是较早的版本，建议读完此文后再去看看新浪官方授权机制，从理论到落地，必定很有收获。
+
+
+最近在做第三方接入的，初步定下使用OAuth2协议，...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on February 12, 2018
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2018/02/12/%E8%BD%AC-MD5+Salt%E5%AE%89%E5%85%A8%E6%B5%85%E6%9E%90/">
+        <h2 class="post-title">
+            [转]MD5+Salt安全浅析
+        </h2>
+        
+        <div class="post-content-preview">
+            
+  原文地址：https://www.server110.com/sec_news/201309/995.html
+
+
+这段时间诸多爆库的新闻，里面有许多饶有趣味的事情。那些用简单密码，或者一个密码走天下的笑话就不说了，咱说点有内涵的。（这篇文章是给IT界的人看的，如果你看不懂，我会准备一个简单的“如何辨别密码安全糟糕的网站”的方法给你，另文描述。）
+爆库之后哀鸿遍野，一大堆人都在里面嗷嗷...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on February 12, 2018
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2018/02/11/%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8Fjava%E5%AE%9E%E7%8E%B0/">
+        <h2 class="post-title">
+            责任链模式java实现
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+责任链模式在过滤器相关的地方用得比较多，netty中的ChannelPipeLine也使用了责任链模式，以下是百度的介绍：“在责任链模式里，很多对象由每一个对象对其下家的引用而连接起来形成一条链。请求在这个链上传递，直到链上的某一个对象决定处理此请求。发出这个请求的客户端并不知道链上的哪一个对象最终处理这个请求，这使得系统可以在不影响客户端的情况下动态地重新组织和分配责任。”责任链模...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on February 11, 2018
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2018/02/06/redis-skiplist%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/">
+        <h2 class="post-title">
+            redis-skiplist源码学习
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+注：以下代码基于redis-4.0.7
+
+redis中有5种数据结构，之前面试时好几次遇到“排行榜”的问题，虽说都答了出来，不过对其底层的实现还是不清楚。抽空去了解学习了一下。也看到了一些比较好的文章，给了我比较大的帮助，为啥 redis 使用跳表(skiplist)而不是使用 red-black？,跳跃表。
+
+具体实现
+
+数据结构
+
+先来看看数据结构，这对理解redis的skipl...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on February 6, 2018
+    </p>
+</div>
+<hr>
+
+
+<!-- Pager -->
+
+<ul class="pager">
+    
+    <li class="previous">
+        <a href="/page2">&larr; Newer Posts</a>
+    </li>
+    
+    
+    <li class="next">
+        <a href="/page4">Older Posts &rarr;</a>
+    </li>
+    
+</ul>
+
+
+    		</div>
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-3 col-lg-offset-0
+                col-md-3 col-md-offset-0
+                col-sm-12
+                col-xs-12
+                sidebar-container
+            ">
+                <!-- Featured Tags -->
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                            
+                                <a href="/tags/#杂记" title="杂记" rel="6">
+                                    杂记
+                                </a>
+                            
+                        
+                            
+                                <a href="/tags/#git" title="git" rel="2">
+                                    git
+                                </a>
+                            
+                        
+                            
+                        
+                            
+                                <a href="/tags/#java" title="java" rel="11">
+                                    java
+                                </a>
+                            
+                        
+                            
+                        
+                            
+                                <a href="/tags/#mysql" title="mysql" rel="2">
+                                    mysql
+                                </a>
+                            
+                        
+                            
+                                <a href="/tags/#网络" title="网络" rel="4">
+                                    网络
+                                </a>
+                            
+                        
+                            
+                                <a href="/tags/#redis" title="redis" rel="2">
+                                    redis
+                                </a>
+                            
+                        
+                            
+                                <a href="/tags/#设计模式" title="设计模式" rel="7">
+                                    设计模式
+                                </a>
+                            
+                        
+                            
+                                <a href="/tags/#rocketmq" title="rocketmq" rel="9">
+                                    rocketmq
+                                </a>
+                            
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Short About -->
+                <section class="visible-md visible-lg">
+                    <hr><h5><a href="/about/">ABOUT ME</a></h5>
+                    <div class="short-about">
+                        
+                            <img src="/img/avatar-hux.jpg" />
+                        
+                        
+                            <p>听摇滚，写代码，学技术，永远年轻，永远热泪盈眶</p>
+                        
+                        <!-- SNS Link -->
+                        <ul class="list-inline">
+                            
+                            
+                            
+                            
+                            
+                            
+                            <li>
+                                <a target="_blank" href="https://github.com/dingmingcheng">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </section>
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+                    
+                        <li><a href="http://huanzhikang.github.io">huanzhikang Blog</a></li>
+                    
+                </ul>
+                
+    		</div>
+        
+	</div>
+</div>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+                    
+
+                    <!-- add Weibo, Zhihu by Hux, add target = "_blank" to <a> by Hux -->
+                    
+                    
+
+
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/dingmingcheng">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; New Boy 2019
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("http://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

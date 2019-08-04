@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>[转]Java Stream API性能测试 - New Boy</title>
+
+    <link rel="canonical" href="http://localhost:4000/2018/07/11/%E8%BD%AC-Java-Stream-API%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="http://cdn.staticfile.org/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">New Boy</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/about/">About</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/demo/">Example Post</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#java" title="java">java</a>
+                        
+                    </div>
+                    <h1>[转]Java Stream API性能测试</h1>
+                    
+                    
+                    <h2 class="subheading"></h2>
+                    
+                    <span class="meta">Posted by New Boy on July 11, 2018</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+				<blockquote>
+  <p>来本文转载于http://www.cnblogs.com/CarpenterLee/p/6675568.html，十分感谢<a href="http://www.cnblogs.com/CarpenterLee/">CarpenterLee</a>写出如此棒的文章。</p>
+
+  <p>来到了毕业后真正意义上的第一家公司，要说这近两个月在技术层面最大的感受，一是授权方式的演变，这里暂不讨论。第二个就是java8引入的Lambda，Stream，彻底改变了我对编程的理解。不过，在开始接触时，对于写下的每一行是没底的，因为根本不清楚其运行的原理，其效率。最近想写几篇文章强迫自己加深一下印象，不过恰巧看到几篇很棒的blog，由浅入深，理解十分透彻，难以望其项背，遂转之。</p>
+</blockquote>
+
+<p>已经对Stream API的用法鼓吹够多了，用起简洁直观，但性能到底怎么样呢？会不会有很高的性能损失？本节我们对Stream API的性能一探究竟。</p>
+
+<p>为保证测试结果真实可信，我们将JVM运行在<code class="highlighter-rouge">-server</code>模式下，测试数据在GB量级，测试机器采用常见的商用服务器，配置如下：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>OS</th>
+      <th>CentOS 6.7 x86_64</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>CPU</td>
+      <td>Intel Xeon X5675, 12M Cache 3.06 GHz, 6 Cores 12 Threads</td>
+    </tr>
+    <tr>
+      <td>内存</td>
+      <td>96GB</td>
+    </tr>
+    <tr>
+      <td>JDK</td>
+      <td>java version 1.8.0_91, Java HotSpot(TM) 64-Bit Server VM</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>测试<a href="https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/perf/StreamBenchmark/src/lee">所用代码在这里</a>，测试<a href="https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/perf/Stream_performance.xlsx">结果汇总</a>.</p>
+
+<h2 id="测试方法和测试数据">测试方法和测试数据</h2>
+
+<p>性能测试并不是容易的事，Java性能测试更费劲，因为虚拟机对性能的影响很大，JVM对性能的影响有两方面：</p>
+
+<ol>
+  <li>GC的影响。GC的行为是Java中很不好控制的一块，为增加确定性，我们手动指定使用CMS收集器，并使用10GB固定大小的堆内存。集体到JVM参数就是<code class="highlighter-rouge">-XX:+UseConcMarkSweepGC -Xms10G -Xmx10G</code></li>
+  <li>JIT(Just-In-Time)即时编译技术。即时编译技术会将热点代码在JVM运行的过程中编译成本地代码，测试时我们会先对程序预热，触发对测试函数的即时编译。相关的JVM参数是<code class="highlighter-rouge">-XX:CompileThreshold=10000</code>。</li>
+</ol>
+
+<p>Stream并行执行时用到<code class="highlighter-rouge">ForkJoinPool.commonPool()</code>得到的线程池，为控制并行度我们使用Linux的<code class="highlighter-rouge">taskset</code>命令指定JVM可用的核数。</p>
+
+<p>测试数据由程序随机生成。为防止一次测试带来的抖动，测试4次求出平均时间作为运行时间。</p>
+
+<h2 id="实验一-基本类型迭代">实验一 基本类型迭代</h2>
+
+<p>测试内容：找出整型数组中的最小值。对比for循环外部迭代和Stream API内部迭代性能。</p>
+
+<p>测试程序<a href="https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/perf/StreamBenchmark/src/lee/IntTest.java">IntTest</a>，测试结果如下图：</p>
+
+<p><img src="https://images2015.cnblogs.com/blog/939998/201704/939998-20170406213040378-358737189.png" alt="perf_Stream_min_int" /></p>
+
+<p>图中展示的是for循环外部迭代耗时为基准的时间比值。分析如下：</p>
+
+<ol>
+  <li>对于基本类型Stream串行迭代的性能开销明显高于外部迭代开销（两倍）；</li>
+  <li>Stream并行迭代的性能比串行迭代和外部迭代都好。</li>
+</ol>
+
+<p>并行迭代性能跟可利用的核数有关，上图中的并行迭代使用了全部12个核，为考察使用核数对性能的影响，我们专门测试了不同核数下的Stream并行迭代效果：</p>
+
+<p><img src="https://images2015.cnblogs.com/blog/939998/201704/939998-20170406212936425-1973108530.png" alt="perf_Stream_min_int_par" /></p>
+
+<p>分析，对于基本类型：</p>
+
+<ol>
+  <li>使用Stream并行API在单核情况下性能很差，比Stream串行API的性能还差；</li>
+  <li>随着使用核数的增加，Stream并行效果逐渐变好，比使用for循环外部迭代的性能还好。</li>
+</ol>
+
+<p>以上两个测试说明，对于基本类型的简单迭代，Stream串行迭代性能更差，但多核情况下Stream迭代时性能较好。</p>
+
+<h2 id="实验二-对象迭代">实验二 对象迭代</h2>
+
+<p>再来看对象的迭代效果。</p>
+
+<p>测试内容：找出字符串列表中最小的元素（自然顺序），对比for循环外部迭代和Stream API内部迭代性能。</p>
+
+<p>测试程序<a href="https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/perf/StreamBenchmark/src/lee/StringTest.java">StringTest</a>，测试结果如下图：</p>
+
+<p><img src="https://images2015.cnblogs.com/blog/939998/201704/939998-20170406213138722-1162992217.png" alt="perf_Stream_min_String" /></p>
+
+<p>结果分析如下：</p>
+
+<ol>
+  <li>对于对象类型Stream串行迭代的性能开销仍然高于外部迭代开销（1.5倍），但差距没有基本类型那么大。</li>
+  <li>Stream并行迭代的性能比串行迭代和外部迭代都好。</li>
+</ol>
+
+<p>再来单独考察Stream并行迭代效果：</p>
+
+<p><img src="https://images2015.cnblogs.com/blog/939998/201704/939998-20170406213204582-2072599993.png" alt="perf_Stream_min_String_par" /></p>
+
+<p>分析，对于对象类型：</p>
+
+<ol>
+  <li>使用Stream并行API在单核情况下性能比for循环外部迭代差；</li>
+  <li>随着使用核数的增加，Stream并行效果逐渐变好，多核带来的效果明显。</li>
+</ol>
+
+<p>以上两个测试说明，对于对象类型的简单迭代，Stream串行迭代性能更差，但多核情况下Stream迭代时性能较好。</p>
+
+<h2 id="实验三-复杂对象归约">实验三 复杂对象归约</h2>
+
+<p>从实验一、二的结果来看，Stream串行执行的效果都比外部迭代差（很多），是不是说明Stream真的不行了？先别下结论，我们再来考察一下更复杂的操作。</p>
+
+<p>测试内容：给定订单列表，统计每个用户的总交易额。对比使用外部迭代手动实现和Stream API之间的性能。</p>
+
+<p>我们将订单简化为<code class="highlighter-rouge">&lt;userName, price, timeStamp&gt;</code>构成的元组，并用<code class="highlighter-rouge">Order</code>对象来表示。测试程序<a href="https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/perf/StreamBenchmark/src/lee/ReductionTest.java">ReductionTest</a>，测试结果如下图：</p>
+
+<p><img src="https://images2015.cnblogs.com/blog/939998/201704/939998-20170406213231253-1806910111.png" alt="perf_Stream_reduction" /></p>
+
+<p>分析，对于复杂的归约操作：</p>
+
+<ol>
+  <li>Stream API的性能普遍好于外部手动迭代，并行Stream效果更佳；</li>
+</ol>
+
+<p>再来考察并行度对并行效果的影响，测试结果如下：</p>
+
+<p><img src="https://images2015.cnblogs.com/blog/939998/201704/939998-20170406213256035-451595873.png" alt="perf_Stream_reduction_par" /></p>
+
+<p>分析，对于复杂的归约操作：</p>
+
+<ol>
+  <li>使用Stream并行归约在单核情况下性能比串行归约以及手动归约都要差，简单说就是最差的；</li>
+  <li>随着使用核数的增加，Stream并行效果逐渐变好，多核带来的效果明显。</li>
+</ol>
+
+<p>以上两个实验说明，对于复杂的归约操作，Stream串行归约效果好于手动归约，在多核情况下，并行归约效果更佳。我们有理由相信，对于其他复杂的操作，Stream API也能表现出相似的性能表现。</p>
+
+<h2 id="结论">结论</h2>
+
+<p>上述三个实验的结果可以总结如下：</p>
+
+<ol>
+  <li>对于简单操作，比如最简单的遍历，Stream串行API性能明显差于显示迭代，但并行的Stream API能够发挥多核特性。</li>
+  <li>对于复杂操作，Stream串行API性能可以和手动实现的效果匹敌，在并行执行时Stream API效果远超手动实现。</li>
+</ol>
+
+<p>所以，如果出于性能考虑，1. 对于简单操作推荐使用外部迭代手动实现，2. 对于复杂操作，推荐使用Stream API， 3. 在多核情况下，推荐使用并行Stream API来发挥多核优势，4.单核情况下不建议使用并行Stream API。</p>
+
+<p>如果出于代码简洁性考虑，使用Stream API能够写出更短的代码。即使是从性能方面说，尽可能的使用Stream API也另外一个优势，那就是只要Java Stream类库做了升级优化，代码不用做任何修改就能享受到升级带来的好处。</p>
+
+
+                <hr>
+
+                
+
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2018/07/11/%E8%BD%AC-Java-Stream-API%E5%85%A5%E9%97%A8%E7%AF%87/" data-toggle="tooltip" data-placement="top" title="[转]Java Stream API入门篇">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2018/07/11/%E8%BD%AC-Java-Stream-API%E8%BF%9B%E9%98%B6%E7%AF%87/" data-toggle="tooltip" data-placement="top" title="[转]Java Stream API进阶篇">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+
+                
+
+                
+
+            </div>
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+        				
+                            
+                				<a href="/tags/#杂记" title="杂记" rel="6">
+                                    杂记
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#git" title="git" rel="2">
+                                    git
+                                </a>
+                            
+        				
+                            
+        				
+                            
+                				<a href="/tags/#java" title="java" rel="11">
+                                    java
+                                </a>
+                            
+        				
+                            
+        				
+                            
+                				<a href="/tags/#mysql" title="mysql" rel="2">
+                                    mysql
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#网络" title="网络" rel="4">
+                                    网络
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#redis" title="redis" rel="2">
+                                    redis
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#设计模式" title="设计模式" rel="7">
+                                    设计模式
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#rocketmq" title="rocketmq" rel="9">
+                                    rocketmq
+                                </a>
+                            
+        				
+        			</div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+                    
+                        <li><a href="http://huanzhikang.github.io">huanzhikang Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("http://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+                    
+
+                    <!-- add Weibo, Zhihu by Hux, add target = "_blank" to <a> by Hux -->
+                    
+                    
+
+
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/dingmingcheng">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; New Boy 2019
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("http://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

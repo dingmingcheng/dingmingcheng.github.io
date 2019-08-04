@@ -3,7 +3,8 @@ layout: post
 title: "mysql中的explain的使用"
 date: 2017-12-24
 description: "mysql相关"
-tag: mysql
+author: "dingmc"
+tags: mysql
 ---
 
 ## 前言
@@ -16,7 +17,7 @@ tag: mysql
 
 ### 基本列
 
-![](pic1.png)
+![](/img/in-post/mysql-explain/pic1.png)
 
 ​	其中主要包括id, select_type, table, partitions, type, possible_keys, key, key_len, ref, rows, filtered, Extra
 
@@ -32,29 +33,29 @@ PRIMARY是指复杂语句中最外层的部分
 
 SUBQUERY我理解为不在from语句中的select部分
 
-![](pic2.png)
+![](/img/in-post/mysql-explain/pic2.png)
 
 DERIVED是指在from语句中的select部分
 
 注：mysql5.7种应该是对临时表进行了优化，因为经过测试，在5.6中，就算没有limit 1也会有DERIVED的select，而在5.7中，如果不加limit 1，就只会有一个SIMPLE类型的查询。
 
-![](pic3.png)
+![](/img/in-post/mysql-explain/pic3.png)
 
 UNION
 
-![](pic4.png)
+![](/img/in-post/mysql-explain/pic4.png)
 
 UNION RESULT
 
 注：在5.6中，执行上述union语句是这样的：
 
-![](pic5.png)
+![](/img/in-post/mysql-explain/pic5.png)
 
 ### table
 
 这一列显示了对应行正在访问哪个表。可以在这一列中从上往下观察Mysql的关联优化器为查询选择的顺序，emmm，mysql的查询执行计划总是左侧深度优先树，有兴趣可以另外去了解
 
-![](pic6.png)
+![](/img/in-post/mysql-explain/pic6.png)
 
 ### partitions
 

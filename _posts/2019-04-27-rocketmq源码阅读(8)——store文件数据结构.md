@@ -93,7 +93,7 @@ private static void readCommitlog(int/*读取的消息数量*/ t) throws Excepti
 
 没什么好说的，就按rocketmq源码中怎么写进去的，这边就怎么读出来，多看看多试试就行，再附上一段控制台结果：
 
-![](6.png)
+![](/img/in-post/rocketmq-8-store/6.png)
 
 ### ConsumerQueue
 

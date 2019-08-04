@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>java中的时间 - New Boy</title>
+
+    <link rel="canonical" href="http://localhost:4000/2018/09/22/java%E4%B8%AD%E7%9A%84%E6%97%B6%E9%97%B4/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="http://cdn.staticfile.org/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">New Boy</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/about/">About</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/demo/">Example Post</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#java" title="java">java</a>
+                        
+                    </div>
+                    <h1>java中的时间</h1>
+                    
+                    
+                    <h2 class="subheading"></h2>
+                    
+                    <span class="meta">Posted by New Boy on September 22, 2018</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+				<p>工欲善其事，必先利其器</p>
+
+<p>工程中其实对时间的使用是非常多的。Java中的time其实一直都是一个比较蛋疼的问题。我看网上也是对其诟病已久。Java8也推出了java.time包以便于统一时间相关的管理，就此对Java中的时间进行一个简单的总结。主要是各种类型之间的转换，在此做一个简单的记录总结。</p>
+
+<h2 id="概括">概括</h2>
+
+<p>这次主要包含了四种对象的相互转换，包括Date，Java8推出的LocalDateTime，long（timestamp），String（表现形式为String的时间啊）。另外，对Date统一用了org.joda.DateTime做一个封装，SimpleDateFormat确实不好用，还存在线程安全问题。</p>
+
+<h3 id="date--long">Date &lt;==&gt; long</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">long</span> <span class="n">millis</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">millis</span><span class="o">);</span><span class="c1">//1537621612687</span>
+<span class="c1">//long -&gt; Date</span>
+<span class="n">DateTime</span> <span class="n">dateTime</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DateTime</span><span class="o">(</span><span class="n">millis</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">dateTime</span><span class="o">.</span><span class="na">toDate</span><span class="o">());</span><span class="c1">//Sat Sep 22 21:45:28 CST 2018</span>
+<span class="c1">//Date -&gt; long</span>
+<span class="n">DateTime</span> <span class="n">now</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DateTime</span><span class="o">(</span><span class="k">new</span> <span class="n">Date</span><span class="o">());</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">now</span><span class="o">.</span><span class="na">toDate</span><span class="o">().</span><span class="na">getTime</span><span class="o">());</span><span class="c1">//1537621612794</span>
+</code></pre></div></div>
+
+<h3 id="date--string">Date &lt;==&gt; String</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//String -&gt; Date</span>
+<span class="n">String</span> <span class="n">time</span> <span class="o">=</span> <span class="s">"2003-03-03T12:04:32.123Z"</span><span class="o">;</span>
+<span class="n">DateTime</span> <span class="n">dateTime1</span> <span class="o">=</span> <span class="n">DateTime</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">time</span><span class="o">,</span> <span class="n">org</span><span class="o">.</span><span class="na">joda</span><span class="o">.</span><span class="na">time</span><span class="o">.</span><span class="na">format</span><span class="o">.</span><span class="na">DateTimeFormat</span><span class="o">.</span><span class="na">forPattern</span><span class="o">(</span><span class="s">"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"</span><span class="o">));</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">dateTime1</span><span class="o">.</span><span class="na">toDate</span><span class="o">());</span><span class="c1">//Mon Mar 03 12:04:32 CST 2003</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">dateTime1</span><span class="o">);</span><span class="c1">//2003-03-03T12:04:32.123+08:00</span>
+<span class="c1">//String &lt;- Date</span>
+<span class="n">DateTime</span> <span class="n">dateTime</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DateTime</span><span class="o">(</span><span class="k">new</span> <span class="n">Date</span><span class="o">());</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">dateTime</span><span class="o">.</span><span class="na">withZone</span><span class="o">(</span><span class="n">DateTimeZone</span><span class="o">.</span><span class="na">forTimeZone</span><span class="o">(</span><span class="n">TimeZone</span><span class="o">.</span><span class="na">getTimeZone</span><span class="o">(</span><span class="s">"GMT+8:00"</span><span class="o">))));</span><span class="c1">//2018-09-22T21:47:04.483+08:00</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">dateTime</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="s">"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"</span><span class="o">));</span><span class="c1">//2018-09-22T21:47:04.483Z</span>
+</code></pre></div></div>
+
+<h3 id="localdatetime--long">LocalDateTime &lt;==&gt; long</h3>
+
+<p>再来看看Java8推出的LocalDateTime</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">long</span> <span class="n">millis</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">millis</span><span class="o">);</span><span class="c1">//1537624862354</span>
+<span class="c1">//long -&gt; localDateTime</span>
+<span class="n">LocalDateTime</span> <span class="n">dateTime</span> <span class="o">=</span><span class="n">LocalDateTime</span><span class="o">.</span><span class="na">ofInstant</span><span class="o">(</span><span class="n">Instant</span><span class="o">.</span><span class="na">ofEpochMilli</span><span class="o">(</span><span class="n">millis</span><span class="o">),</span> <span class="n">TimeZone</span><span class="o">.</span><span class="na">getDefault</span><span class="o">().</span><span class="na">toZoneId</span><span class="o">());</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">dateTime</span><span class="o">);</span><span class="c1">//2018-09-22T22:01:02.354</span>
+<span class="n">dateTime</span> <span class="o">=</span><span class="n">LocalDateTime</span><span class="o">.</span><span class="na">ofInstant</span><span class="o">(</span><span class="n">Instant</span><span class="o">.</span><span class="na">ofEpochSecond</span><span class="o">(</span><span class="n">millis</span> <span class="o">/</span> <span class="mi">1000</span><span class="o">),</span> <span class="n">TimeZone</span><span class="o">.</span><span class="na">getDefault</span><span class="o">().</span><span class="na">toZoneId</span><span class="o">());</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">dateTime</span><span class="o">);</span><span class="c1">//2018-09-22T22:22:28</span>
+<span class="n">dateTime</span> <span class="o">=</span><span class="n">LocalDateTime</span><span class="o">.</span><span class="na">ofInstant</span><span class="o">(</span><span class="n">Instant</span><span class="o">.</span><span class="na">ofEpochMilli</span><span class="o">(</span><span class="n">millis</span><span class="o">),</span> <span class="n">TimeZone</span><span class="o">.</span><span class="na">getTimeZone</span><span class="o">(</span><span class="s">"GMT+8:00"</span><span class="o">).</span><span class="na">toZoneId</span><span class="o">());</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">dateTime</span><span class="o">);</span><span class="c1">//2018-09-22T22:22:28.674</span>
+<span class="n">dateTime</span> <span class="o">=</span><span class="n">LocalDateTime</span><span class="o">.</span><span class="na">ofInstant</span><span class="o">(</span><span class="n">Instant</span><span class="o">.</span><span class="na">ofEpochMilli</span><span class="o">(</span><span class="n">millis</span><span class="o">),</span> <span class="n">TimeZone</span><span class="o">.</span><span class="na">getTimeZone</span><span class="o">(</span><span class="n">ZoneId</span><span class="o">.</span><span class="na">SHORT_IDS</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"CTT"</span><span class="o">)).</span><span class="na">toZoneId</span><span class="o">());</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">dateTime</span><span class="o">);</span>
+<span class="c1">//long &lt;- localDateTime</span>
+<span class="n">Instant</span> <span class="n">ans</span> <span class="o">=</span> <span class="n">LocalDateTime</span><span class="o">.</span><span class="na">now</span><span class="o">().</span><span class="na">toInstant</span><span class="o">(</span><span class="n">ZoneOffset</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"+8"</span><span class="o">));</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">ans</span><span class="o">.</span><span class="na">getEpochSecond</span><span class="o">());</span><span class="c1">//1537626148</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">ans</span><span class="o">.</span><span class="na">getNano</span><span class="o">());</span><span class="c1">//869000000</span>
+</code></pre></div></div>
+
+<h3 id="localdatetime--string">LocalDateTime &lt;==&gt; String</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">String</span> <span class="n">time</span> <span class="o">=</span> <span class="s">"2003-03-03T12:04:32.123Z"</span><span class="o">;</span>
+<span class="n">LocalDateTime</span> <span class="n">t</span> <span class="o">=</span> <span class="n">LocalDateTime</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">time</span><span class="o">,</span> <span class="n">DateTimeFormatter</span><span class="o">.</span><span class="na">ofPattern</span><span class="o">(</span><span class="s">"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"</span><span class="o">));</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">t</span><span class="o">);</span><span class="c1">//2003-03-03T12:04:32.123</span>
+<span class="c1">//localDateTime -&gt; String</span>
+<span class="n">String</span> <span class="n">ans</span> <span class="o">=</span> <span class="n">LocalDateTime</span><span class="o">.</span><span class="na">now</span><span class="o">().</span><span class="na">format</span><span class="o">(</span><span class="n">DateTimeFormatter</span><span class="o">.</span><span class="na">ofPattern</span><span class="o">(</span><span class="s">"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"</span><span class="o">));</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">ans</span><span class="o">);</span><span class="c1">//2018-09-22T22:41:18.391Z</span>
+<span class="n">ans</span> <span class="o">=</span> <span class="n">LocalDateTime</span><span class="o">.</span><span class="na">now</span><span class="o">().</span><span class="na">format</span><span class="o">(</span><span class="n">DateTimeFormatter</span><span class="o">.</span><span class="na">ofPattern</span><span class="o">(</span><span class="s">"yyyy-MM-dd日"</span><span class="o">));</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">ans</span><span class="o">);</span><span class="c1">//2018-09-22日</span>
+</code></pre></div></div>
+
+<p>至于LocalDateTime和Date之间的转换，可以通过timestamp来。</p>
+
+<h2 id="写在最后">写在最后</h2>
+
+<p>其实本该8月就能弄好的，奈何这段时间公司项目需求比较多，迭代很快，忙到模糊。时至今日，中秋即将到来之际才匆匆整理出来。最后，祝各位中秋快乐，心想事成。</p>
+
+
+                <hr>
+
+                
+
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2018/07/11/%E8%BD%AC-%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java-Stream%E6%B5%81%E6%B0%B4%E7%BA%BF/" data-toggle="tooltip" data-placement="top" title="[转]深入理解Java Stream流水线">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2019/01/05/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(1)-%E7%94%9F%E4%BA%A7%E8%80%85%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E6%B6%88%E6%81%AF%E7%9A%84%E5%8F%91%E9%80%81/" data-toggle="tooltip" data-placement="top" title="rocketmq源码阅读(1)——生产者初始化与消息的发送">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+
+                
+
+                
+
+            </div>
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+        				
+                            
+                				<a href="/tags/#杂记" title="杂记" rel="6">
+                                    杂记
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#git" title="git" rel="2">
+                                    git
+                                </a>
+                            
+        				
+                            
+        				
+                            
+                				<a href="/tags/#java" title="java" rel="11">
+                                    java
+                                </a>
+                            
+        				
+                            
+        				
+                            
+                				<a href="/tags/#mysql" title="mysql" rel="2">
+                                    mysql
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#网络" title="网络" rel="4">
+                                    网络
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#redis" title="redis" rel="2">
+                                    redis
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#设计模式" title="设计模式" rel="7">
+                                    设计模式
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#rocketmq" title="rocketmq" rel="9">
+                                    rocketmq
+                                </a>
+                            
+        				
+        			</div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+                    
+                        <li><a href="http://huanzhikang.github.io">huanzhikang Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("http://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+                    
+
+                    <!-- add Weibo, Zhihu by Hux, add target = "_blank" to <a> by Hux -->
+                    
+                    
+
+
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/dingmingcheng">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; New Boy 2019
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("http://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

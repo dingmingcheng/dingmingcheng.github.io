@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>New Boy</title>
+
+    <link rel="canonical" href="http://localhost:4000/page4/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="http://cdn.staticfile.org/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">New Boy</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/about/">About</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/demo/">Example Post</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Page Header -->
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 ">
+                <div class="site-heading">
+                    <h1>New Boy</h1>
+                    <!--<hr class="small">-->
+                    <span class="subheading">a new blog for a new boy</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<div class="container">
+	<div class="row">
+        
+
+<!-- USE SIDEBAR -->
+    <!-- Post Container -->
+    		<div class="
+                col-lg-8 col-lg-offset-1
+                col-md-8 col-md-offset-1
+                col-sm-12
+                col-xs-12
+                post-container
+            ">
+    			
+<div class="post-preview">
+    <a href="/2018/02/04/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E4%BB%A3%E7%A0%81%E8%A7%A3%E8%AF%BB/">
+        <h2 class="post-title">
+            redis分布式锁代码解读
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+说起锁，其实还是一个很宽泛的概念，在java中，基础的就是synchronized关键字，ReentrantLock，但是就这两个就可以引出非常多的知识点，包括操作系统层面的monitor锁，AQS，volatile等等。不过在分布式环境中，在对共享资源进行操作时（最常见的就是一个秒杀的场景），单机的锁肯定是行不通的，于是就引申出了分布式锁的概念，分布式锁的实现方式主要有3种，这篇只...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on February 4, 2018
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2018/01/27/%E8%BD%AC-Git%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6%E4%B8%8EGit-Flow%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B/">
+        <h2 class="post-title">
+            [转]Git版本控制与Git Flow工作流程
+        </h2>
+        
+        <div class="post-content-preview">
+            本文出处：原文
+
+引言
+
+编写的目的
+
+
+  通过规范化的流程，使得产品、开发与测试等各个部门更高效的协同工作。
+  通过规范化的流程使得产品高效稳定运行。
+
+
+背景
+
+在多组员，多项目等环境进行协同工作时，如果没有统一规范、统一流程，则会导致额外的工作量，甚至会做无用功。所以要减少版本冲突，减轻不必要的工作，就需要规范化的工作流程。
+
+总则
+
+
+  统一使用Git作为版本控制的主要工具。
+...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by dingmc on January 27, 2018
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2018/01/23/reactor%E5%8D%95%E7%BA%BF%E7%A8%8B-%E5%A4%9A%E7%BA%BF%E7%A8%8B-%E4%B8%BB%E4%BB%8E%E7%9A%84java%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/">
+        <h2 class="post-title">
+            reactor单线程，多线程，主从的java代码实现
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+从最初，自己就对网络编程比较感兴趣，这段时间看了netty权威指南，收获很多。我觉得所有的知识都是要落地才能体现其价值，也为了加深自己对reactor模式的理解，自己也就敲了一遍，当然中间也遇到了很多困难，废话不多说，上代码。
+
+以下代码使用java原生nio实现，未考虑半包，粘包等问题
+
+common类
+
+主要包含客户端启动代码，之后的服务端使用同一个客户端代码，还有就是写字节函数...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by dingmc on January 23, 2018
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2018/01/13/mysql%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95%E4%B8%8Esysbench/">
+        <h2 class="post-title">
+            mysql基准测试与sysbench
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+之前常常会看到QPS，TPS这些字样，确实这些指标也是衡量数据库性能的非常重要的指标，而基准测试则是抛开业务，对机子上的数据库进行测试，自己也尝试用sysbench做了一遍，废话少说。
+
+##测试过程
+
+测试主要依赖自带的oltp.lua这个脚本文件，不同系统应该会在不同文件夹下，我的是mac，位于/usr/local/Cellar/sysbench/1.0.11_1/share/s...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by dingmc on January 13, 2018
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2018/01/08/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%AE%80%E5%8D%95OOM%E5%88%86%E6%9E%90/">
+        <h2 class="post-title">
+            记一次简单OOM分析
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+说到OOM，out of memory也是一个广泛存在的问题，如果线上出了问题，临时抱佛脚肯定是不行的，所以未雨绸缪是必须的。
+
+测试过程
+
+首先是程序的准备
+
+准备了两个OOM的程序
+
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+/**
+ * @Autho...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on January 8, 2018
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2017/12/24/mysql%E4%B8%AD%E7%9A%84explain%E7%9A%84%E4%BD%BF%E7%94%A8/">
+        <h2 class="post-title">
+            mysql中的explain的使用
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+由于开源简单等优势，mysql近几年也变得越来越火，最近看到一个报告，报告显示中国开发者常用的数据库中，mysql稳居第一，使用比例高达79.0%，而且在“全球开发者常用的数据库”中，mysql也稳居第一，高达55.6%。数据库的io一直是系统性能调优中非常重要的一环，写出好的sql语句也是开发者必须具备的基本素质之一，explain的合理使用也可以帮助开发者对sql语句进行相关的优...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by dingmc on December 24, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2017/12/23/%E8%BD%AC-java%E5%9F%BA%E7%A1%80-%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E4%B8%8E%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA/">
+        <h2 class="post-title">
+            [转]java基础-内存泄漏与内存溢出
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+主要根据之前看的资料进行了一些修改。
+
+原文地址
+
+要点
+
+
+  内存泄露是指程序中间动态分配了内存，但在程序结束时没有释放这部分内存，从而造成那部分内存不可用的情况，重启计算机可以解决，但也有可能再次发生内存泄露，内存泄露和硬件没有关系，它是由软件设计缺陷引起的。
+  内存泄漏可以分为4类：
+
+
+1) 常发性内存泄漏。发生内存泄漏的代码会被多次执行到，每次被执行的时候都会导致一块内...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on December 23, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2017/12/22/linux%E7%9B%B8%E5%85%B3%E5%91%BD%E4%BB%A4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+        <h2 class="post-title">
+            linux相关命令学习笔记
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+最早应该是在操作系统的课程上接触到了linux系统，那时候其实对linux并没有什么具体的概念，真正接触应该大三下学期，给自己的电脑装了双系统，也在ubuntu上开发过一个web项目，再到暑假去看了《linux权威指南》，也算是入了门了，不过其中的命令也是非常多，常常会忘记，之前会吧平时用到的一些命令存在txt中，既然现在开了博客，也打算一起整理过来。
+
+命令
+
+###系统工作命令
+...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by dingmc on December 22, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2017/12/22/%E8%BD%AC-jvm%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%92%8C%E6%B5%81%E7%A8%8B/">
+        <h2 class="post-title">
+            [转]jvm工作原理和流程
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+暑假期间看了一段时间的《深入JVM虚拟机》，再加上网上一些归纳比较好的知识，对jvm也是可以说上几句，这篇博文更多的是整理其他博主的博文,也感谢互联网让我站在了巨人的肩膀上。
+
+先放上参考链接吧
+
+Java 详解 JVM 工作原理和流程
+
+内容
+
+作为一名Java使用者，掌握JVM的体系结构也是必须的。
+说起Java，人们首先想到的是Java编程语言，然而事实上，Java是一种技术，...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by dingmc on December 22, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2017/12/16/mybatis%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E5%B7%A5%E5%85%B7/">
+        <h2 class="post-title">
+            mybatis自动生成工具
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+实习也一个月多了，也学到了很多的东西，记得刚开始接触开发时，其中感觉最恶心的是mybatis的相关文件的编写，主要是Mapper文件，之前自己的个人项目中，数据库相关的字段命名都是很不规范的，而且字段也少。所以一开始接触企业项目时真的是头痛，mapper基础文件又长。第二天感觉这样效率很低，就自己写了一个java程序，通过在建模工具中导出的sql建表语句进行生成需要的部分。最近不知怎...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on December 16, 2017
+    </p>
+</div>
+<hr>
+
+
+<!-- Pager -->
+
+<ul class="pager">
+    
+    <li class="previous">
+        <a href="/page3">&larr; Newer Posts</a>
+    </li>
+    
+    
+    <li class="next">
+        <a href="/page5">Older Posts &rarr;</a>
+    </li>
+    
+</ul>
+
+
+    		</div>
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-3 col-lg-offset-0
+                col-md-3 col-md-offset-0
+                col-sm-12
+                col-xs-12
+                sidebar-container
+            ">
+                <!-- Featured Tags -->
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                            
+                                <a href="/tags/#杂记" title="杂记" rel="6">
+                                    杂记
+                                </a>
+                            
+                        
+                            
+                                <a href="/tags/#git" title="git" rel="2">
+                                    git
+                                </a>
+                            
+                        
+                            
+                        
+                            
+                                <a href="/tags/#java" title="java" rel="11">
+                                    java
+                                </a>
+                            
+                        
+                            
+                        
+                            
+                                <a href="/tags/#mysql" title="mysql" rel="2">
+                                    mysql
+                                </a>
+                            
+                        
+                            
+                                <a href="/tags/#网络" title="网络" rel="4">
+                                    网络
+                                </a>
+                            
+                        
+                            
+                                <a href="/tags/#redis" title="redis" rel="2">
+                                    redis
+                                </a>
+                            
+                        
+                            
+                                <a href="/tags/#设计模式" title="设计模式" rel="7">
+                                    设计模式
+                                </a>
+                            
+                        
+                            
+                                <a href="/tags/#rocketmq" title="rocketmq" rel="9">
+                                    rocketmq
+                                </a>
+                            
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Short About -->
+                <section class="visible-md visible-lg">
+                    <hr><h5><a href="/about/">ABOUT ME</a></h5>
+                    <div class="short-about">
+                        
+                            <img src="/img/avatar-hux.jpg" />
+                        
+                        
+                            <p>听摇滚，写代码，学技术，永远年轻，永远热泪盈眶</p>
+                        
+                        <!-- SNS Link -->
+                        <ul class="list-inline">
+                            
+                            
+                            
+                            
+                            
+                            
+                            <li>
+                                <a target="_blank" href="https://github.com/dingmingcheng">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </section>
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+                    
+                        <li><a href="http://huanzhikang.github.io">huanzhikang Blog</a></li>
+                    
+                </ul>
+                
+    		</div>
+        
+	</div>
+</div>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+                    
+
+                    <!-- add Weibo, Zhihu by Hux, add target = "_blank" to <a> by Hux -->
+                    
+                    
+
+
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/dingmingcheng">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; New Boy 2019
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("http://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

@@ -3,7 +3,8 @@ layout: post
 title: "mysql基准测试与sysbench"
 date: 2018-01-13
 description: "mysql相关"
-tag: mysql
+author: "dingmc"
+tags: mysql
 ---
 
 ## 前言
@@ -52,7 +53,7 @@ tag: mysql
 
    结果如下，数据还是很详细的
 
-   ![](pic1.png)
+   ![](/img/in-post/mysql-sysbench/pic1.png)
 
 3. 清理数据
 

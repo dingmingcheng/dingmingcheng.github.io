@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>随便写随便看 - New Boy</title>
+
+    <link rel="canonical" href="http://localhost:4000/2018/02/27/%E9%9A%8F%E4%BE%BF%E5%86%99%E9%9A%8F%E4%BE%BF%E7%9C%8B/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="http://cdn.staticfile.org/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">New Boy</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/about/">About</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/demo/">Example Post</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#杂记" title="杂记">杂记</a>
+                        
+                    </div>
+                    <h1>随便写随便看</h1>
+                    
+                    
+                    <h2 class="subheading"></h2>
+                    
+                    <span class="meta">Posted by New Boy on February 27, 2018</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+				<blockquote>
+  <p>本来文章是发在微博上的，不过政治原因，第二天被干掉了，于是打算把之前的文章都移到博客上。由于本人知识浅薄，只是希望记录下这段时间的所思所想，里面的一些观点也很片面，就当笑话一样随便看看吧:D</p>
+</blockquote>
+
+<p>说起这篇长文，真是令人难过，昨晚文思泉涌，写了这段时间的所闻所想。奈何最近真值风口，估计渣浪的关键字库中加了很多的敏感词汇，一早起来就发现中招了，长文被渣浪干掉了。</p>
+
+<p>我这人有点倔，也不喜欢做重复的事，自然不愿写出一样的文章，不过还是围绕“合久必分，分久必合”来写，这简单的八个字也确实是我这几个月来感触最大的一点吧，无论是在技术上亦或是生活中，还是希望记录一下自己此刻的心境。</p>
+
+<p>关了灯，思绪却难以从昨日的月亮中走出来。。果断切了“但愿人长久”，阿菲的歌声真是太迷人了，还是约翰列侬的“世界和平”更容易让人静下心。</p>
+
+<p>小时候，常常待在太公家，太公当了一辈子老师，很慈祥温和，也很喜欢听他讲三国的故事，家里有本《三国演义》，带着些许好奇，勉勉强强读完了整本书。魏蜀吴三国鼎立，明争暗斗，却都逃不了司马家族天下一统的局面。其实本想接着写写历史的，但不知如何下笔，或许是因为初高中一写作文就开始举历史上的例子，说到作文，真是奇怪，记叙文和议论文他娘的到底有什么区别，不都是举三个例子，总结一下吗？</p>
+
+<p>还是接着写写技术，写写互联网吧。其实在各行各业，都经历着“合久必分，分久必合”，要说最明显的还属最热的行业。从本世纪初开始，互联网行业在技术爆炸式发展的推动下，互联网科技公司的市值已逐渐取代传统行业。大量创业公司的成立与快速的死亡，仍旧无法阻挡淘金者的前赴后继，都说站在风口上，猪也能飞，最明显最典型的例子无外乎共享单车，从大量公司如雨后春笋般冒出到几家独大，这发生的一切竟短短一年未到，最后剩下的也都有AT的撑腰，更确切说是资本，说起AT，也是渗透到了各行各业，着实让人咬牙切齿，呵，有钱真的能为所欲为。相信若无重大的社会变革技术变革，估计近十年还会是互联网大佬的天下。</p>
+
+<p>去年开始，出了这么一个词，“区块链”，感觉其热度超过AI，比特币价格的泡沫式暴涨与国家命令禁止ICO或许会更直观一些，记得大二时，比特币大概2000rmb，那时还在机房和ck吹逼，说用机房的电脑挖矿，当然这也和我们寝室终极目标–“打通墙壁，把隔壁寝室改装成厕所”一样，也就敢吹吹牛逼，哈哈哈几句罢了。回到区块链上，虽说除了比特币，暂时还没有落地的大量使用的项目，很多估计还停留在什么红皮书，白皮书的阶段，但其从概念上却给了我们思想创新上的冲动，移动互联网的发展中有个必提的概念–“分布式”，但目前的分布式更多的是“一统的分布式”，区块链的发展或许真的能实现“安全可靠的分布式存储”，呵，但是明天的事情谁会知道呢？说到AI，说到人工智能，大量流水线式不动脑子的工作被机器所替代已成必然。不过别担心，动脑子的工作也会被替代，程序员从低级到高级，都爱干“让大家都失业”这件事，当然大家也包括程序员自己，我认为人工智能其核心在于其算法和数据，正如阿尔法go，也是在经过“喂食”大量的数据后，机器自我学习这些数据，而有了称霸棋坛的“笑话”，随着数据的指数级增长，“分布式存储”或许真的很重要，也许正如某些区块链推崇者说的那样，人工智能时代的到来必在区块链发展成熟之后。呵呵，在下才疏学浅，就不瞎立flag了。</p>
+
+<p>长文写到这里，手有些微微发抖，其实发文的一个主要原因还是因为最近一些敏感的东西，本来胆子就小，家里水表许久未抄，昨天还他娘的被干掉了。哎，其实我是很爱国的，打出这句话竟然感觉自己有几分悲情，“合久必分分久必合”，虽说江湖腥风血雨，谁是这武林盟主，何人又是下一个王者，于我等无名鼠辈，既无力撼动也不必撼动，只不过是茶余饭后说说笑笑的谈资罢了。</p>
+
+<p>人生拐点，感慨万千，愿聊以慰籍               </p>
+
+<p>2018.2.27于杭​​​​</p>
+
+
+
+                <hr>
+
+                
+
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2018/02/14/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%E5%AE%9E%E7%8E%B0/" data-toggle="tooltip" data-placement="top" title="单例模式实现">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2018/02/28/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAClassLoader,%E4%BD%A0%E7%9C%9F%E7%9A%84%E4%BA%86%E8%A7%A3ClassLoader%E5%90%97/" data-toggle="tooltip" data-placement="top" title="[转]深入浅出ClassLoader,你真的了解ClassLoader吗">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+
+                
+
+                
+
+            </div>
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+        				
+                            
+                				<a href="/tags/#杂记" title="杂记" rel="6">
+                                    杂记
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#git" title="git" rel="2">
+                                    git
+                                </a>
+                            
+        				
+                            
+        				
+                            
+                				<a href="/tags/#java" title="java" rel="11">
+                                    java
+                                </a>
+                            
+        				
+                            
+        				
+                            
+                				<a href="/tags/#mysql" title="mysql" rel="2">
+                                    mysql
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#网络" title="网络" rel="4">
+                                    网络
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#redis" title="redis" rel="2">
+                                    redis
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#设计模式" title="设计模式" rel="7">
+                                    设计模式
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#rocketmq" title="rocketmq" rel="9">
+                                    rocketmq
+                                </a>
+                            
+        				
+        			</div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+                    
+                        <li><a href="http://huanzhikang.github.io">huanzhikang Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("http://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+                    
+
+                    <!-- add Weibo, Zhihu by Hux, add target = "_blank" to <a> by Hux -->
+                    
+                    
+
+
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/dingmingcheng">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; New Boy 2019
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("http://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

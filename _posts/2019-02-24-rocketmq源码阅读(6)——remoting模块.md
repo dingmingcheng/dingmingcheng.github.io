@@ -226,7 +226,7 @@ private transient byte[] body;
 
 再来看看相关协议格式的设计，分为4部分，第1部分的length指2，3，4部分的总字节数，第2部分包括第3部分的序列化方式以及第3部分的字节数
 
-![](../../../../test.png)
+![](/img/in-post/rocketmq-6-remoting/pic1.png)
 
 ### 编码
 

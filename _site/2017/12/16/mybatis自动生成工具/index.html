@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>mybatis自动生成工具 - New Boy</title>
+
+    <link rel="canonical" href="http://localhost:4000/2017/12/16/mybatis%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E5%B7%A5%E5%85%B7/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="http://cdn.staticfile.org/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">New Boy</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/about/">About</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/demo/">Example Post</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#mybatis" title="mybatis">mybatis</a>
+                        
+                    </div>
+                    <h1>mybatis自动生成工具</h1>
+                    
+                    
+                    <h2 class="subheading"></h2>
+                    
+                    <span class="meta">Posted by New Boy on December 16, 2017</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+				<h2 id="前言">前言</h2>
+
+<p>实习也一个月多了，也学到了很多的东西，记得刚开始接触开发时，其中感觉最恶心的是mybatis的相关文件的编写，主要是Mapper文件，之前自己的个人项目中，数据库相关的字段命名都是很不规范的，而且字段也少。所以一开始接触企业项目时真的是头痛，mapper基础文件又长。第二天感觉这样效率很低，就自己写了一个java程序，通过在建模工具中导出的sql建表语句进行生成需要的部分。最近不知怎么突然感觉肯定有相应的工具类，果然。。。（记得有个老哥一开始还自己写了getter和setter的自动生成的脚本，哈哈哈），既然有这些比较稳定的工具，肯定比自己几小时写的程序好用的。</p>
+
+<h2 id="使用">使用</h2>
+
+<h3 id="相关文件下载">相关文件下载</h3>
+
+<p>1.<a href="https://github.com/mybatis/generator/releases/tag/mybatis-generator-1.3.2">Mybatis-Generator</a></p>
+
+<p>2.数据库驱动jar包，我这里使用的是mysql，可以去<a href="http://mvnrepository.com/artifact/mysql/mysql-connector-java">这里</a> 下载，我使用的是5.1.44版本</p>
+
+<h3 id="具体操作过程">具体操作过程</h3>
+
+<p>1.解压下载的Mybatis-Generator的压缩包，进入lib文件夹下</p>
+
+<p><img src="/img/in-post/mybatis-generator/pic1.png" alt="" /></p>
+
+<p>放入之前已经下载好的mysql驱动包，以及创建好generatorConfig.xml配置文件，再创建相关的生成的类的文件夹</p>
+
+<p>2.generatorConfig.xml文件，还是比较好修改的</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="cp">&lt;!DOCTYPE generatorConfiguration
+  PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+  "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd"&gt;</span>
+<span class="nt">&lt;generatorConfiguration&gt;</span>
+    <span class="c">&lt;!--数据库驱动--&gt;</span>
+    <span class="nt">&lt;classPathEntry</span>    <span class="na">location=</span><span class="s">"mysql-connector-java-5.1.44.jar"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;context</span> <span class="na">id=</span><span class="s">"DB2Tables"</span>    <span class="na">targetRuntime=</span><span class="s">"MyBatis3"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;commentGenerator&gt;</span>
+            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"suppressDate"</span> <span class="na">value=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
+            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"suppressAllComments"</span> <span class="na">value=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;/commentGenerator&gt;</span>
+        <span class="c">&lt;!--数据库链接地址账号密码--&gt;</span>
+        <span class="nt">&lt;jdbcConnection</span> <span class="na">driverClass=</span><span class="s">"com.mysql.jdbc.Driver"</span> <span class="na">connectionURL=</span><span class="s">"jdbc:mysql://127.0.0.1:3306/dmc-test?characterEncoding=utf8"</span> <span class="na">userId=</span><span class="s">"root"</span> <span class="na">password=</span><span class="s">"******"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;/jdbcConnection&gt;</span>
+        <span class="nt">&lt;javaTypeResolver&gt;</span>
+            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"forceBigDecimals"</span> <span class="na">value=</span><span class="s">"false"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;/javaTypeResolver&gt;</span>
+        <span class="c">&lt;!--生成Model类存放位置--&gt;</span>
+        <span class="nt">&lt;javaModelGenerator</span> <span class="na">targetPackage=</span><span class="s">"test.model"</span> <span class="na">targetProject=</span><span class="s">"src"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"enableSubPackages"</span> <span class="na">value=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
+            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"trimStrings"</span> <span class="na">value=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;/javaModelGenerator&gt;</span>
+        <span class="c">&lt;!--生成映射文件存放位置--&gt;</span>
+        <span class="nt">&lt;sqlMapGenerator</span> <span class="na">targetPackage=</span><span class="s">"test.mapping"</span> <span class="na">targetProject=</span><span class="s">"src"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"enableSubPackages"</span> <span class="na">value=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;/sqlMapGenerator&gt;</span>
+        <span class="c">&lt;!--生成Dao类存放位置--&gt;</span>
+        <span class="nt">&lt;javaClientGenerator</span> <span class="na">type=</span><span class="s">"XMLMAPPER"</span> <span class="na">targetPackage=</span><span class="s">"test.dao"</span> <span class="na">targetProject=</span><span class="s">"src"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"enableSubPackages"</span> <span class="na">value=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;/javaClientGenerator&gt;</span>
+        <span class="c">&lt;!--生成对应表及类名--&gt;</span>
+        <span class="nt">&lt;table</span> <span class="na">tableName=</span><span class="s">"testtable"</span> <span class="na">domainObjectName=</span><span class="s">"Testtable"</span> <span class="na">enableCountByExample=</span><span class="s">"false"</span> <span class="na">enableUpdateByExample=</span><span class="s">"false"</span> <span class="na">enableDeleteByExample=</span><span class="s">"false"</span> <span class="na">enableSelectByExample=</span><span class="s">"false"</span> <span class="na">selectByExampleQueryId=</span><span class="s">"false"</span><span class="nt">&gt;&lt;/table&gt;</span>
+    <span class="nt">&lt;/context&gt;</span>
+<span class="nt">&lt;/generatorConfiguration&gt;</span>
+</code></pre></div></div>
+
+<p>3.在lib文件夹下输入以下命令</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java <span class="nt">-jar</span> mybatis-generator-core-1.3.5.jar <span class="nt">-configfile</span> generatorConfig.xml <span class="nt">-overwrite</span>
+</code></pre></div></div>
+
+<p>4.完成</p>
+
+<h2 id="结尾">结尾</h2>
+
+<p>通过工具的使用，可以大大提高工作的效率，而且文件的准确性也没问题，之后也可以使用起来。</p>
+
+
+                <hr>
+
+                
+
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2017/12/16/github%E5%88%9D%E5%A7%8B%E5%8C%96%E8%AE%BE%E7%BD%AE/" data-toggle="tooltip" data-placement="top" title="github sshkey添加">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2017/12/22/%E8%BD%AC-jvm%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%92%8C%E6%B5%81%E7%A8%8B/" data-toggle="tooltip" data-placement="top" title="[转]jvm工作原理和流程">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+
+                
+
+                
+
+            </div>
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+        				
+                            
+                				<a href="/tags/#杂记" title="杂记" rel="6">
+                                    杂记
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#git" title="git" rel="2">
+                                    git
+                                </a>
+                            
+        				
+                            
+        				
+                            
+                				<a href="/tags/#java" title="java" rel="11">
+                                    java
+                                </a>
+                            
+        				
+                            
+        				
+                            
+                				<a href="/tags/#mysql" title="mysql" rel="2">
+                                    mysql
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#网络" title="网络" rel="4">
+                                    网络
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#redis" title="redis" rel="2">
+                                    redis
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#设计模式" title="设计模式" rel="7">
+                                    设计模式
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#rocketmq" title="rocketmq" rel="9">
+                                    rocketmq
+                                </a>
+                            
+        				
+        			</div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+                    
+                        <li><a href="http://huanzhikang.github.io">huanzhikang Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("http://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+                    
+
+                    <!-- add Weibo, Zhihu by Hux, add target = "_blank" to <a> by Hux -->
+                    
+                    
+
+
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/dingmingcheng">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; New Boy 2019
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("http://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

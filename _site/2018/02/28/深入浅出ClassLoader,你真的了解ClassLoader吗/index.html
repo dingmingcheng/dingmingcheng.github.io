@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>[转]深入浅出ClassLoader,你真的了解ClassLoader吗 - New Boy</title>
+
+    <link rel="canonical" href="http://localhost:4000/2018/02/28/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAClassLoader,%E4%BD%A0%E7%9C%9F%E7%9A%84%E4%BA%86%E8%A7%A3ClassLoader%E5%90%97/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="http://cdn.staticfile.org/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">New Boy</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/about/">About</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/demo/">Example Post</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#java" title="java">java</a>
+                        
+                    </div>
+                    <h1>[转]深入浅出ClassLoader,你真的了解ClassLoader吗</h1>
+                    
+                    
+                    <h2 class="subheading"></h2>
+                    
+                    <span class="meta">Posted by New Boy on February 28, 2018</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+				<h2 id="前言">前言</h2>
+
+<blockquote>
+  <p>转载自<a href="http://ifeve.com/">并发编程网 – ifeve.com</a><strong>本文链接地址:</strong> <a href="http://ifeve.com/classloader/">深入浅出ClassLoader</a></p>
+</blockquote>
+
+<p>在之前的实习中，也接触到一些包依赖冲突的问题，确实非常麻烦，最近在复习jvm类加载时，看见一篇很不错的文章，9除了理论也结合了实践，故转载之。</p>
+
+<h1 id="你真的了解classloader吗">你真的了解ClassLoader吗？</h1>
+
+<p>这篇文章翻译自zeroturnaround.com的 <a href="http://zeroturnaround.com/rebellabs/rebel-labs-tutorial-do-you-really-get-classloaders/4/"><strong>Do You Really Get Classloaders?</strong></a> ，融入和补充了笔者的一些实践、经验和样例。本文的例子比原文更加具有实际意义，文字内容也更充沛一些，非常感谢作者 <strong>Jevgeni Kabanov</strong> 能够共享如此优秀的文档。</p>
+
+<h2 id="1-为什么你需要了解和敬畏classloader">1. 为什么你需要了解和敬畏ClassLoader</h2>
+
+<p>ClassLoader在Java语言中占据了核心地位，Java应用服务器，OSGi，以及大量的网络框架，它们大多数都用到了ClassLoader。如果在使用过程中出现了类加载错误，你能解决它吗？</p>
+
+<p>我们将从JVM和开发者两个角度讲述ClassLoader，将会选择一些典型的案例，然后演示如何解决它们。NoClassDefFoundError，LinkageError等很多错误都会有特定的表征，我们分析每个例子，然后进行解决。</p>
+
+<h2 id="2-进入classloader">2. 进入ClassLoader</h2>
+
+<p>每个ClassLoader对象都是一个java.lang.ClassLoader的实例。每个Class对象都被这些ClassLoader对象所加载，通过继承java.lang.ClassLoader可以扩展出自定义ClassLoader，并使用这些自定义的ClassLoader对类进行加载。</p>
+
+<p>先大体了解一下ClassLoader的API：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">ClassLoader</span> <span class="o">{</span>
+ <span class="kd">public</span> <span class="n">Class</span> <span class="nf">loadClass</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">);</span>
+
+ <span class="kd">protected</span> <span class="n">Class</span> <span class="nf">defineClass</span><span class="o">(</span><span class="kt">byte</span><span class="o">[]</span> <span class="n">b</span><span class="o">);</span>
+
+ <span class="kd">public</span> <span class="n">URL</span> <span class="nf">getResource</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">);</span>
+
+ <span class="kd">public</span> <span class="n">Enumeration</span> <span class="nf">getResources</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">);</span>
+
+ <span class="kd">public</span> <span class="n">ClassLoader</span> <span class="nf">getParent</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>    最重要的是ClassLoader的<code class="highlighter-rouge">loadClass</code>方法，它接受一个全类名，然后返回一个Class类型的实例。</p>
+
+<p>    <code class="highlighter-rouge">defineClass</code>方法接受一组字节，然后将其具体化为一个Class类型实例，它一般从磁盘上加载一个文件，然后将文件的字节传递给JVM，通过JVM（native 方法）对于Class的定义，将其具体化，实例化为一个Class类型实例。</p>
+
+<p>    <code class="highlighter-rouge">getParent</code>方法返回其parent ClassLoader。</p>
+
+<p>    <code class="highlighter-rouge">getResource</code>和<code class="highlighter-rouge">getResources</code>方法，从给定的repository中查找URLs，同时它们也具备类似<code class="highlighter-rouge">loadClass</code>一样的代理机制，我们可以将<code class="highlighter-rouge">loadClass</code>视为：<code class="highlighter-rouge">defineClass(getResource(name).getBytes())</code>。</p>
+
+<p>    Java由于其晚绑定和“解释型”的特性，类型的加载是到最晚才进行，一个类型直到被调用构造函数、静态方法或者在字段上使用时才会被加载。</p>
+
+<p>    考虑如下代码：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">A</span> <span class="o">{</span>
+     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doSomething</span><span class="o">()</span> <span class="o">{</span>
+          <span class="n">B</span> <span class="n">b</span> <span class="o">=</span> <span class="k">new</span> <span class="n">B</span><span class="o">();</span>
+          <span class="n">b</span><span class="o">.</span><span class="na">doSomethingElse</span><span class="o">();</span>
+     <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>代码：B b = new B();等同于B b = Class.forName(“B”, false, A.class.getClassLoader()).newInstance();</p>
+
+<p>这代表着，在类型A中使用到的类型，将由加载了类型A的类加载器来进行加载。</p>
+
+<h2 id="3-classloader继承体系">3. ClassLoader继承体系</h2>
+
+<p>当启动一个JVM时，bootstrap 类加载器就会加载java的核心类，例如：rt.jar中的类。bootstrap 类加载器是其他类加载器的parent，它使唯一一个没有parent的类加载器。</p>
+
+<p>接下来是extension 类加载器，它以bootstrap 类加载器作为parent，它用来从Java系统变量java.ext.dir中的jar包中加载类的。</p>
+
+<p>第三个，也是最重要的一个就是开发者使用的system classpath 类加载器 。它是extension 类加载器 的child，它用来从Java系统变量java.class.path下面加载类，可以通过 -classpath 来指定这个位置。</p>
+
+<p>注意类加载器的体系并不是“继承”体系，而是一个“委派”体系。大多数类加载器首先会到自己的parent中查找类或者资源，如果找不到，才会在自己的本地进行查找。事实上，类加载器被定义加载哪些在parent中无法加载到的类，这样在较高层级的类加载器上的类型能够被“赋值”为较低类加载器加载的类型。</p>
+
+<p>类加载器的委托行为动机是为了避免相同的类被加载多次。回到1995年，Java的主要方向被放在Applet上，那时候网络带宽优先，所以程序中的类直到用时才会被加载。但是事实上，Java在服务器端展示了强劲的能力，但是服务器端要求类加载器能够反转委派原则，也就是先加载本地的类，如果加载不到，再到parent中加载。</p>
+
+<p>JavaEE的 <strong>委派模型</strong></p>
+
+<p><img src="/img/in-post/class-loader/pic1.png" alt="" /></p>
+
+<p>    每个方块都是一个类加载器，JavaEE规范推荐每个模块的类加载器先加载本类加载的内容，如果加载不到才回到parent类加载器中尝试加载。</p>
+
+<p>    反转委派原则的原因是应用服务器中所携带的类库并不是应用所期待的，也许不适合应用开发者，一个常见的例子就是log4j的依赖在容器和不同的应用中都存在，但是它们的版本大都不同。</p>
+
+<p>    Tomcat的 <strong>类加载顺序（开启了delegate模式）</strong></p>
+
+<p><img src="/img/in-post/class-loader/pic2.png" alt="" /></p>
+
+<p>    在Tomcat中，默认的行为是先尝试在Bootstrap和Extension中进行类型加载，如果加载不到则在WebappClassLoader中进行加载，如果还是找不到则在Common中进行查找。在Alibaba使用的Tomcat开启了delegate模式，因此加载类型时会以parent类加载器优先。</p>
+
+<h2 id="4-noclassdeffounderror">4. NoClassDefFoundError</h2>
+
+<p>NoClassDefFoundError是在开发JavaEE程序中常见的一种问题。该问题会随着你所使用的JavaEE中间件环境的复杂度以及应用本身的体量变得更加复杂，尤其是现在的JavaEE服务器具有大量的类加载器。</p>
+
+<p>在JavaDoc中对NoClassDefFoundError的产生是由于JVM或者类加载器实例尝试加载类型的定义，但是该定义却没有找到，影响了执行路径。换句话说，在编译时这个类是能够被找到的，但是在执行时却没有找到。</p>
+
+<p>这一刻IDE是没有出错提醒的，但是在运行时却出现了错误。</p>
+
+<p>看看如下示例：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * @author weipeng2k 2015年3月27日 下午5:15:15
+ */</span>
+<span class="nd">@WebServlet</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"NoClassDefFoundErrorServlet"</span><span class="o">,</span> <span class="n">urlPatterns</span> <span class="o">=</span> <span class="s">"/noClassDefFoundError.do"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">NoClassDefFoundErrorServlet</span> <span class="kd">extends</span> <span class="n">HttpServlet</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">long</span> <span class="n">serialVersionUID</span> <span class="o">=</span> <span class="mi">61585757018374721L</span><span class="o">;</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doGet</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">resp</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">ServletException</span><span class="o">,</span> <span class="n">IOException</span> <span class="o">{</span>
+        <span class="n">resp</span><span class="o">.</span><span class="na">getWriter</span><span class="o">().</span><span class="na">println</span><span class="o">(</span><span class="n">TestCase</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+</code></pre></div></div>
+
+<p>    在看pom.xml中对于依赖的定义：</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependencies&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+        <span class="nt">&lt;groupId&gt;</span>junit<span class="nt">&lt;/groupId&gt;</span>
+        <span class="nt">&lt;artifactId&gt;</span>junit<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;version&gt;</span>3.8.1<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;scope&gt;</span>provided<span class="nt">&lt;/scope&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+        <span class="nt">&lt;groupId&gt;</span>javax.servlet<span class="nt">&lt;/groupId&gt;</span>
+        <span class="nt">&lt;artifactId&gt;</span>servlet-api<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;version&gt;</span>3.0<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;scope&gt;</span>provided<span class="nt">&lt;/scope&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+        <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
+        <span class="nt">&lt;artifactId&gt;</span>spring<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;version&gt;</span>2.5.6<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;/dependencies&gt;</span>
+</code></pre></div></div>
+
+<p>其中对于junit的依赖是provided级别的，这里是为了能简化错误出现的条件。可以看到，在NoClassDefFoundErrorServlet中，使用了junit.jar中的TestCase，但是junit.jar在WEB-INF/lib中却没有，从而导致WebappClassLoader在进行加载TestCase时无法找到，从而抛出NoClassDefFoundError。我们需要从最终的war包中确定是否存在这个类，而不是在IDE中进行搜索。</p>
+
+<h2 id="5-nosuchmethoderror">5. NoSuchMethodError</h2>
+
+<p>在另一个场景中，我们可能遇到了另一个错误，也就是NoSuchMethodError。</p>
+
+<p>NoSuchMethodError代表这个类型确实存在，但是一个不正确的版本被加载了。为了解决这个问题我们可以使用 ‘-verbose:class’ 来判断该JVM加载的到底是哪个版本。</p>
+
+<p>看如下示例：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">org.springframework.beans.factory.BeanFactoryUtils</span><span class="o">;</span>
+
+<span class="cm">/**
+ * @author weipeng2k 2015年3月31日 上午9:09:58
+ */</span>
+<span class="nd">@WebServlet</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"NoSuchMethodErrorServlet"</span><span class="o">,</span> <span class="n">urlPatterns</span> <span class="o">=</span> <span class="o">{</span> <span class="s">"/noSuchMethodError.do"</span> <span class="o">})</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">NoSuchMethodErrorServlet</span> <span class="kd">extends</span> <span class="n">HttpServlet</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">long</span> <span class="n">serialVersionUID</span> <span class="o">=</span> <span class="mi">1699609060417354821L</span><span class="o">;</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doGet</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">resp</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">ServletException</span><span class="o">,</span> <span class="n">IOException</span> <span class="o">{</span>
+        <span class="n">BeanFactoryUtils</span><span class="o">.</span><span class="na">isGeneratedBeanName</span><span class="o">(</span><span class="s">"xxx"</span><span class="o">);</span>
+
+        <span class="n">resp</span><span class="o">.</span><span class="na">getWriter</span><span class="o">().</span><span class="na">println</span><span class="o">(</span><span class="s">"done."</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>在doGet方法中调用了BeanFactoryUtils.isGeneratedBeanName(”xxx“);，看一下项目的pom依赖。</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependencies&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+        <span class="nt">&lt;groupId&gt;</span>junit<span class="nt">&lt;/groupId&gt;</span>
+        <span class="nt">&lt;artifactId&gt;</span>junit<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;version&gt;</span>4.11<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;scope&gt;</span>provided<span class="nt">&lt;/scope&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+        <span class="nt">&lt;groupId&gt;</span>javax.servlet<span class="nt">&lt;/groupId&gt;</span>
+        <span class="nt">&lt;artifactId&gt;</span>servlet-api<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;version&gt;</span>3.0<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;scope&gt;</span>provided<span class="nt">&lt;/scope&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+        <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
+        <span class="nt">&lt;artifactId&gt;</span>org.springframework.context<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;version&gt;</span>3.0.5.RELEASE<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;scope&gt;</span>provided<span class="nt">&lt;/scope&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+        <span class="nt">&lt;groupId&gt;</span>org.apache.mina<span class="nt">&lt;/groupId&gt;</span>
+        <span class="nt">&lt;artifactId&gt;</span>mina-core<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;version&gt;</span>2.0.7<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+        <span class="nt">&lt;groupId&gt;</span>com.alibaba.external<span class="nt">&lt;/groupId&gt;</span>
+        <span class="nt">&lt;artifactId&gt;</span>sourceforge.spring<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;version&gt;</span>2.0.7<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;/dependencies&gt;</span>
+
+</code></pre></div></div>
+
+<p>这里为了方便观察到结果，将org.springframework.context的 <strong>scope</strong> 改为了 <strong>provided</strong> ，目的是不将其打包入war包，而只是使用了sourceforge.spring中定义的2.0.7版本，这个版本肯定没有isGeneratedBeanName(String name)方法，但是在IDE中，由于应用依赖到了高版本的spring从而能够编译通过，但是在运行时却没有那么好运了。这种错误，常见于 <strong>Maven坐标</strong> 的变动，使得应用依赖了多个 <strong>相同内容，不同版本</strong> 的jar包，以致在运行时选择了非期望的版本。</p>
+
+<h2 id="6-classcastexception">6. ClassCastException</h2>
+
+<p>NoClassDefFoundError和NoSuchMethodError是两个在 <strong>JavaEE</strong> 环境中经常出现的问题，这些问题需要 <strong>开发人员</strong>了解问题的本质，才能够被 <strong>从容</strong> 的处理。</p>
+
+<p>下面我们看一下ClassCastException，在一个类加载器的情况下，一般出现这种错误都会是在转型操作时，比如：A a = (A) method();，很容易判断出来method()方法返回的类型不是类型A，但是在 <strong>JavaEE</strong> 多个类加载器的环境下就会出现一些难以定位的情况。</p>
+
+<p>看如下示例：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">murdock</span><span class="o">.</span><span class="na">classloader</span><span class="o">.</span><span class="na">servlet</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.io.File</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.URL</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">javax.servlet.ServletException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.servlet.annotation.WebServlet</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServlet</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletRequest</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletResponse</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.apache.mina.proxy.utils.MD4</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.murdock.classloader.CachedClassLoader</span><span class="o">;</span>
+
+<span class="cm">/**
+ * @author weipeng2k 2015年4月4日 下午6:00:54
+ */</span>
+<span class="nd">@WebServlet</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"ClassCastExceptionServlet"</span><span class="o">,</span> <span class="n">urlPatterns</span> <span class="o">=</span> <span class="s">"/classCastException.do"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ClassCastExceptionServlet</span> <span class="kd">extends</span> <span class="n">HttpServlet</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">long</span>   <span class="n">serialVersionUID</span>    <span class="o">=</span> <span class="o">-</span><span class="mi">8959000121057369987L</span><span class="o">;</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doGet</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">resp</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">ServletException</span><span class="o">,</span> <span class="n">IOException</span> <span class="o">{</span>
+        <span class="n">String</span> <span class="n">localFirst</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="na">getParameter</span><span class="o">(</span><span class="s">"localFirst"</span><span class="o">);</span>
+        <span class="n">CachedClassLoader</span> <span class="n">cl</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="n">cl</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CachedClassLoader</span><span class="o">(</span>
+                <span class="k">new</span> <span class="n">URL</span><span class="o">[]</span> <span class="o">{</span> <span class="k">new</span> <span class="n">File</span><span class="o">(</span>
+                        <span class="s">"/Users/weipeng2k/.m2/repository/org/apache/mina/mina-core/2.0.7/mina-core-2.0.7.jar"</span><span class="o">).</span><span class="na">toURI</span><span class="o">()</span>
+                        <span class="o">.</span><span class="na">toURL</span><span class="o">()</span> <span class="o">},</span> <span class="k">this</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getClassLoader</span><span class="o">());</span>
+        <span class="k">if</span> <span class="o">(</span><span class="s">"false"</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">localFirst</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">cl</span><span class="o">.</span><span class="na">setLocalFirst</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">klass</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="na">loadClass</span><span class="o">(</span><span class="s">"org.apache.mina.proxy.utils.MD4"</span><span class="o">);</span>
+            <span class="n">MD4</span> <span class="n">md4</span> <span class="o">=</span> <span class="o">(</span><span class="n">MD4</span><span class="o">)</span> <span class="n">klass</span><span class="o">.</span><span class="na">newInstance</span><span class="o">();</span>
+
+            <span class="n">resp</span><span class="o">.</span><span class="na">getWriter</span><span class="o">().</span><span class="na">println</span><span class="o">(</span><span class="n">md4</span><span class="o">);</span>
+
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="n">ex</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+            <span class="n">cl</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+        <span class="o">}</span>
+
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>在ClassCastExceptionServlet中，构建了一个CachedClassLoader，利用这个ClassLoader加载<code class="highlighter-rouge">org.apache.mina.proxy.utils.MD4</code>，然后反射调用构造该类的实例，将其赋给<code class="highlighter-rouge">MD4</code>，最后将其打印到浏览器。</p>
+
+<p><strong>请求URL</strong>：<a href="undefined">http://localhost:8080/classCastException.do</a></p>
+
+<p>响应页面，出现错误：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">RuntimeException</span><span class="o">:</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">ClassCastException</span><span class="o">:</span> <span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">mina</span><span class="o">.</span><span class="na">proxy</span><span class="o">.</span><span class="na">utils</span><span class="o">.</span><span class="na">MD4</span> <span class="n">cannot</span> <span class="n">be</span> <span class="n">cast</span> <span class="n">to</span> <span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">mina</span><span class="o">.</span><span class="na">proxy</span><span class="o">.</span><span class="na">utils</span><span class="o">.</span><span class="na">MD4</span>
+ <span class="n">com</span><span class="o">.</span><span class="na">murdock</span><span class="o">.</span><span class="na">classloader</span><span class="o">.</span><span class="na">servlet</span><span class="o">.</span><span class="na">ClassCastExceptionServlet</span><span class="o">.</span><span class="na">doGet</span><span class="o">(</span><span class="n">ClassCastExceptionServlet</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">42</span><span class="o">)</span>
+ <span class="n">javax</span><span class="o">.</span><span class="na">servlet</span><span class="o">.</span><span class="na">http</span><span class="o">.</span><span class="na">HttpServlet</span><span class="o">.</span><span class="na">service</span><span class="o">(</span><span class="n">HttpServlet</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">622</span><span class="o">)</span> <span class="n">javax</span><span class="o">.</span><span class="na">servlet</span><span class="o">.</span><span class="na">http</span><span class="o">.</span><span class="na">HttpServlet</span><span class="o">.</span><span class="na">service</span><span class="o">(</span><span class="n">HttpServlet</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">729</span><span class="o">)</span>
+<span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">tomcat</span><span class="o">.</span><span class="na">websocket</span><span class="o">.</span><span class="na">server</span><span class="o">.</span><span class="na">WsFilter</span><span class="o">.</span><span class="na">doFilter</span><span class="o">(</span><span class="n">WsFilter</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">52</span><span class="o">)</span>
+</code></pre></div></div>
+
+<p><strong>请求URL</strong> ：http://localhost:8080/classCastException.do?localFirst=false
+响应页面，输出正常：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">mina</span><span class="o">.</span><span class="na">proxy</span><span class="o">.</span><span class="na">utils</span><span class="o">.</span><span class="na">MD4</span><span class="err">@</span><span class="mi">401</span><span class="n">c8af5</span>
+</code></pre></div></div>
+
+<p>    请求的URL加上了<code class="highlighter-rouge">localFirst=false</code>就可以正常的输出，而它也就是在CachedClassLoder上设置了一下，为什么有这么大的差别。<code class="highlighter-rouge">org.apache.mina.proxy.utils.MD4</code>全类名一致，为什么会出现ClassCastException呢？</p>
+
+<p>    在JVM中，如何确定一个类型实例？答：全类名吗？不是，是类加载器加上全类名。在JVM中，类型被定义在一个叫<strong>SystemDictionary</strong> 的数据结构中，该数据结构接受类加载器和全类名作为参数，返回类型实例。</p>
+
+<p>     <strong>SystemDictionary</strong> 如图所示：</p>
+
+<p><img src="/img/in-post/class-loader/pic3.png" alt="" /></p>
+
+<p>    类型加载时，需要传入类加载器和需要加载的全类名，如果在 <strong>SystemDictionary</strong> 中能够命中一条记录，则返回<em>class</em> 列上对应的类型实例引用，如果无法命中记录，则会调用<code class="highlighter-rouge">loader.loadClass(name);</code>进行类型加载。</p>
+
+<p>    这里不会更加深入的介绍 <strong>SystemDictionary</strong> 如何进行类型加载的过程，而是需要指出 <strong>JVM中确定一个类型的坐标是通过类加载器和全类名做到的</strong> 。回想一下<code class="highlighter-rouge">MD4 md4 = (MD4) klass.newInstance();</code>，是不是代表着等式两边的MD4是不同的类加载器加载的呢？那问题一定出在 <strong>CachedClassLoader</strong> 上。这里贴一下<code class="highlighter-rouge">loadClass(String name)</code>方法的部分逻辑。</p>
+
+<p>     <strong>CachedClassLoader</strong> 的loadClass逻辑：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="o">(</span><span class="n">localFirst</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="n">clazz</span> <span class="o">=</span> <span class="n">findClass</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">clazz</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">clazz</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">ClassNotFoundException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="kd">super</span><span class="o">.</span><span class="na">loadClass</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
+<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="kd">super</span><span class="o">.</span><span class="na">loadClass</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>可以看到在 <em>localFirst</em> 为true时，该类加载器会首先加载自身 <em>repository</em> 中的类型，如果加载不到，则会尝试默认的加载机制进行加载，也就是parent优先加载。这样就可以解释MD4 md4 = (MD4) klass.newInstance();，等式左边MD4 md4，这个类型是WebappClassLoader.org.apache.mina.proxy.utils.MD4，等式右边klass.newInstance()返回的类型是CachedClassLoader.org.apache.mina.proxy.utils.MD4，二者并不是同一个类型，所以无法完成类型转换，最终抛出 <strong>ClassCastException</strong> 。而当 <em>localFirst</em> 为false时，该类加载器遵循parent优先，从而会先委派给WebappClassLoader进行加载，当然转型也就不会有问题了。</p>
+
+<p>在传统的双亲委派模型下，这种 <strong>ClassCastException</strong> 是不会发生的，因为它的加载顺序杜绝了出现这种问题的可能，而在 <strong>JavaEE</strong> 环境下，每个资源模块（比如一个war包）都优先使用自身的资源，正因为突破了双亲委派模型， <strong>奇怪的问题</strong> 就发生了。</p>
+
+<h2 id="7-linkageerror">7. LinkageError</h2>
+
+<p>有时候事情会变得更糟，和 <strong>ClassCastException</strong> 本质一样，加载自不同位置的<em>相同类</em>在同一段逻辑（比如：方法）中交互时，会出现 <strong>LinkageError</strong> 。</p>
+
+<p>我们先看一下出错的异常信息，然后分析一下它产生的条件和原因：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">LinkageError</span><span class="o">:</span> <span class="n">loader</span> <span class="n">constraint</span> <span class="nl">violation:</span> <span class="n">when</span> <span class="n">resolving</span> <span class="n">overridden</span> <span class="n">method</span> <span class="s">"com.murdock.classloader.linkageerror.Param2.generate()Lcom/murdock/classloader/linkageerror/Param2;"</span> <span class="n">the</span> <span class="kd">class</span> <span class="nf">loader</span> <span class="o">(</span><span class="n">instance</span> <span class="n">of</span> <span class="n">com</span><span class="o">/</span><span class="n">murdock</span><span class="o">/</span><span class="n">classloader</span><span class="o">/</span><span class="n">linkageerror</span><span class="o">/</span><span class="n">LinkageErrorTest</span><span class="err">$</span><span class="mi">1</span><span class="o">)</span> <span class="n">of</span> <span class="n">the</span> <span class="n">current</span> <span class="kd">class</span><span class="err">,</span> <span class="nc">com</span><span class="o">/</span><span class="n">murdock</span><span class="o">/</span><span class="n">classloader</span><span class="o">/</span><span class="n">linkageerror</span><span class="o">/</span><span class="n">Param2</span><span class="o">,</span> <span class="n">and</span> <span class="n">its</span> <span class="n">superclass</span> <span class="nf">loader</span> <span class="o">(</span><span class="n">instance</span> <span class="n">of</span> <span class="n">sun</span><span class="o">/</span><span class="n">misc</span><span class="o">/</span><span class="n">Launcher$AppClassLoader</span><span class="o">),</span> <span class="n">have</span> <span class="n">different</span> <span class="n">Class</span> <span class="n">objects</span> <span class="k">for</span> <span class="n">the</span> <span class="n">type</span> <span class="n">com</span><span class="o">/</span><span class="n">murdock</span><span class="o">/</span><span class="n">classloader</span><span class="o">/</span><span class="n">linkageerror</span><span class="o">/</span><span class="n">Param2</span> <span class="n">used</span> <span class="n">in</span> <span class="n">the</span> <span class="n">signature</span>
+    <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Class</span><span class="o">.</span><span class="na">getDeclaredConstructors0</span><span class="o">(</span><span class="n">Native</span> <span class="n">Method</span><span class="o">)</span>
+    <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Class</span><span class="o">.</span><span class="na">privateGetDeclaredConstructors</span><span class="o">(</span><span class="n">Class</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">2671</span><span class="o">)</span>
+    <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Class</span><span class="o">.</span><span class="na">getConstructor0</span><span class="o">(</span><span class="n">Class</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">3075</span><span class="o">)</span>
+    <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Class</span><span class="o">.</span><span class="na">newInstance</span><span class="o">(</span><span class="n">Class</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">412</span><span class="o">)</span>
+    <span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">murdock</span><span class="o">.</span><span class="na">classloader</span><span class="o">.</span><span class="na">linkageerror</span><span class="o">.</span><span class="na">LinkageErrorTest</span><span class="o">.</span><span class="na">test</span><span class="o">(</span><span class="n">LinkageErrorTest</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">34</span><span class="o">)</span>
+    <span class="n">at</span> <span class="n">sun</span><span class="o">.</span><span class="na">reflect</span><span class="o">.</span><span class="na">NativeMethodAccessorImpl</span><span class="o">.</span><span class="na">invoke0</span><span class="o">(</span><span class="n">Native</span> <span class="n">Method</span><span class="o">)</span>
+    <span class="n">at</span> <span class="n">sun</span><span class="o">.</span><span class="na">reflect</span><span class="o">.</span><span class="na">NativeMethodAccessorImpl</span><span class="o">.</span><span class="na">invoke</span><span class="o">(</span><span class="n">NativeMethodAccessorImpl</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">62</span><span class="o">)</span>
+    <span class="n">at</span> <span class="n">sun</span><span class="o">.</span><span class="na">reflect</span><span class="o">.</span><span class="na">DelegatingMethodAccessorImpl</span><span class="o">.</span><span class="na">invoke</span><span class="o">(</span><span class="n">DelegatingMethodAccessorImpl</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">43</span><span class="o">)</span>
+    <span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">reflect</span><span class="o">.</span><span class="na">Method</span><span class="o">.</span><span class="na">invoke</span><span class="o">(</span><span class="n">Method</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">497</span><span class="o">)</span>
+    <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">junit</span><span class="o">.</span><span class="na">runners</span><span class="o">.</span><span class="na">model</span><span class="o">.</span><span class="na">FrameworkMethod</span><span class="err">$</span><span class="mi">1</span><span class="o">.</span><span class="na">runReflectiveCall</span><span class="o">(</span><span class="n">FrameworkMethod</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">47</span><span class="o">)</span>
+    <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">junit</span><span class="o">.</span><span class="na">internal</span><span class="o">.</span><span class="na">runners</span><span class="o">.</span><span class="na">model</span><span class="o">.</span><span class="na">ReflectiveCallable</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">ReflectiveCallable</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">12</span><span class="o">)</span>
+    <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">junit</span><span class="o">.</span><span class="na">runners</span><span class="o">.</span><span class="na">model</span><span class="o">.</span><span class="na">FrameworkMethod</span><span class="o">.</span><span class="na">invokeExplosively</span><span class="o">(</span><span class="n">FrameworkMethod</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">44</span><span class="o">)</span>
+    <span class="n">at</span> <span class="n">org</span><span class="o">.</span><span class="na">junit</span><span class="o">.</span><span class="na">internal</span><span class="o">.</span><span class="na">runners</span><span class="o">.</span><span class="na">statements</span><span class="o">.</span><span class="na">InvokeMethod</span><span class="o">.</span><span class="na">evaluate</span><span class="o">(</span><span class="n">InvokeMethod</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="mi">17</span><span class="o">)</span>
+</code></pre></div></div>
+
+<p>​	看到一堆出错信息，但是不要紧张，慢慢的读一下出错信息，这种错误一般会让你直觉感觉不会出现。<code class="highlighter-rouge">loader constraint violation</code>表示类加载器冲突了，这句话暗示： <strong>相同的类，由不同的ClassLoader加载，但是在这里遇到了</strong>。<code class="highlighter-rouge">when resolving overridden method "com.murdock.classloader.linkageerror.Param2.generate()Lcom/murdock/classloader/linkageerror/Param2;"</code>表示在解析那条语句出现了问题，这里表示在<code class="highlighter-rouge">Param2.generate()</code>方法的解析过程中出现了问题。<code class="highlighter-rouge">the class loader (instance of com/murdock/classloader/linkageerror/LinkageErrorTest$1) of the current class, com/murdock/classloader/linkageerror/Param2,</code>表示解析的语句所在的类型<code class="highlighter-rouge">Param2</code>是<code class="highlighter-rouge">LinkageErrorTest$1</code>类加载器加载的。<code class="highlighter-rouge">and its superclass loader (instance of sun/misc/Launcher$AppClassLoader), have different Class objects for the type com/murdock/classloader/linkageerror/Param2 used in the signature</code>表示<code class="highlighter-rouge">Param2</code>的超类<code class="highlighter-rouge">Param</code>中被覆盖的方法返回的类型<code class="highlighter-rouge">Param2</code>为<code class="highlighter-rouge">Launcher$AppClassLoader</code>加载。</p>
+
+<p>    Linkage在常规情况下非常难以制造，只有在多个类加载器交互时才有可能出现，下面看一下问题代码。出现问题的类和参数：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">murdock</span><span class="o">.</span><span class="na">classloader</span><span class="o">.</span><span class="na">linkageerror</span><span class="o">;</span>
+
+<span class="cm">/**
+ * @author weipeng2k 2015年4月28日 上午10:04:26
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HandleUtils</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">m</span><span class="o">(</span><span class="n">Param</span> <span class="n">param</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">param</span><span class="o">.</span><span class="na">generate</span><span class="o">();</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+
+<span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">murdock</span><span class="o">.</span><span class="na">classloader</span><span class="o">.</span><span class="na">linkageerror</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Param</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">Param2</span> <span class="nf">generate</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">Param2</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">murdock</span><span class="o">.</span><span class="na">classloader</span><span class="o">.</span><span class="na">linkageerror</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Param2</span> <span class="kd">extends</span> <span class="n">Param</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">Param2</span> <span class="nf">generate</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">Param2</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>    测试用例如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Test</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">test</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+    <span class="c1">// cl1在加载HandleUtils和Param时将会使用AppClassLoader</span>
+    <span class="n">URLClassLoader</span> <span class="n">cl1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">URLClassLoader</span><span class="o">(</span><span class="k">new</span> <span class="n">URL</span><span class="o">[]</span> <span class="o">{</span><span class="k">new</span> <span class="n">File</span><span class="o">(</span><span class="s">"target/test-classes"</span><span class="o">).</span><span class="na">toURI</span><span class="o">().</span><span class="na">toURL</span><span class="o">()},</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">loadClass</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">ClassNotFoundException</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="s">"com.murdock.classloader.linkageerror.HandleUtils"</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">name</span><span class="o">))</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="n">ClassLoader</span><span class="o">.</span><span class="na">getSystemClassLoader</span><span class="o">().</span><span class="na">loadClass</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
+            <span class="o">}</span>
+
+            <span class="k">if</span> <span class="o">(</span><span class="s">"com.murdock.classloader.linkageerror.Param"</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">name</span><span class="o">))</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="n">ClassLoader</span><span class="o">.</span><span class="na">getSystemClassLoader</span><span class="o">().</span><span class="na">loadClass</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
+            <span class="o">}</span>
+
+            <span class="k">return</span> <span class="kd">super</span><span class="o">.</span><span class="na">loadClass</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
+        <span class="o">}</span>
+
+    <span class="o">};</span>
+
+ <span class="n">ClassLoader</span><span class="o">.</span><span class="na">getSystemClassLoader</span><span class="o">().</span><span class="na">loadClass</span><span class="o">(</span><span class="s">"com.murdock.classloader.linkageerror.Param2"</span><span class="o">);</span>
+    <span class="n">HandleUtils</span> <span class="n">hu</span> <span class="o">=</span> <span class="o">(</span><span class="n">HandleUtils</span><span class="o">)</span> <span class="n">cl1</span><span class="o">.</span><span class="na">loadClass</span><span class="o">(</span><span class="s">"com.murdock.classloader.linkageerror.HandleUtils"</span><span class="o">).</span><span class="na">newInstance</span><span class="o">();</span>
+    <span class="n">hu</span><span class="o">.</span><span class="na">m</span><span class="o">((</span><span class="n">Param</span><span class="o">)</span> <span class="n">cl1</span><span class="o">.</span><span class="na">loadClass</span><span class="o">(</span><span class="s">"com.murdock.classloader.linkageerror.Param2"</span><span class="o">).</span><span class="na">newInstance</span><span class="o">());</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><strong>LinkageError</strong> 需要观察哪个类被不同的类加载器加载了，在哪个方法或者调用处发生（交汇）的，然后才能想解决方法，解决方法无外乎两种。第一，还是不同的类加载器加载，但是相互不再交汇影响，这里需要针对发生问题的地方做一些改动，比如更换实现方式，避免出现上述问题；第二，冲突的类需要由一个Parent类加载器进行加载。<strong>LinkageError</strong> 和<strong>ClassCastException</strong> 本质是一样的，加载自不同类加载器的类型，在同一个类的方法或者调用中出现，如果有转型操作那么就会抛 <strong>ClassCastException</strong> ，如果是直接的方法调用处的参数或者返回值解析，那么就会产生 <strong>LinkageError</strong> 。</p>
+
+<h2 id="8-类加载器问题对照表">8. 类加载器问题对照表</h2>
+
+<p>遇到类加载器问题时，可以尝试使用下面的表格进行问题排查。</p>
+
+<table>
+  <thead>
+    <tr>
+      <th><strong>类找不到</strong></th>
+      <th><strong>加载了不正确的类</strong></th>
+      <th><strong>多于一个类被加载</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>ClassNotFoundException NoClassDefFoundError</td>
+      <td>IncompatibleClassChangeError NoSuchMethodError NoSuchFieldError IllegalAccessError</td>
+      <td>ClassCastException LinkageError</td>
+    </tr>
+    <tr>
+      <td>IDE class lookup (Ctrl+Shift+T in Eclipse)find . -name “*.jar” -exec jar -tf {} \; | grep DateUtils使用middleware-detector</td>
+      <td>通过在启动参数中加 -verbose:class，观察加载的类来自哪个jar包使用middelware-detector</td>
+      <td>通过<code class="highlighter-rouge">-verbose:class</code>观察</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="9-使用middleware-detector进行类查找">9. 使用Middleware-Detector进行类查找</h2>
+
+<p>出现了 <strong>ClassNotFoundException</strong> 或者 <strong>NoClassDefFoundError</strong> ，需要检查一下程序的classpath下面是否存在你所预想的类。这时可以使用Middleware-Detector工具进行类查找，该工具是Alibaba中间件团队开发的一款中间件问题诊断工具，当然也包括了许多支持性质的工具。</p>
+
+<p>下面我们使用Middleware-Detector进行类查找，比如我们要查找apache的Utils，我们怀疑这个类在classpath下找不到。</p>
+
+<p>启动middleware-detector，查看 <strong>Pandora</strong> 提供的自定义检查器，目前编号为1的Pandora自定义检查器就是进行classpath下的指定类或者接口的查找工作。</p>
+
+<p><img src="/img/in-post/class-loader/pic4.png" alt="" /></p>
+
+<p>    配置classpath目录以及需要查找的类名，这里类名支持 <em> 号进行模糊匹配。可以看到设定当前的classpath目录到了</em>WEB-INF/lib* 下面，然后找寻<code class="highlighter-rouge">*apache*comm*A*Utils</code>是否存在，如果能够找到则会输出到终端，这里就找到了ArchiveUtils和ArrayUtils两个符合要求的类。如果无法找到，那么就可能是<code class="highlighter-rouge">pom.xml</code>的依赖配置不正确了，需要检查一下。</p>
+
+<p><img src="/img/in-post/class-loader/pic5.png" alt="" /></p>
+
+<h2 id="10-使用middleware-detector进行检查类冲突">10. 使用Middleware-Detector进行检查类冲突</h2>
+
+<p>出现了 <strong>NoSuchMethodError</strong> 或者 <strong>NoSuchFieldError</strong> ，这时一般是应用的classpath下包含了多个包含了想同类的jar包，而很不幸的加载到了 <em>不正确</em> 的jar包。</p>
+
+<p>我们可以通过使用Middleware-Detector的类查找进行定位，但是不能发现一个修复一个，这里Middleware-Detector提供了一个检查classpath下有冲突jar包的功能。只需要设置classpath的目录，然后运行cc –check tomcat#1即可。有冲突的jar就需要自己在pom.xml里面进行仲裁或者排除了。</p>
+
+<p><img src="/img/in-post/class-loader/pic6.png" alt="" /></p>
+
+<p><strong>原创文章，转载请注明：</strong> 转载自<a href="http://ifeve.com/">并发编程网 – ifeve.com</a><strong>本文链接地址:</strong> <a href="http://ifeve.com/classloader/">深入浅出ClassLoader</a></p>
+
+
+
+                <hr>
+
+                
+
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2018/02/27/%E9%9A%8F%E4%BE%BF%E5%86%99%E9%9A%8F%E4%BE%BF%E7%9C%8B/" data-toggle="tooltip" data-placement="top" title="随便写随便看">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2018/03/08/%E4%B8%89%E7%A7%8D%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/" data-toggle="tooltip" data-placement="top" title="三种工厂模式">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+
+                
+
+                
+
+            </div>
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+        				
+                            
+                				<a href="/tags/#杂记" title="杂记" rel="6">
+                                    杂记
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#git" title="git" rel="2">
+                                    git
+                                </a>
+                            
+        				
+                            
+        				
+                            
+                				<a href="/tags/#java" title="java" rel="11">
+                                    java
+                                </a>
+                            
+        				
+                            
+        				
+                            
+                				<a href="/tags/#mysql" title="mysql" rel="2">
+                                    mysql
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#网络" title="网络" rel="4">
+                                    网络
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#redis" title="redis" rel="2">
+                                    redis
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#设计模式" title="设计模式" rel="7">
+                                    设计模式
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#rocketmq" title="rocketmq" rel="9">
+                                    rocketmq
+                                </a>
+                            
+        				
+        			</div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+                    
+                        <li><a href="http://huanzhikang.github.io">huanzhikang Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("http://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+                    
+
+                    <!-- add Weibo, Zhihu by Hux, add target = "_blank" to <a> by Hux -->
+                    
+                    
+
+
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/dingmingcheng">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; New Boy 2019
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("http://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>三种工厂模式 - New Boy</title>
+
+    <link rel="canonical" href="http://localhost:4000/2018/03/08/%E4%B8%89%E7%A7%8D%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="http://cdn.staticfile.org/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">New Boy</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/about/">About</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/demo/">Example Post</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#设计模式" title="设计模式">设计模式</a>
+                        
+                    </div>
+                    <h1>三种工厂模式</h1>
+                    
+                    
+                    <h2 class="subheading"></h2>
+                    
+                    <span class="meta">Posted by New Boy on March 8, 2018</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+				<h2 id="前言">前言</h2>
+
+<p>之前在网上看了很多关于工厂模式的文章，之前看完就觉得懂了，可之后又忘了，上周把实习结束了，匆匆告别，匆匆回校。很棒的实习经历，有空再写。回校后打算理一遍设计模式，自己实现一遍，当是加深一下记忆，为之后正式的工作打好基础。先写写工厂模式。</p>
+
+<p>工厂模式主要分为三种，简单工厂模式，工厂模式，以及抽象工厂模式。说到工厂模式，其实我觉得在类和类之间的解耦起到了比较关键的作用，还是要在适当的场景下使用适当的设计模式。</p>
+
+<p>以实际的例子讲讲这三种设计模式吧，我觉得例子是最能加强记忆的。</p>
+
+<h2 id="简单工厂模式">简单工厂模式</h2>
+
+<p>“民以食为天”，就举食物相关的例子。</p>
+
+<p>简单起见，为食物抽象出三个属性：成本，售价，名字。创建抽象类：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">Food</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">price</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">cost</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">Food</span><span class="o">()</span> <span class="o">{</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nf">Food</span><span class="o">(</span><span class="kt">int</span> <span class="n">price</span><span class="o">,</span> <span class="kt">int</span> <span class="n">cost</span><span class="o">,</span> <span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">price</span> <span class="o">=</span> <span class="n">price</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">cost</span> <span class="o">=</span> <span class="n">cost</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getPrice</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">price</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setPrice</span><span class="o">(</span><span class="kt">int</span> <span class="n">price</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">price</span> <span class="o">=</span> <span class="n">price</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getCost</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">cost</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setCost</span><span class="o">(</span><span class="kt">int</span> <span class="n">cost</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">cost</span> <span class="o">=</span> <span class="n">cost</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="s">"Food{"</span> <span class="o">+</span>
+                <span class="s">"price="</span> <span class="o">+</span> <span class="n">price</span> <span class="o">+</span>
+                <span class="s">", cost="</span> <span class="o">+</span> <span class="n">cost</span> <span class="o">+</span>
+                <span class="s">", name='"</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="sc">'\''</span> <span class="o">+</span>
+                <span class="sc">'}'</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>设想了两个类继承Food类，一个是“炒饭”，一个是“面条”。</p>
+
+<p>FriedRice:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FriedRice</span> <span class="kd">extends</span> <span class="n">Food</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="nf">FriedRice</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">(</span><span class="mi">100</span><span class="o">,</span> <span class="mi">20</span><span class="o">,</span> <span class="s">"FriedRice"</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nf">FriedRice</span><span class="o">(</span><span class="kt">int</span> <span class="n">price</span><span class="o">,</span> <span class="kt">int</span> <span class="n">cost</span><span class="o">,</span> <span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">(</span><span class="n">price</span><span class="o">,</span> <span class="n">cost</span><span class="o">,</span> <span class="n">name</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="s">"FriedRice{"</span> <span class="o">+</span>
+                <span class="s">"price="</span> <span class="o">+</span> <span class="kd">super</span><span class="o">.</span><span class="na">getPrice</span><span class="o">()</span> <span class="o">+</span>
+                <span class="s">", cost="</span> <span class="o">+</span> <span class="kd">super</span><span class="o">.</span><span class="na">getCost</span><span class="o">()</span> <span class="o">+</span>
+                <span class="s">", name='"</span> <span class="o">+</span> <span class="kd">super</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="sc">'\''</span> <span class="o">+</span>
+                <span class="sc">'}'</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>Noodles:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Noodles</span> <span class="kd">extends</span> <span class="n">Food</span> <span class="o">{</span>
+  
+    <span class="kd">public</span> <span class="nf">Noodles</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">(</span><span class="mi">50</span><span class="o">,</span> <span class="mi">10</span><span class="o">,</span> <span class="s">"Noodles"</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nf">Noodles</span><span class="o">(</span><span class="kt">int</span> <span class="n">price</span><span class="o">,</span> <span class="kt">int</span> <span class="n">cost</span><span class="o">,</span> <span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">(</span><span class="n">price</span><span class="o">,</span> <span class="n">cost</span><span class="o">,</span> <span class="n">name</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="s">"Noodles{"</span> <span class="o">+</span>
+                <span class="s">"price="</span> <span class="o">+</span> <span class="kd">super</span><span class="o">.</span><span class="na">getPrice</span><span class="o">()</span> <span class="o">+</span>
+                <span class="s">", cost="</span> <span class="o">+</span> <span class="kd">super</span><span class="o">.</span><span class="na">getCost</span><span class="o">()</span> <span class="o">+</span>
+                <span class="s">", name='"</span> <span class="o">+</span> <span class="kd">super</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="sc">'\''</span> <span class="o">+</span>
+                <span class="sc">'}'</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>对于简单工厂模式而言，只是提供了一个生产对象的工厂，看网上大部分通过switch或者if进行实例化对象，这里我是用了反射去实现，感觉代码的可维护性会更好，当然，反射的效率是个问题，factory中添加了缓存进行了适当的优化。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FoodFactory</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="n">ConcurrentHashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Class</span><span class="o">&gt;</span> <span class="n">classCache</span><span class="o">;</span>
+
+    <span class="n">FoodFactory</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">classCache</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConcurrentHashMap</span><span class="o">&lt;&gt;();</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">getClz</span><span class="o">(</span><span class="n">String</span> <span class="n">clzName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+        <span class="n">Object</span> <span class="n">obj</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">classCache</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">clzName</span><span class="o">)</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">classCache</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">clzName</span><span class="o">).</span><span class="na">newInstance</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="n">clzName</span><span class="o">).</span><span class="na">newInstance</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>测试类：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">FoodFactory</span> <span class="n">foodFactory</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FoodFactory</span><span class="o">();</span>
+        <span class="n">String</span> <span class="n">foodName</span> <span class="o">=</span> <span class="s">"com.dmc.DesignPatterns.simpleFactory.FriedRice"</span><span class="o">;</span>
+        <span class="n">Object</span> <span class="n">food</span> <span class="o">=</span> <span class="n">chooseFood</span><span class="o">(</span><span class="n">foodName</span><span class="o">,</span> <span class="n">foodFactory</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">food</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">Object</span> <span class="nf">chooseFood</span><span class="o">(</span><span class="n">String</span> <span class="n">foodName</span><span class="o">,</span> <span class="n">FoodFactory</span> <span class="n">foodFactory</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">Object</span> <span class="n">food</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">food</span> <span class="o">=</span> <span class="n">foodFactory</span><span class="o">.</span><span class="na">getClz</span><span class="o">(</span><span class="n">foodName</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">food</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>写完觉得简单工厂模式还是觉得单个工厂难以维护，而且在效率上有一定的局限，结构也不是很清晰。就比如你一个车间要去加工所有类型的产品，给人的感觉就是“乱”。</p>
+
+<h2 id="工厂模式">工厂模式</h2>
+
+<p>在简单工厂模式的基础上，抽象出“FoodFactory”的接口，每一种食物都交由相对应的工厂实现。比较好理解：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">FoodFactory</span> <span class="o">{</span>
+    <span class="n">Food</span> <span class="nf">createFood</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//炒饭工厂</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">FriedRiceFactory</span> <span class="kd">implements</span> <span class="n">FoodFactory</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Food</span> <span class="nf">createFood</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">Food</span> <span class="n">food</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FriedRice</span><span class="o">();</span>
+        <span class="k">return</span> <span class="n">food</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//面条工厂</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">NoodlesFactory</span> <span class="kd">implements</span> <span class="n">FoodFactory</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Food</span> <span class="nf">createFood</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">Food</span> <span class="n">food</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Noodles</span><span class="o">();</span>
+        <span class="k">return</span> <span class="n">food</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>测试类：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">FriedRiceFactory</span> <span class="n">friedRiceFactory</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FriedRiceFactory</span><span class="o">();</span>
+        <span class="n">Food</span> <span class="n">friedRice</span> <span class="o">=</span> <span class="n">friedRiceFactory</span><span class="o">.</span><span class="na">createFood</span><span class="o">();</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">friedRice</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+
+        <span class="n">NoodlesFactory</span> <span class="n">noodlesFactory</span> <span class="o">=</span> <span class="k">new</span> <span class="n">NoodlesFactory</span><span class="o">();</span>
+        <span class="n">Food</span> <span class="n">noodles</span> <span class="o">=</span> <span class="n">noodlesFactory</span><span class="o">.</span><span class="na">createFood</span><span class="o">();</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">noodles</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h2 id="抽象工厂模式">抽象工厂模式</h2>
+
+<p>考虑以下场景：有饭店A和饭店B，两家饭店都会制作炒饭和面条，但其成本	或者售价不同，那么抽象工厂便有其用武之地。</p>
+
+<p>抽象出一个”饭店接口”</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">AbstractRestaurant</span> <span class="o">{</span>
+    <span class="n">Food</span> <span class="nf">createRice</span><span class="o">();</span>
+
+    <span class="n">Food</span> <span class="nf">createNoodles</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>分别实现A饭店和B饭店</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RestaurantA</span> <span class="kd">implements</span> <span class="n">AbstractRestaurant</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Food</span> <span class="nf">createRice</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">Food</span> <span class="n">food</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FriedRice</span><span class="o">(</span><span class="mi">20</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="s">"FriedRiceA"</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">food</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Food</span> <span class="nf">createNoodles</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">Food</span> <span class="n">food</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Noodles</span><span class="o">(</span><span class="mi">30</span><span class="o">,</span> <span class="mi">15</span><span class="o">,</span> <span class="s">"NoodlesA"</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">food</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RestaurantB</span> <span class="kd">implements</span> <span class="n">AbstractRestaurant</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Food</span> <span class="nf">createRice</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">Food</span> <span class="n">food</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FriedRice</span><span class="o">(</span><span class="mi">59</span><span class="o">,</span> <span class="mi">14</span><span class="o">,</span> <span class="s">"FriedRiceB"</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">food</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Food</span> <span class="nf">createNoodles</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">Food</span> <span class="n">food</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Noodles</span><span class="o">(</span><span class="mi">34</span><span class="o">,</span> <span class="mi">21</span><span class="o">,</span> <span class="s">"NoodlesB"</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">food</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>测试程序：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">RestaurantA</span> <span class="n">A</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RestaurantA</span><span class="o">();</span>
+        <span class="n">RestaurantB</span> <span class="n">B</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RestaurantB</span><span class="o">();</span>
+
+        <span class="n">Food</span> <span class="n">AFriedRice</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="na">createRice</span><span class="o">();</span>
+        <span class="n">Food</span> <span class="n">ANoodles</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="na">createNoodles</span><span class="o">();</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">AFriedRice</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">ANoodles</span><span class="o">);</span>
+
+        <span class="n">Food</span> <span class="n">BFriedRice</span> <span class="o">=</span> <span class="n">B</span><span class="o">.</span><span class="na">createRice</span><span class="o">();</span>
+        <span class="n">Food</span> <span class="n">BNoodles</span> <span class="o">=</span> <span class="n">B</span><span class="o">.</span><span class="na">createNoodles</span><span class="o">();</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">BFriedRice</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">BNoodles</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h2 id="总结">总结</h2>
+
+<p>很浅的个人理解，希望工作中能加深理解。。。</p>
+
+
+                <hr>
+
+                
+
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2018/02/28/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAClassLoader,%E4%BD%A0%E7%9C%9F%E7%9A%84%E4%BA%86%E8%A7%A3ClassLoader%E5%90%97/" data-toggle="tooltip" data-placement="top" title="[转]深入浅出ClassLoader,你真的了解ClassLoader吗">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2018/03/09/%E5%A4%9A%E4%BE%8B%E6%A8%A1%E5%BC%8F/" data-toggle="tooltip" data-placement="top" title="多例模式">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+
+                
+
+                
+
+            </div>
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+        				
+                            
+                				<a href="/tags/#杂记" title="杂记" rel="6">
+                                    杂记
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#git" title="git" rel="2">
+                                    git
+                                </a>
+                            
+        				
+                            
+        				
+                            
+                				<a href="/tags/#java" title="java" rel="11">
+                                    java
+                                </a>
+                            
+        				
+                            
+        				
+                            
+                				<a href="/tags/#mysql" title="mysql" rel="2">
+                                    mysql
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#网络" title="网络" rel="4">
+                                    网络
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#redis" title="redis" rel="2">
+                                    redis
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#设计模式" title="设计模式" rel="7">
+                                    设计模式
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#rocketmq" title="rocketmq" rel="9">
+                                    rocketmq
+                                </a>
+                            
+        				
+        			</div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+                    
+                        <li><a href="http://huanzhikang.github.io">huanzhikang Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("http://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+                    
+
+                    <!-- add Weibo, Zhihu by Hux, add target = "_blank" to <a> by Hux -->
+                    
+                    
+
+
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/dingmingcheng">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; New Boy 2019
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("http://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

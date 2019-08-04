@@ -3,7 +3,8 @@ layout: post
 title: "reactor单线程，多线程，主从的java代码实现"
 date: 2018-01-23
 description: "reactor实现"
-tag: 网络
+author: "dingmc"
+tags: 网络
 ---
 
 ## 前言
@@ -161,7 +162,7 @@ public class ClientStart {
 
 ### 单线程
 
-![](pic4.png)
+![](/img/in-post/reactor/pic4.png)
 
 ``` java
 //Server.java
@@ -245,17 +246,17 @@ public class Server {
 
 测试结果(之后就不放测试结果了，都是一样的)：
 
-![](pic1.png)
+![](/img/in-post/reactor/pic1.png)
 
-![](pic2.png)
+![](/img/in-post/reactor/pic2.png)
 
-![](pic3.png)
+![](/img/in-post/reactor/pic3.png)
 
 
 
 ### 多线程
 
-![](pic5.png)
+![](/img/in-post/reactor/pic5.png)
 
 Acceptor类
 
@@ -474,7 +475,7 @@ public class Handler extends Thread{
 
 ### 主从
 
-![](pic6.png)
+![](/img/in-post/reactor/pic6.png)
 
 ServerStart.java
 

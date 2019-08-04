@@ -1,459 +1,638 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
-  <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
 
-  <title>dmc</title>
-  <meta name="description" content="欢迎来到我的博客">
-  <meta name="author" content="leopardpan">
+    <title>New Boy</title>
 
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="dmc">
-  <meta name="twitter:description" content="欢迎来到我的博客">
-  
-  <meta property="og:type" content="article">
-  <meta property="og:title" content="dmc">
-  <meta property="og:description" content="欢迎来到我的博客">
-  
-  <link rel="icon" type="image/png" href="/images/favicon.png" />
-  <link href="/images/favicon.png" rel="shortcut icon" type="image/png">
-  
-  <link rel="stylesheet" href="/css/main.css">
-  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="canonical" href="http://localhost:4000/">
 
-  <link rel="canonical" href="http://localhost:4000/">
-  <link rel="alternate" type="application/rss+xml" title="dmc" href="http://localhost:4000/feed.xml">
-  
-  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
 
-<!-- 站点统计 -->
-  <script 
-  async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
-  </script>  
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
 
-<!-- 百度统计 -->
-  
-  <script>
-      var _hmt = _hmt || [];
-      (function() {
-          var hm = document.createElement("script");
-          hm.src = "https://hm.baidu.com/hm.js?2cda0649a3e97c5f4bf7c98c59a40949";
-          var s = document.getElementsByTagName("script")[0];
-          s.parentNode.insertBefore(hm, s);
-      })();
-  </script>
-  
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="http://cdn.staticfile.org/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
 
-  <!-- google 统计 -->
-  
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
 
-  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<script>
-  (adsbygoogle = window.adsbygoogle || []).push({
-    google_ad_client: "ca-pub-9005224472374751",
-    enable_page_level_ads: true
-  });
-</script>
 
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
 </head>
 
 
-  <body>
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
 
-    <span class="mobile btn-mobile-menu">        
-      <div class="nav_container">
-         <nav class="nav-menu-item" style = "float:right">
-            <i class="nav-menu-item">
-              <a href="/#blog" title="" class="blog-button">  博客主页
-              </a>
-            </i>
-            
-                <i class="nav-menu-item">
-
-                  <a href="/archive" title="archive" class="btn-mobile-menu__icon">
-                      所有文章
-                  </a>
-                </i>
-            
-                <i class="nav-menu-item">
-
-                  <a href="/tags" title="tags" class="btn-mobile-menu__icon">
-                      标签
-                  </a>
-                </i>
-            
-                <i class="nav-menu-item">
-
-                  <a href="/about" title="about" class="btn-mobile-menu__icon">
-                      关于我
-                  </a>
-                </i>
-            
-          </nav>
-      </div>
-    </span>
-    
-    <header class="panel-cover " style="background-image: url('/images/background-cover.jpg')">
-  <div class="panel-main">
-
-    <div class="panel-main__inner panel-inverted">
-    <div class="panel-main__content">
-        <!-- 头像效果-start -->
-        <div class="ih-item circle effect right_to_left">            
-            <a href="/#blog" title="前往 dmc 的主页" class="blog-button">
-                <div class="img"><img src="/images/avatar.jpg" alt="img"></div>
-                <div class="info">
-                    <div class="info-back">
-                        <h2> 
-                            
-                                article
-                            
-                        </h2>
-                        <p>
-                           
-                                Personal
-                            
-                        </p>
-                    </div>
-                </div>
-            </a>
-        </div>
-        <!-- 头像效果-end -->
-        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for dmc" class="blog-button">dmc</a></h1>
-        
-        <span class="panel-cover__subtitle panel-subtitle">个人站</span>
-        
-        <hr class="panel-cover__divider" />
-        <p class="panel-cover__description">欢迎来到我的博客</p>
-        <hr class="panel-cover__divider panel-cover__divider--secondary" />
-        
-        
-        
-
-        <div class="navigation-wrapper">
-          <div>
-            <nav class="cover-navigation cover-navigation--primary">
-              <ul class="navigation">
-                <li class="navigation__item"><a href="/#blog" title="" class="blog-button">博客主页</a></li>
-                
-                  <li class="navigation__item"><a href="/archive" title="archive">所有文章</a></li>
-                
-                  <li class="navigation__item"><a href="/tags" title="tags">标签</a></li>
-                
-                  <li class="navigation__item"><a href="/about" title="about">关于我</a></li>
-                
-              </ul>
-            </nav>
-          </div>          
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">New Boy</a>
         </div>
 
-
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/about/">About</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/demo/">Example Post</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
+                    
+                </ul>
+            </div>
         </div>
-      </div>
+        <!-- /.navbar-collapse -->
     </div>
-    
-    
-    <div class="panel-cover--overlay cover-clear"></div>
-    
-  </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Page Header -->
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 ">
+                <div class="site-heading">
+                    <h1>New Boy</h1>
+                    <!--<hr class="small">-->
+                    <span class="subheading">a new blog for a new boy</span>
+                </div>
+            </div>
+        </div>
+    </div>
 </header>
 
+<!-- Main Content -->
+<div class="container">
+	<div class="row">
+        
 
-    <div class="content-wrapper">
-        <div class="content-wrapper__inner">
-            <div class="main-post-list hidden">
+<!-- USE SIDEBAR -->
+    <!-- Post Container -->
+    		<div class="
+                col-lg-8 col-lg-offset-1
+                col-md-8 col-md-offset-1
+                col-sm-12
+                col-xs-12
+                post-container
+            ">
+    			
+<div class="post-preview">
+    <a href="/2019/06/30/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%9C%A8data%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/">
+        <h2 class="post-title">
+            消息队列在data中的应用
+        </h2>
+        
+        <div class="post-content-preview">
+            在不久前，在data和exchange项目中，我们将所有用到rocketmq的地方全部切换到了kafka上。在结汇项目中，消息队列也已经用了近一年多，期间也踩过几个坑，此wiki用以记录消息队列在data和exchange中的实践
 
-  <ol class="post-list">
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2019/04/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(8)-store%E6%96%87%E4%BB%B6%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" title="访问 rocketmq源码阅读(8)——store文件数据结构">rocketmq源码阅读(8)——store文件数据结构</a></h2>
-      <p class="excerpt">##前言上文简单分析了一下rocketmq中的存储部分，本文中，我们来看看主要的存储文件中的数据结构。包括CommitLog，ConsumerQueue以及IndexFile，可以试着去读取这些文件文件结构CommitLogprivate static void readCommitlog(int/*读取的消息数量*/ t) throws Exception{  String file = "/Users/dingmc/store/commitlog/0000000000000000000...&hellip;</p>
-      <div class="post-list__meta">        
-        <time datetime="2019-04-27 00:00:00 +0800" class="post-list__meta--date date">
-          <img src="/images/calendar.png" width="20px" /> 
-          2019-04-27</time> 
-        <div class = "tag-img-icon">
-          <img src="/images/tag-icon.svg" width="20px" /> 
-        </div>
-        <a href="/tags">
-          <div class = "post-list-icon-mate">
-            <span class="post-list__meta--tags-right">rocketmq</span>
-          </div>
-          <div class = "post-list-small-mate">
-          <a class="btn-border-small" href=/2019/04/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(8)-store%E6%96%87%E4%BB%B6%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/>阅读全文 » </a>
-          </div>
-      </div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2019/04/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(7)-store%E6%A8%A1%E5%9D%97/" title="访问 rocketmq源码阅读(7)——store模块">rocketmq源码阅读(7)——store模块</a></h2>
-      <p class="excerpt">前言在rocketmq中，store模块，也就是底层存储模块，是最为核心的部分，也在很大程度上决定了rocketmq的性能。rocketmq借鉴了kafka的设计，采用了文件存储。整体介绍消费模型先看看rocketmq的存储架构(图来源于此博文)可以看到在broker接收到消息后，首先会把消息写入到commitLog中，之后会异步将消息分发给ConsumerQueue和IndexFile，之后相关的细节也将主要围绕commitLog，consumerQueue，indexFIle来讲存储文...&hellip;</p>
-      <div class="post-list__meta">        
-        <time datetime="2019-04-07 00:00:00 +0800" class="post-list__meta--date date">
-          <img src="/images/calendar.png" width="20px" /> 
-          2019-04-07</time> 
-        <div class = "tag-img-icon">
-          <img src="/images/tag-icon.svg" width="20px" /> 
-        </div>
-        <a href="/tags">
-          <div class = "post-list-icon-mate">
-            <span class="post-list__meta--tags-right">rocketmq</span>
-          </div>
-          <div class = "post-list-small-mate">
-          <a class="btn-border-small" href=/2019/04/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(7)-store%E6%A8%A1%E5%9D%97/>阅读全文 » </a>
-          </div>
-      </div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2019/02/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(6)-remoting%E6%A8%A1%E5%9D%97/" title="访问 rocketmq源码阅读(6)——remoting模块">rocketmq源码阅读(6)——remoting模块</a></h2>
-      <p class="excerpt">前言本文中，会看看rocketmq中remoting模块中的代码。remoting模块相对而言会比较简单，主要是对netty进行了一层封装，至于netty的细节本文中就不细讲了，建议对netty有一些基本的了解再来看此文会比较好。我们其实可以看看像rocketmq这种成熟的消息队列中间件是如何使用netty这种高性能网络通信框架。从功能上来看，分为NettyRemotingClient和NettyRemotingServer这两个类，两个有分别继承了抽象类NettyRemotingAbst...&hellip;</p>
-      <div class="post-list__meta">        
-        <time datetime="2019-02-24 00:00:00 +0800" class="post-list__meta--date date">
-          <img src="/images/calendar.png" width="20px" /> 
-          2019-02-24</time> 
-        <div class = "tag-img-icon">
-          <img src="/images/tag-icon.svg" width="20px" /> 
-        </div>
-        <a href="/tags">
-          <div class = "post-list-icon-mate">
-            <span class="post-list__meta--tags-right">rocketmq</span>
-          </div>
-          <div class = "post-list-small-mate">
-          <a class="btn-border-small" href=/2019/02/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(6)-remoting%E6%A8%A1%E5%9D%97/>阅读全文 » </a>
-          </div>
-      </div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(5)-%E6%B6%88%E8%B4%B9%E8%80%85%E6%B6%88%E8%B4%B9%E6%B5%81%E7%A8%8B/" title="访问 rocketmq源码阅读(5)——消费者消费流程">rocketmq源码阅读(5)——消费者消费流程</a></h2>
-      <p class="excerpt">前言在消费者初始化过程中，我们看到了PullRequest的分发，接下来就是看看具体的消费流程。大体的流程是这样的：  PullRequest的处理  回调PullCallBack处理pullResult  ConsumeMessageService处理消息PullRequest的处理PullMessageService在拿到PullRequest后，直接转发给DefauleMQPushConsumerImpl进行处理：在拿到PullRequest后，DefauleMQPushConsum...&hellip;</p>
-      <div class="post-list__meta">        
-        <time datetime="2019-01-20 00:00:00 +0800" class="post-list__meta--date date">
-          <img src="/images/calendar.png" width="20px" /> 
-          2019-01-20</time> 
-        <div class = "tag-img-icon">
-          <img src="/images/tag-icon.svg" width="20px" /> 
-        </div>
-        <a href="/tags">
-          <div class = "post-list-icon-mate">
-            <span class="post-list__meta--tags-right">rocketmq</span>
-          </div>
-          <div class = "post-list-small-mate">
-          <a class="btn-border-small" href=/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(5)-%E6%B6%88%E8%B4%B9%E8%80%85%E6%B6%88%E8%B4%B9%E6%B5%81%E7%A8%8B/>阅读全文 » </a>
-          </div>
-      </div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(4)-mq%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%9C%8D%E5%8A%A1/" title="访问 rocketmq源码阅读(4)——mq负载均衡服务">rocketmq源码阅读(4)——mq负载均衡服务</a></h2>
-      <p class="excerpt">前言上一文在消费者初始化中，提到了客户端的负载均衡服务。再简单介绍一下负载均衡服务rebalance服务主要用于每个消费者实例匹配一个或者多个queue，以保证broker端的queue只对应一个实例，避免多个实例消费相同的queue。rebalance主要包括RebalancePullImpl和RebalancePushImpl，位于org.apache.rocketmq.client.impl.consumer下，还有就是队列分配算法，在org.apache.rocketmq.clie...&hellip;</p>
-      <div class="post-list__meta">        
-        <time datetime="2019-01-13 00:00:00 +0800" class="post-list__meta--date date">
-          <img src="/images/calendar.png" width="20px" /> 
-          2019-01-13</time> 
-        <div class = "tag-img-icon">
-          <img src="/images/tag-icon.svg" width="20px" /> 
-        </div>
-        <a href="/tags">
-          <div class = "post-list-icon-mate">
-            <span class="post-list__meta--tags-right">rocketmq</span>
-          </div>
-          <div class = "post-list-small-mate">
-          <a class="btn-border-small" href=/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(4)-mq%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%9C%8D%E5%8A%A1/>阅读全文 » </a>
-          </div>
-      </div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(3)-mq%E6%B6%88%E8%B4%B9%E8%80%85%E5%88%9D%E5%A7%8B%E5%8C%96/" title="访问 rocketmq源码阅读(3)——mq消费者初始化">rocketmq源码阅读(3)——mq消费者初始化</a></h2>
-      <p class="excerpt">写在前面最近开始看了一些rocketmq的源码，在正式讲消费者初始化过程之前先写写自己的感受吧。虽说已经写了两篇了，但阅读以及整理的时候，还是感觉有很多问题。之前看源码更多的是去了解相关的流程。在写文章时，还是能体会到自己太弱，无法理解相关设计的精妙之处，仅仅是能看明白流程。说到精妙之处，比如说其中设计模式的应用，相关锁的使用原因，带着问题去看才会发现不懂的还有很多。另外，在整理的时候，感觉似乎是太抠一些不太重要的细节了，个人感觉效率太低，没有太大的必要。不可置否，像rocketmq这么精...&hellip;</p>
-      <div class="post-list__meta">        
-        <time datetime="2019-01-13 00:00:00 +0800" class="post-list__meta--date date">
-          <img src="/images/calendar.png" width="20px" /> 
-          2019-01-13</time> 
-        <div class = "tag-img-icon">
-          <img src="/images/tag-icon.svg" width="20px" /> 
-        </div>
-        <a href="/tags">
-          <div class = "post-list-icon-mate">
-            <span class="post-list__meta--tags-right">rocketmq</span>
-          </div>
-          <div class = "post-list-small-mate">
-          <a class="btn-border-small" href=/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(3)-mq%E6%B6%88%E8%B4%B9%E8%80%85%E5%88%9D%E5%A7%8B%E5%8C%96/>阅读全文 » </a>
-          </div>
-      </div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(2)-MQClientInstance%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/" title="访问 rocketmq源码阅读(2)——MQClientInstance的初始化">rocketmq源码阅读(2)——MQClientInstance的初始化</a></h2>
-      <p class="excerpt">前言上篇在读mq生成者相关的代码时。在DefaultMQProducer的初始化最后一步时，代码是mQClientFactory.start();。至于MQClientInstance的关键性在上篇文章中也提到了。这篇就从mQClientFactory.start();开始吧。先放上相关的代码吧###字段分析先来看看MQClientInstance中的重要的变量吧//该clientInstance配置，主要包括nameSrv，unitName之类的private final ClientC...&hellip;</p>
-      <div class="post-list__meta">        
-        <time datetime="2019-01-07 00:00:00 +0800" class="post-list__meta--date date">
-          <img src="/images/calendar.png" width="20px" /> 
-          2019-01-07</time> 
-        <div class = "tag-img-icon">
-          <img src="/images/tag-icon.svg" width="20px" /> 
-        </div>
-        <a href="/tags">
-          <div class = "post-list-icon-mate">
-            <span class="post-list__meta--tags-right">rocketmq</span>
-          </div>
-          <div class = "post-list-small-mate">
-          <a class="btn-border-small" href=/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(2)-MQClientInstance%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/>阅读全文 » </a>
-          </div>
-      </div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(1)-%E7%94%9F%E4%BA%A7%E8%80%85%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E6%B6%88%E6%81%AF%E7%9A%84%E5%8F%91%E9%80%81/" title="访问 rocketmq源码阅读(1)——生产者初始化与消息的发送">rocketmq源码阅读(1)——生产者初始化与消息的发送</a></h2>
-      <p class="excerpt">前言其实这开头还是在全部写完才加上去的。其实这篇文章也不是那么入门了，毕竟也涉及到源码了。不说熟练掌握rocketmq的架构，至少得熟悉rocketmq的整体流程，包括broker，queue，namesrv。当然，本文并未涵盖事务消息，VIPChannel，延迟消息，队列选择算法的选择等，一些高级用法的源码会在之后慢慢补充起来。不过话说，估计也没人看——、先放个最简单的producer的demo吧，其实org.apache.rocketmq.client.producer.Default...&hellip;</p>
-      <div class="post-list__meta">        
-        <time datetime="2019-01-05 00:00:00 +0800" class="post-list__meta--date date">
-          <img src="/images/calendar.png" width="20px" /> 
-          2019-01-05</time> 
-        <div class = "tag-img-icon">
-          <img src="/images/tag-icon.svg" width="20px" /> 
-        </div>
-        <a href="/tags">
-          <div class = "post-list-icon-mate">
-            <span class="post-list__meta--tags-right">rocketmq</span>
-          </div>
-          <div class = "post-list-small-mate">
-          <a class="btn-border-small" href=/2019/01/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(1)-%E7%94%9F%E4%BA%A7%E8%80%85%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E6%B6%88%E6%81%AF%E7%9A%84%E5%8F%91%E9%80%81/>阅读全文 » </a>
-          </div>
-      </div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2018/09/java%E4%B8%AD%E7%9A%84%E6%97%B6%E9%97%B4/" title="访问 java中的时间">java中的时间</a></h2>
-      <p class="excerpt">工欲善其事，必先利其器工程中其实对时间的使用是非常多的。Java中的time其实一直都是一个比较蛋疼的问题。我看网上也是对其诟病已久。Java8也推出了java.time包以便于统一时间相关的管理，就此对Java中的时间进行一个简单的总结。主要是各种类型之间的转换，在此做一个简单的记录总结。概括这次主要包含了四种对象的相互转换，包括Date，Java8推出的LocalDateTime，long（timestamp），String（表现形式为String的时间啊）。另外，对Date统一用了o...&hellip;</p>
-      <div class="post-list__meta">        
-        <time datetime="2018-09-22 00:00:00 +0800" class="post-list__meta--date date">
-          <img src="/images/calendar.png" width="20px" /> 
-          2018-09-22</time> 
-        <div class = "tag-img-icon">
-          <img src="/images/tag-icon.svg" width="20px" /> 
-        </div>
-        <a href="/tags">
-          <div class = "post-list-icon-mate">
-            <span class="post-list__meta--tags-right">java</span>
-          </div>
-          <div class = "post-list-small-mate">
-          <a class="btn-border-small" href=/2018/09/java%E4%B8%AD%E7%9A%84%E6%97%B6%E9%97%B4/>阅读全文 » </a>
-          </div>
-      </div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2018/07/%E8%BD%AC-%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java-Stream%E6%B5%81%E6%B0%B4%E7%BA%BF/" title="访问 [转]深入理解Java Stream流水线">[转]深入理解Java Stream流水线</a></h2>
-      <p class="excerpt">  来本文转载于http://www.cnblogs.com/CarpenterLee/p/6637118.html，十分感谢CarpenterLee写出如此棒的文章。  来到了毕业后真正意义上的第一家公司，要说这近两个月在技术层面最大的感受，一是授权方式的演变，这里暂不讨论。第二个就是java8引入的Lambda，Stream，彻底改变了我对编程的理解。不过，在开始接触时，对于写下的每一行是没底的，因为根本不清楚其运行的原理，其效率。最近想写几篇文章强迫自己加深一下印象，不过恰巧看到几篇...&hellip;</p>
-      <div class="post-list__meta">        
-        <time datetime="2018-07-11 00:00:00 +0800" class="post-list__meta--date date">
-          <img src="/images/calendar.png" width="20px" /> 
-          2018-07-11</time> 
-        <div class = "tag-img-icon">
-          <img src="/images/tag-icon.svg" width="20px" /> 
-        </div>
-        <a href="/tags">
-          <div class = "post-list-icon-mate">
-            <span class="post-list__meta--tags-right">java</span>
-          </div>
-          <div class = "post-list-small-mate">
-          <a class="btn-border-small" href=/2018/07/%E8%BD%AC-%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java-Stream%E6%B5%81%E6%B0%B4%E7%BA%BF/>阅读全文 » </a>
-          </div>
-      </div>
-      <hr class="post-list__divider" />
-    </li>
-    
-  </ol>
+不经意的TIMEOUT_CLEAN_QUEUE
 
-  <hr class="post-list__divider " />
+记得在去年11月初的时候，确切来说是在ebay API的限流正式放开之后。某日早上，日常检查线上error日志...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on June 30, 2019
+    </p>
+</div>
+<hr>
 
-<nav class="pagination" role="navigation">
+<div class="post-preview">
+    <a href="/2019/04/27/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(8)-store%E6%96%87%E4%BB%B6%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
+        <h2 class="post-title">
+            rocketmq源码阅读(8)——store文件数据结构
+        </h2>
+        
+        <div class="post-content-preview">
+            ##前言
 
-	<!-- 百度搜索 -->
-	<script type="text/javascript">(function(){document.write(unescape('%3Cdiv id="bdcs"%3E%3C/div%3E'));var bdcs = document.createElement('script');bdcs.type = 'text/javascript';bdcs.async = true;bdcs.src = 'http://znsv.baidu.com/customer_search/api/js?sid=12441349038163667913' + '&plate_url=' + encodeURIComponent(window.location.href) + '&t=' + Math.ceil(new Date()/3600000);var s = document.getElementsByTagName('script')[0];s.parentNode.insertBefore(bdcs, s);})();
-	</script>
-	
-    
-    <span class="pagination__page-number">1 / 5</span>
-    
-        <a class="older-posts pagination__older btn btn-small btn-tertiary" href="/page/2/#blog">更早 &rarr;</a>
-    
-</nav>
+上文简单分析了一下rocketmq中的存储部分，本文中，我们来看看主要的存储文件中的数据结构。包括CommitLog，ConsumerQueue以及IndexFile，可以试着去读取这些文件
+
+文件结构
+
+CommitLog
+
+private static void readCommitlog(int/*读取的消息数量*/ t) throws Exception{
+  Strin...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on April 27, 2019
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2019/04/07/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(7)-store%E6%A8%A1%E5%9D%97/">
+        <h2 class="post-title">
+            rocketmq源码阅读(7)——store模块
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+在rocketmq中，store模块，也就是底层存储模块，是最为核心的部分，也在很大程度上决定了rocketmq的性能。rocketmq借鉴了kafka的设计，采用了文件存储。
+
+整体介绍
+
+消费模型
+
+先看看rocketmq的存储架构(图来源于此博文)
 
 
+
+可以看到在broker接收到消息后，首先会把消息写入到commitLog中，之后会异步将消息分发给ConsumerQueue...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on April 7, 2019
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2019/02/24/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(6)-remoting%E6%A8%A1%E5%9D%97/">
+        <h2 class="post-title">
+            rocketmq源码阅读(6)——remoting模块
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+本文中，会看看rocketmq中remoting模块中的代码。remoting模块相对而言会比较简单，主要是对netty进行了一层封装，至于netty的细节本文中就不细讲了，建议对netty有一些基本的了解再来看此文会比较好。我们其实可以看看像rocketmq这种成熟的消息队列中间件是如何使用netty这种高性能网络通信框架。
+
+从功能上来看，分为NettyRemotingClien...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on February 24, 2019
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2019/01/20/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(5)-%E6%B6%88%E8%B4%B9%E8%80%85%E6%B6%88%E8%B4%B9%E6%B5%81%E7%A8%8B/">
+        <h2 class="post-title">
+            rocketmq源码阅读(5)——消费者消费流程
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+在消费者初始化过程中，我们看到了PullRequest的分发，接下来就是看看具体的消费流程。大体的流程是这样的：
+
+
+  PullRequest的处理
+  回调PullCallBack处理pullResult
+  ConsumeMessageService处理消息
+
+
+PullRequest的处理
+
+PullMessageService在拿到PullRequest后，直接转发给Def...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on January 20, 2019
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2019/01/13/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(4)-mq%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%9C%8D%E5%8A%A1/">
+        <h2 class="post-title">
+            rocketmq源码阅读(4)——mq负载均衡服务
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+上一文在消费者初始化中，提到了客户端的负载均衡服务。再简单介绍一下负载均衡服务
+
+rebalance服务主要用于每个消费者实例匹配一个或者多个queue，以保证broker端的queue只对应一个实例，避免多个实例消费相同的queue。
+
+rebalance主要包括RebalancePullImpl和RebalancePushImpl，位于org.apache.rocketmq.cl...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on January 13, 2019
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2019/01/13/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(3)-mq%E6%B6%88%E8%B4%B9%E8%80%85%E5%88%9D%E5%A7%8B%E5%8C%96/">
+        <h2 class="post-title">
+            rocketmq源码阅读(3)——mq消费者初始化
+        </h2>
+        
+        <div class="post-content-preview">
+            写在前面
+
+最近开始看了一些rocketmq的源码，在正式讲消费者初始化过程之前先写写自己的感受吧。虽说已经写了两篇了，但阅读以及整理的时候，还是感觉有很多问题。之前看源码更多的是去了解相关的流程。在写文章时，还是能体会到自己太弱，无法理解相关设计的精妙之处，仅仅是能看明白流程。说到精妙之处，比如说其中设计模式的应用，相关锁的使用原因，带着问题去看才会发现不懂的还有很多。另外，在整理的时候，...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on January 13, 2019
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2019/01/07/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(2)-MQClientInstance%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/">
+        <h2 class="post-title">
+            rocketmq源码阅读(2)——MQClientInstance的初始化
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+上篇在读mq生成者相关的代码时。在DefaultMQProducer的初始化最后一步时，代码是mQClientFactory.start();。至于MQClientInstance的关键性在上篇文章中也提到了。这篇就从mQClientFactory.start();开始吧。先放上相关的代码吧
+
+###字段分析
+
+先来看看MQClientInstance中的重要的变量吧
+
+//该cli...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on January 7, 2019
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2019/01/05/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(1)-%E7%94%9F%E4%BA%A7%E8%80%85%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E6%B6%88%E6%81%AF%E7%9A%84%E5%8F%91%E9%80%81/">
+        <h2 class="post-title">
+            rocketmq源码阅读(1)——生产者初始化与消息的发送
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+其实这开头还是在全部写完才加上去的。其实这篇文章也不是那么入门了，毕竟也涉及到源码了。不说熟练掌握rocketmq的架构，至少得熟悉rocketmq的整体流程，包括broker，queue，namesrv。当然，本文并未涵盖事务消息，VIPChannel，延迟消息，队列选择算法的选择等，一些高级用法的源码会在之后慢慢补充起来。不过话说，估计也没人看——、
+
+先放个最简单的produc...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on January 5, 2019
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2018/09/22/java%E4%B8%AD%E7%9A%84%E6%97%B6%E9%97%B4/">
+        <h2 class="post-title">
+            java中的时间
+        </h2>
+        
+        <div class="post-content-preview">
+            工欲善其事，必先利其器
+
+工程中其实对时间的使用是非常多的。Java中的time其实一直都是一个比较蛋疼的问题。我看网上也是对其诟病已久。Java8也推出了java.time包以便于统一时间相关的管理，就此对Java中的时间进行一个简单的总结。主要是各种类型之间的转换，在此做一个简单的记录总结。
+
+概括
+
+这次主要包含了四种对象的相互转换，包括Date，Java8推出的LocalDateTi...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on September 22, 2018
+    </p>
+</div>
+<hr>
+
+
+<!-- Pager -->
+
+<ul class="pager">
+    
+    
+    <li class="next">
+        <a href="/page2">Older Posts &rarr;</a>
+    </li>
+    
+</ul>
+
+
+    		</div>
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-3 col-lg-offset-0
+                col-md-3 col-md-offset-0
+                col-sm-12
+                col-xs-12
+                sidebar-container
+            ">
+                <!-- Featured Tags -->
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                            
+                                <a href="/tags/#杂记" title="杂记" rel="6">
+                                    杂记
+                                </a>
+                            
+                        
+                            
+                                <a href="/tags/#git" title="git" rel="2">
+                                    git
+                                </a>
+                            
+                        
+                            
+                        
+                            
+                                <a href="/tags/#java" title="java" rel="11">
+                                    java
+                                </a>
+                            
+                        
+                            
+                        
+                            
+                                <a href="/tags/#mysql" title="mysql" rel="2">
+                                    mysql
+                                </a>
+                            
+                        
+                            
+                                <a href="/tags/#网络" title="网络" rel="4">
+                                    网络
+                                </a>
+                            
+                        
+                            
+                                <a href="/tags/#redis" title="redis" rel="2">
+                                    redis
+                                </a>
+                            
+                        
+                            
+                                <a href="/tags/#设计模式" title="设计模式" rel="7">
+                                    设计模式
+                                </a>
+                            
+                        
+                            
+                                <a href="/tags/#rocketmq" title="rocketmq" rel="9">
+                                    rocketmq
+                                </a>
+                            
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Short About -->
+                <section class="visible-md visible-lg">
+                    <hr><h5><a href="/about/">ABOUT ME</a></h5>
+                    <div class="short-about">
+                        
+                            <img src="/img/avatar-hux.jpg" />
+                        
+                        
+                            <p>听摇滚，写代码，学技术，永远年轻，永远热泪盈眶</p>
+                        
+                        <!-- SNS Link -->
+                        <ul class="list-inline">
+                            
+                            
+                            
+                            
+                            
+                            
+                            <li>
+                                <a target="_blank" href="https://github.com/dingmingcheng">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </section>
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+                    
+                        <li><a href="http://huanzhikang.github.io">huanzhikang Blog</a></li>
+                    
+                </ul>
+                
+    		</div>
+        
+	</div>
 </div>
 
-            <section class="footer">
-    <footer>
-        <div class = "footer_div">  
-        <nav class="cover-navigation navigation--social">
-          <ul class="navigation">
 
-          
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+                    
 
-          
-          
-          
+                    <!-- add Weibo, Zhihu by Hux, add target = "_blank" to <a> by Hux -->
+                    
+                    
 
-          
 
-          <!-- RSS -->
-          <li class="navigation__item_social">
-            <a href="/feed.xml" rel="author" title="RSS" target="_blank">
-              <i class='social fa fa-rss fa-2x'></i>
-              <span class="label">RSS</span>
-            </a>
-          </li>
-
-          
-
-          </ul>
-        </nav>
-
-        </div>
-
-        <div class = "footer_div">  
-           <p class="copyright text-muted">
-            Copyright &copy; dmc 2019
-               <!--Theme by <a href="http://baixin.io/">leopardpan</a> -->
-               |
-            </p>
-        	<div align="right">
-    			<link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css">
-
-        </div>
-        <div>
-    </footer>
-</section>
-
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/dingmingcheng">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; New Boy 2019
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
         </div>
     </div>
-    
-    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
-<script type="text/javascript" src="/js/main.js"></script>
+</footer>
 
-<script type="text/javascript" src="/js/highlight.pack.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("http://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
 
 
 
-    
-  </body>
+<!-- Baidu Tongji -->
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
 
 </html>

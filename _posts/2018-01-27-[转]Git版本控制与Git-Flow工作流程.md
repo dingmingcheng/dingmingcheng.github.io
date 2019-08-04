@@ -3,7 +3,8 @@ layout: post
 title: "[转]Git版本控制与Git Flow工作流程"
 date: 2018-01-27
 description: "git flow"
-tag: git
+author: "dingmc"
+tags: git
 ---
 
 本文出处：[原文](http://asion.club/posts/git-flow.html)
@@ -34,7 +35,7 @@ tag: git
 
 我们使用的分支流程：
 
-![](pic.svg)
+![](/img/in-post/replay-git-flow/pic.svg)
 
 - 天蓝色圆点所在的线为我们源码的主线（master）。
 - 天蓝色方形指向的节点就是每一个发布版本的标签（tag）。
@@ -49,22 +50,22 @@ tag: git
 
 1. 原来的master分支用来记录官方发布轨迹；
 2. 新的develop分支是一个集成分支，用来记录开发新功能的轨迹。
-   ![](pic2.svg)
+   ![](/img/in-post/replay-git-flow/pic2.svg)
    除了master主线和develop主分支线，其他的分支都是临时的分支，有一定的生命周期的，其余的工作流程分支都是围绕这两个分支之间的区别进行的。
 
 #### 其他分支说明
 
 - **新功能分支（Feature Branches）**
     每一个新的功能都应该创建一个独立的分支，从develop分支中派生出来。当功能完成后，要合并（merged）回develop分支，合并后它的生命周期就结束。新功能分支不会与master分支有直接的交汇。如图：
-  ![](pic3.svg)
+  ![](/img/in-post/replay-git-flow/pic3.svg)
     注意：对于所有意图和目的，新功能分支会合并到develop分支。但是，这个Gitflow工作流不会在此结束。
 - **发布分支（Release Branches）**
   一旦开发的功能已经满足发布条件（或预定发布日期接近），应该合并所有满足发布条件的新功能分支到develop分支中，然后，开出一个发布分支（Release），开始准备一个发布版本。在这个分支上，不能再添加新的功能，只有bug修复和该版本为导向的任务。一旦到了发布日期，Release就要合并回master发布，并且，打出版本标签。另外，还需要合并回develop分支。
-  ![](pic4.svg)
+  ![](/img/in-post/replay-git-flow/pic4.svg)
      使用一个专门的分支来准备发布版本，使得一个团队能对当前版本进行抛光，而另一个团队继续为下一个版本的功能做准备。它还创造了良好定义的发展阶段（例如，很容易说，“本周我们正在准备4.0版”，而且真实地看到它在库中的结构）。
 - **维护分支（Maintenance Branches）**
     维护分支也就是线上bug修复分支，使用来快速修复生产环境的紧急问题。
-  ![](pic5.svg)
+  ![](/img/in-post/replay-git-flow/pic5.svg)
     这个分支是唯一一个开放过程中直接从master分支派生来的分支。快速的修复问题后，它应该被合并回master和develop（或者当前发布分支），然后，master分支需要打一个版本标签。
     一个专门的错误修复开发线，可以让团队在不等待下一个发布周期，导致中断工作流程情况下解决问题。可以将维护分支当做主要的问题修复分支，与master并行。
 
@@ -89,7 +90,7 @@ tag: git
 ### 工作流的基础
 
 **创建develop分支**
-![](pic6.svg)
+![](/img/in-post/replay-git-flow/pic6.svg)
 
 - 项目负责人在本地master基础上创建一个develop分支，然后，推送到服务器；
 
@@ -110,7 +111,7 @@ develop这个分支将包含项目的完整历史记录，而master将包含缩�
 ### 新功能开发流程
 
 1. 新建feature分支
-   ![](pic7.svg)
+   ![](/img/in-post/replay-git-flow/pic7.svg)
     基于develop分支创建新功能分支：
 
 ```
@@ -130,7 +131,7 @@ git statusgit add <some-file>git commit -m "Add some-file."
 ```
 
 完成新功能开发（合并feature分支到develop）
-![](pic8.svg)
+![](/img/in-post/replay-git-flow/pic8.svg)
  **当确定新功能开发完成，且联调测试通过，并且新功能负责人已经得到合并feature分支到develop分支的允许；这样才能合并feature分支到develop。**
 
 1. ```
@@ -152,7 +153,7 @@ git statusgit add <some-file>git commit -m "Add some-file."
 ### 线上版本发布流程
 
 1. 从develop中创建准备发布的release分支
-   ![](pic9.svg)
+   ![](/img/in-post/replay-git-flow/pic9.svg)
     当主测试流程完成，源码已经趋近于稳定状态，应该准备一个发布版本，确立版本号：
 
 ```
@@ -170,7 +171,7 @@ git push
 继续抛光改bug
 
 release分支合并到master发布
-![](pic10.svg)
+![](/img/in-post/replay-git-flow/pic10.svg)
 一旦已经满足发布条件（或已经到了预定发布日期），应该把release分支合并到master分支和develop分支中，然后，使用master发布新版本。合并release分支到develop分支是很重要的，要让release上修改的东西能在后续的开发分支中生效。
 
 ```
@@ -203,7 +204,7 @@ git tag -a 0.1.0.RELEASE -m "Initial public release" mastergit push --tags
 修改bug Fix the bug
 
 完成修复，合并到master发布
-![](pic11.svg)
+![](/img/in-post/replay-git-flow/pic11.svg)
 
 ```
 git checkout mastergit merge issue-#001git push

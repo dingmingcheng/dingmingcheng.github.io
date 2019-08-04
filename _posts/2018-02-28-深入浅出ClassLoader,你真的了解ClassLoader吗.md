@@ -3,7 +3,7 @@ layout: post
 title: "[转]深入浅出ClassLoader,你真的了解ClassLoader吗"
 date: 2018-02-28
 description: "jvm相关"
-tag: java
+tags: java
 ---
 
 ## 前言
@@ -87,7 +87,7 @@ public class A {
 
 JavaEE的 **委派模型**
 
-![](pic1.png)
+![](/img/in-post/class-loader/pic1.png)
 
     每个方块都是一个类加载器，JavaEE规范推荐每个模块的类加载器先加载本类加载的内容，如果加载不到才回到parent类加载器中尝试加载。
 
@@ -95,7 +95,7 @@ JavaEE的 **委派模型**
 
     Tomcat的 **类加载顺序（开启了delegate模式）**
 
-![](pic2.png)
+![](/img/in-post/class-loader/pic2.png)
 
     在Tomcat中，默认的行为是先尝试在Bootstrap和Extension中进行类型加载，如果加载不到则在WebappClassLoader中进行加载，如果还是找不到则在Common中进行查找。在Alibaba使用的Tomcat开启了delegate模式，因此加载类型时会以parent类加载器优先。
 
@@ -313,7 +313,7 @@ org.apache.mina.proxy.utils.MD4@401c8af5
 
      **SystemDictionary** 如图所示：
 
-![](pic3.png)
+![](/img/in-post/class-loader/pic3.png)
 
     类型加载时，需要传入类加载器和需要加载的全类名，如果在 **SystemDictionary** 中能够命中一条记录，则返回*class* 列上对应的类型实例引用，如果无法命中记录，则会调用`loader.loadClass(name);`进行类型加载。
 
@@ -449,11 +449,11 @@ public void test() throws Exception {
 
 启动middleware-detector，查看 **Pandora** 提供的自定义检查器，目前编号为1的Pandora自定义检查器就是进行classpath下的指定类或者接口的查找工作。
 
-![](pic4.png)
+![](/img/in-post/class-loader/pic4.png)
 
     配置classpath目录以及需要查找的类名，这里类名支持 * 号进行模糊匹配。可以看到设定当前的classpath目录到了*WEB-INF/lib* 下面，然后找寻`*apache*comm*A*Utils`是否存在，如果能够找到则会输出到终端，这里就找到了ArchiveUtils和ArrayUtils两个符合要求的类。如果无法找到，那么就可能是`pom.xml`的依赖配置不正确了，需要检查一下。
 
-![](pic5.png)
+![](/img/in-post/class-loader/pic5.png)
 
 ## 10. 使用Middleware-Detector进行检查类冲突
 
@@ -461,7 +461,7 @@ public void test() throws Exception {
 
 我们可以通过使用Middleware-Detector的类查找进行定位，但是不能发现一个修复一个，这里Middleware-Detector提供了一个检查classpath下有冲突jar包的功能。只需要设置classpath的目录，然后运行cc –check tomcat#1即可。有冲突的jar就需要自己在pom.xml里面进行仲裁或者排除了。
 
-![](pic6.png)
+![](/img/in-post/class-loader/pic6.png)
 
 **原创文章，转载请注明：** 转载自[并发编程网 – ifeve.com](http://ifeve.com/)**本文链接地址:** [深入浅出ClassLoader](http://ifeve.com/classloader/)
 

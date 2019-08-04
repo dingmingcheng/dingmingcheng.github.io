@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>[转]MD5+Salt安全浅析 - New Boy</title>
+
+    <link rel="canonical" href="http://localhost:4000/2018/02/12/%E8%BD%AC-MD5+Salt%E5%AE%89%E5%85%A8%E6%B5%85%E6%9E%90/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="http://cdn.staticfile.org/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">New Boy</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/about/">About</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/demo/">Example Post</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#网络" title="网络">网络</a>
+                        
+                    </div>
+                    <h1>[转]MD5+Salt安全浅析</h1>
+                    
+                    
+                    <h2 class="subheading"></h2>
+                    
+                    <span class="meta">Posted by New Boy on February 12, 2018</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+				<blockquote>
+  <p>原文地址：<a href="https://www.server110.com/sec_news/201309/995.html">https://www.server110.com/sec_news/201309/995.html</a></p>
+</blockquote>
+
+<p>这段时间诸多爆库的新闻，里面有许多饶有趣味的事情。那些用简单密码，或者一个密码走天下的笑话就不说了，咱说点有内涵的。（这篇文章是给IT界的人看的，如果你看不懂，我会准备一个简单的“如何辨别密码安全糟糕的网站”的方法给你，另文描述。）
+爆库之后哀鸿遍野，一大堆人都在里面嗷嗷乱叫，当然也包括我在内。但是当我嗷了一阵子之后，发现我的G点和大家的居然不一样，就静下心来观察。结果发现就连大多数IT界的人对密码学这个玩意儿居然都是一无所知的状态，各种人云亦云的笑话此起彼伏。当然了，能看懂的也没几个。</p>
+
+<p>就比如说MD5不安全这个笑话。</p>
+
+<p>其实也不知道这怎么就跟爆库的事情扯到一块去了，但总归那几天就有一堆人上来恨恨地说：MD5不安全，现在还有人用来做密码的散列……好吧，大概对于有些人来说有点深了，这个知识以后我补。咱接着说，“简直是逊爆了”。当然，原文不是如此，但也差不多了。</p>
+
+<p>言下之意，就是他的知识告诉他MD5是不安全的，而用这些的人大概是没知识的。而事实上是，这么说的人同样没有知识。为什么？首先要搞清楚所谓的“不安全”是指哪些问题？</p>
+
+<h3 id="笑点一md5被破解啦">笑点一：MD5被破解啦!</h3>
+
+<p>2004年的国际密码学会议（Crypto’2004）王小云证明了MD5可以被碰撞，至此，MD5不再安全。没错，确实不安全了，但是具体是什么意思呢？大概多数人根本搞不清楚，也就不知道这个不安全是在哪一个场景底下的了。</p>
+
+<p>要说明这个问题，首先要搞懂MD5是一个什么概念。所谓的MD5实际上是一个散列函数，具体说特点如下：</p>
+
+<p>无论多长多随意的信息，最后都转换成一个固定长度的散列值；</p>
+
+<p>对于大量不同的信息，最后出来的散列值呈平均分布；</p>
+
+<p>对于特定的一个信息，最后出来的散列值都是相同的。</p>
+
+<p>根据上面的特点，人们通常可以得到下面的结论：</p>
+
+<p>不可逆（用一个固定长度的数值，怎么可能表示任意长度的信息呢）；</p>
+
+<p>难碰撞（假如散列值有效范围是从0到9，那么平均需要尝试11次才能找到一个相同的信息。但是，一般来说散列值有效范围都在2的64次方以上，即0到18,446,744,073,709,551,616之间，甚至更多，你可以说是一个天文数字）；</p>
+
+<p>可代表（既然不可逆，难碰撞，你用散列值是猜不出原来的信息，更不太可能伪造一个信息，其散列值完全相同。于是你出示一个散列值，就可以证明你持有某个有效信息，比如密码）。</p>
+
+<p>好，到这里你大概能发现，上面结论中的难碰撞貌似不对。没错，2004年的破解就是证明了MD5在碰撞上面不可靠，也就是可以通过某种方式快速的找到具有相同散列值的另一个信息。比方说：</p>
+
+<p><strong>已知</strong>原来的信息是aaaaaaaaaa，散列值是10；</p>
+
+<p>通过某方法，能迅速的找到一个信息aaaXaaaXaa，散列值也是10。</p>
+
+<p>那么这会造成什么影响呢？这就需要先说明一下，散列函数都可以用来做什么：</p>
+
+<p>签名认证，证明某段信息没有被修改；</p>
+
+<p>密码验证，证明你确实知道某个密码；</p>
+
+<p>其他，比如用在哈希表的散列过程等（这一个场景跟安全没关系，咱就不讨论了）。</p>
+
+<p>先说签名认证。所谓签名认证就是给出一个信息A，然后运算H(A)=S，同时将A和S记录起来。当需要校验信息A有没有被篡改的时候，只要计算H(A)=S’，看S’是否等于S，就知道了。实际上过程比这个复杂，需要运用非对称加密才能保证安全。但总归可以看出来，如果我知道A和S，就能快速推算出一个A’出来，使得H(A’)=S，那么这个签名认证过程就失效了，或者说就可以伪装没有篡改了。</p>
+
+<p>而所谓密码验证，就是给定一个密码A，经过散列运算H(A)=S，此后，每一次用户登录的时候输入A’，计算H(A’)=S’，看看S’是否就是S。如果相等，那就说明用户知道密码A，否则就是不知道。在这种应用里面，如果我知道正确的密码A，我还需要费半天功夫搞出个A’，使得H(A’)=S吗？完全没必要。</p>
+
+<p>换句话说，2004年那个MD5碰撞问题，对于密码验证来说，根本就没多大干系。那些拿着这个来说MD5在密码应用上不安全的，压根就没搞懂MD5的碰撞不安全是怎么回事。下次有人再这么说的时候，你大可以嘲笑一下对方，哪怕你不知道我上面在说什么，你只要质问一下“碰撞是什么意思，请不惜赐教”，多半就哑巴了。</p>
+
+<h3 id="笑点二已经有很大的md5密码碰撞库有78万亿个密码呢">笑点二：已经有很大的MD5密码（碰撞）库，有7.8万亿个密码呢！</h3>
+
+<p>​	另一个拿来说事的，就是MD5密码库如何如何大，比如包含了7.8万亿个密码。可是……你晓得英文大小写+数字+2标点共计64种字符，长度是10个字符，总共会有多少个不同的密码吗？答案是1,152,921,504,606,846,976个，也就是1,152,921.5万亿个。那个7.8万亿个密码的密码库，只占有这里面的<strong>百万分之6.7</strong>。</p>
+
+<p>可为什么大家的密码还老是泄露呢？那是因为：</p>
+
+<p>人的记性很差，所以总会选用比较好记的密码，也就是弱密码；</p>
+
+<p>人的记性很差，所以总会选择极有限的几个密码用在无穷多的网站上；</p>
+
+<p>没读过书的人总是那么多，于是总用很差劲的方式来对待系统的安全部分，尤其是密码部分。</p>
+
+<p>先说弱密码，因为你总倾向于记生日、人名、单词，于是你的密码通常会是：</p>
+
+<p>4位纯数字，总计1万个不同的密码；</p>
+
+<p>6位纯数字，总计100万个不同的密码；</p>
+
+<p>8位以内的小写字母，而且还是某种拼音或者单词，总计估计不超过1000万个不同的密码；</p>
+
+<p>即便是8位小写字母加数字，也就是时2.8万亿个不同组合。</p>
+
+<p>所以，一个7.8万亿个密码的密码库，足以覆盖大部分用户的弱密码了。可是，问题没那么简单，如果密码保存和验证的过程正确，即便有一个7.8万万亿的密码库，黑客也不会搞出你的密码来——不是不能，而是没有兴趣。</p>
+
+<p>为什么？那就先要搞清楚，密码是怎么被破解的。假设明文成为P，密钥为k，加密过程为E(P,
+k)，得到的密文是C，而解密过程为D(C, k)=P。那么破解的手段大致有如下几种：</p>
+
+<p>暴力穷举：最笨最慢的方法，让P’=0…X，找到E(P’, k)=C；</p>
+
+<p>算法分析：研究E()，找到其中的弱点，然后P’=0…Y，找到E(P’, k)=C，Y&lt;X；</p>
+
+<p>密文分析：根据C1,C2,…Cn，找到里面的蛛丝马迹，直接找到能解密的
+替代函数D’()，或者直接解出C的部分明文P’；</p>
+
+<p>已知明文攻击：有选择的给出明文P1,P2,…Pn，让对方用E(p, k)计算出C1, C2,
+…Cn，通过分析找到k’，使得D(C, k’)=P；</p>
+
+<p>生日攻击：有选择的给出明文P1,P2,…Pn，然后直接用这些明文尝试用户U1, U2,
+…Un，恰巧某些用户Ux就是用的其中一个明文。这是后面要讲的其中一个重点，所谓加盐就是要解决类似的问题；</p>
+
+<p>偷听：监听链路，等用户U给出P时即可直接获得，或者用户给出的是E(P,k)=C，则下次也可以用同样的协议给出C，伪装用户U。什么QQ盗号木马，就属于这种形式；</p>
+
+<p>整锅端：通过后门漏洞等，直接拿到所有数据和程序，然后进行上面的各种分析和攻击。本次CSDN为开端的，多数是这种；</p>
+
+<p>间谍（找到人，用各种贿赂，直接拿到E()、D()和k，甚至所有移植的C和P，或者自己拿着这些东西出去卖钱）。</p>
+
+<p>上面的攻击难度和耗费时间和成本基本上是递减的，其中整锅端的这种攻击，可以使得攻击者可以选择更简单快速的攻击方式，这取决于密码保管方采用的什么保管策略和协议。如果做得好，那么能做的顶多就是已知明文攻击，或者针对个别用户做生日攻击。如果做得不好，比如说像这次爆发的结果看，就直接拿到明文密码了。</p>
+
+<p>很显然，如果用暴力破解，那么结果就是对每个用户尝试超过1,152,921万亿个不同的密码，这是极其费时而不现实的。所以，大多数情况下会选择生日攻击这种形式，因为大多数人会选择那些比较好记的密码，而这些密码占总体密码只是一个极有限的一部分。这就是为什么说7.6万亿个密码的库，就可以搅得大多数网站天翻地覆。那么这种攻击具体是如何实施的呢？我来举一个例子：</p>
+
+<p>比如说大家可能很喜欢使用123456，那么经过MD5散列之后就可以得到一个散列值，比如说是qwerty。于是乎当我们拿到一个网站的数据库，发现里面有为数不少的用户，其密码列保存的是qwerty。这说明几个问题：</p>
+
+<p>该站点密码保存的方式不好，很可能是计算C=E(P)，保存C；</p>
+
+<p>这些用户的密码很可能是相同的。</p>
+
+<p>你只要尝试一下用qwerty登录其中一个用户，发现登录不了，就可以得出如下结论：</p>
+
+<p>该站点不是使用明文保存密码；</p>
+
+<p>该站点使用的是MD5；</p>
+
+<p>该用户的密码就是123456。</p>
+
+<p>剩下来要做的事情，就是用那个7.6万亿的密码库，逐一比对每个用户的密码列了。</p>
+
+<p>好，第二个MD5不安全的笑点来了：上述破解过程对于绝大多数散列函数来说，基本上都是一个道理。比如说SHA1，用同样的密码样本，也可以制作出一个7.6万亿的密码库，然后接下来的事情就和MD5一样了。那么当大家用这个方法都不安全的时候，何来一个说法说MD5就不安全呢？</p>
+
+<p>总结：如果有人跟你说7.6万亿个密码的密码库，你大可以通过“你知道什么是生日攻击或者碰撞攻击吗”来嘲笑他，哪怕上面那堆东西你看不懂一个字。</p>
+
+<h3 id="笑点三md5加盐不安全">笑点三：MD5加盐不安全！</h3>
+
+<p>还有人会说MD5+salt（就是俗称的加盐）不安全，理由是MD5运算很快云云。这样说的人，肯定不知道MD5+salt要避免的问题是什么，或者说MD5+salt为什么就安全了，甚至大概连MD5+salt的salt是个什么东西，应该怎么个加法都不知道。</p>
+
+<p>要搞明白这些个问题，首先要了解两个最基本的知识：</p>
+
+<p>密码学的理论安全，是建立在就算你知道了所有其他的信息包括E()、D()的具体算法，整个加解密的协议，以及保存密文的方法，乃至所有程序源代码、数据库，你只要不知道密钥k是什么，对于待破解的密文C是不能得到明文P的，甚至用任意其它明文P’计算出相应的密文C’，你也得不到待破解密文C所对应的明文P是什么；</p>
+
+<p>密码学的应用安全，是建立在破解所要付出的成本远超出能得到的利益上的。</p>
+
+<p>对于保存用户密码所用的散列函数来说，是没有k这回事的。就算有那也是保存在服务端，一锅端的时候就会拿到。所以要保证理论的安全，就必须要求算法本身不能通过密文C能得到明文P，这个散列算法本身就可以做到。另外一个要保证的事情，那就是通过各种可以公开让大家知道的保存密码方法，和验证协议，做到不遭受包括生日攻击在内的各种攻击。然而很不幸的是，这种保证实际上是做不到的，或者说无法在面对这种攻击的时候，让针对单个用户的破解达到近似暴力破解所需时间的程度。关于这个问题举一个例子：</p>
+
+<p>据说现在随便一台好点的机器，每秒钟可以计算700万个密码的MD5值。也就是说7.6万亿的密码库，需要运算大概1百万秒，也就是11天半。如果你被FBI，克格勃，或者国家安全局盯上的话，他们肯定会用性能强大万倍以上的机器来对付你。也就是说，这个时间会缩短到大概2分钟。</p>
+
+<p>于是，实际上密码保存的着眼点是应用安全。还是上面的例子，比如说，如果黑客A花5000买了个机器，而这台机器大概能用2年。如果他用11天半破解了你的账号，那么成本大概就等于5000元/2年*11天半=79元。但如果拿到你的账号密码之后，里面能获取的利益也就5毛，这个黑客A就亏了。亏本生意是不会有人去做的，就算做了，他的损失也比你大。所以应用安全的重点就是提高破解的门槛，手段包括：</p>
+
+<p>增加算法所需要的时间（比如那个宣称散列一次至少0.3秒的bcrypt）；</p>
+
+<p>增加破解所有人的总体时间，等。</p>
+
+<p>前一种方法也不是不行，但是这种方法并不从根本上解决生日攻击的问题。或者说，产生一个密码库的时间从1台普通机器用11天半，增加到用一个超级计算机集群用1年，但是只要有了这个库之后，对已有的密码散列值进行生日攻击只要10秒钟，那还是很划算的。因为产生密码库的成本是一种沉没成本，和用户量有多少完全没有关系。比如说，用这个密码库去对比一个瑞士银行账户的密码，只要有几个沙特王子的密码在这个密码库里面，你就可以买下几百个超级计算机集群了。</p>
+
+<p>而后者，则是将生成密码库的沉没成本变成边际成本，也就是说：如果需要为每一个用户生成一遍密码库，那整个破解的成本就会随着用户量的提高而急剧增加。比如生成一个用户的密码库需要花11天半的时间，一共有1万个用户，全部破解就需要315年的时间。就算生成密码库的时间压缩到10分钟，全部破解也需要70天的时间。那怎么做到呢？方法就是加盐，也就是那个笑点“md5+salt不安全”。</p>
+
+<p>加盐怎么加呢？方法如下：</p>
+
+<p>针对每一个用户U，生成一个随机值Salt，并且在以后永远保持不变，任意两个用户的盐不能相同。然后当用户设置密码的时候，根据明文密码P，计算MD5(P+Salt)=C。而登录的时候用户也给出明文密码P’，服务器拿到之后同样计算MD5(P’+Salt)=C’，看C’是否等于C。我们来看一下这样是否就达到目的了：</p>
+
+<p>假设有两个用户A和B，密码都是123456，但盐分别是aaaa和bbbb，于是MD5(123456+aaaa)=X8jv8o，而MD5(123456+bbbb)=8go489，而不再是标准的qwerty。这时候：</p>
+
+<p>黑客拿到的只是：用户A的盐是aaaa，散列值是X8jv8o。用户B的盐是bbbb，散列值是8go489；</p>
+
+<p>首先，标准的密码库失效了；</p>
+
+<p>其次，每个用户的散列值都不一样，你无法根据相同散列值数量的多少得出哪些是弱密码；</p>
+
+<p>再次，盐是aaaa，散列值是X8jv8o，是无法推导出密码是123456，还是abcdef，还是别的什么东西，不像在简单MD5的情况下，看到qwerty就知道那是123456；</p>
+
+<p>于是，黑客剩下两个选项：</p>
+
+<p>针对每个用户进行暴力破解；或者</p>
+
+<p>针对每一个用户的盐，比如aaaa，分别根据弱密码明文库，计算MD5(弱密码明文+aaaa)=盐aaaa对应的散列值，然后再用这个密码库去对用户A进行生日攻击。对用户B还得重新根据新的盐bbbb生成密码库……</p>
+
+<p>看，这就是加盐的作用。</p>
+
+<p>总结：如果你要嘲笑这类人，你可以质疑他“你知道沉没成本和边际成本吗”，或者“加盐之后如何进行生日攻击或者碰撞攻击”，即便上面写的东西你都没看懂。</p>
+
+<p>嗯，其实在这个笑点下面还有一些有意思的分支笑点：</p>
+
+<h3 id="笑点三点一加固定盐">笑点三点一：加固定盐</h3>
+
+<p>说实话，什么叫做加固定盐我一开始没看懂，直到后来看到说给每个用户加随机盐我才恍然大悟。那意思是说，给每一个用户都用一样的盐，比如用户A使用盐aaaa，用户B也使用aaaa，……用户ZZZ还是使用aaaa。你如果看懂了上面我说的内容，大概你就知道盐是用来防止一个密码碰撞库可以用在所有用户身上。这种“固定盐”打一开始就违反了上述原则，根本就不是盐。所以，在应用密码学的书里面压根就没有“固定盐”这样的说法。</p>
+
+<p>之所以产生固定盐的想法，大概源于不让已有的简单MD5碰撞库能用在你身上，并且盐是不会泄露的。盐这种不是只有用户自己才知道的东西，不是密钥k，如果你的安全性就指望在没人知道你的“固定盐”是多少，那就违反了密码学的准则了，都不需要用脑袋想就知道这是不安全的。而且，人家连你的密码库都能拿到，盐还不是轻而易举的事情么？</p>
+
+<p>还有说不知道我的算法是什么，老大，人家能攻破你的系统登进来，把你的整套数据库拿走，还差程序不成？告诉你，剩下的问题只是你的库里面有多少价值而已。如果是一个不要说是银行库、淘宝库，就算是一个社交库，里面的价值（比如钓钓鱼）都足够请一个“安全专家”来审阅你的代码了。不要把这个安全专家想象的太高级，随便找个有点想象力的技术人员就可以了，比如这样的思路：</p>
+
+<p>我已经有你的程序了；</p>
+
+<p>找到生成密码散列值的入口函数Fuck()；</p>
+
+<p>拿一个明文密码库，在一个用户账号上面不停地改密码，也就是用每一个P不断地Fuck(P)；</p>
+
+<p>好了，密码碰撞库就出来了。</p>
+
+<p>固定盐这种想法还不是最搞笑的，还有下面这一个：</p>
+
+<h3 id="笑点三点二md5sha1这些公开的算法都是不安全的就算加了盐也不安全真正安全的只能是自己写一个算法然后再加盐">笑点三点二：MD5、SHA1、……这些公开的算法都是不安全的，就算加了盐也不安全，真正安全的只能是自己写一个算法，然后再加盐</h3>
+
+<p>我都懒得说什么，这种说法除了暴露你的愚昧无知之外，还能有什么意义呢？这说明你不了解：</p>
+
+<p>什么是MD5；</p>
+
+<p>加盐是干什么的；</p>
+
+<p>密码学的准则之一是不能依赖于你的算法不被公开；</p>
+
+<p>什么样的算法是安全的，怎么样算是安全。</p>
+
+<p>有没有高雅一点的笑点？也有：</p>
+
+<h3 id="笑点三点三用bcrypt吧可以随意调节运算需要的时间比md5慢千万倍每秒钟只能算出3个密码">笑点三点三：用bcrypt吧，可以随意调节运算需要的时间，比MD5慢千万倍，每秒钟只能算出3个密码……</h3>
+
+<p>好吧，这也许管用，因为成本确实挺高的。但是：</p>
+
+<p>单纯的使用这种算法不加盐，只不过增加了沉没成本，边际成本是不会变的，生日攻击还是存在的；</p>
+
+<p>1秒钟算3个密码，虽然破解时的成本大大增加了，但是你自己的系统的运行成本也会大大的增加。比如说：原来用MD5时一台服务器解决用户登录问题负载刚好100%，你用这个该死的bcrypt算法就需要该死的上万台服务器才能解决问题。</p>
+
+<p>其实这回归到一个简单的问题上：你的库里面价值几何？如果你是银行，兴许值得。但对于大部分的站点来说，这么搞只会过度增加自己的成本，MD5加盐就已经可以让大部分黑客完全丧失兴趣了。</p>
+
+<p>还有一些类似的说法，也是一样的。比如说：MD5加盐多算几遍。其实这麽做无非就是增加了一些计算成本而已，和bcrypt思路无差异。（当然，也有人以为这样多算几遍因为算法不标准，人家不知道，于是就安全了。请参见笑点三点一。）</p>
+
+<p>其实，只要你加的是真正意义上的盐——每个用户都不相同、随机的，那其余的手段基本上不是花拳绣腿，就是在表演如何自己砸自己的脚。当然了，不排除有些真的很天才的想法，但大部分人的说法都不在这个范畴内。</p>
+
+<h3 id="总结陈词">总结陈词</h3>
+
+<p>如果你没读过某个领域的至少一本书，最好别随便发言，否则别人一眼就能看出你是个什么青年；</p>
+
+<p>MD5+salt对于大部分中小网站来说已经足够安全了；</p>
+
+<p>你实在信不过MD5，那就用点SHA1之流，在密码验证这种场景里面，已经足够了，除非你是开银行或者开淘宝的；</p>
+
+<p>身份验证只是安全的其中一个环节，想想这些库都是怎么被偷出来的，想想各种QQ木马……</p>
+
+<p>你在网络上看到的大部分言论基本上属于在此领域完全无知的人所想象出来的错误言论，比如说搜索“MD5不安全”，除了极少数个别的抄正规网站的报道外，以及个别真正的安全网站里面的信息外，几乎都是各种笑话；</p>
+
+<p>在安全这方面，只要你不是专家，你还是当他不存在比较好。和食品安全一样，在网络安全方面，其实大部分网站这方面做得都很糟糕，你要知道了真实的情况，恐怕没法用网络上的东西了。</p>
+
+
+
+                <hr>
+
+                
+
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2018/02/11/%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8Fjava%E5%AE%9E%E7%8E%B0/" data-toggle="tooltip" data-placement="top" title="责任链模式java实现">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2018/02/12/%E8%BD%AC-OAuth2.0%E6%8E%88%E6%9D%83%E7%AE%A1%E7%90%86/" data-toggle="tooltip" data-placement="top" title="[转]OAuth2.0授权管理">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+
+                
+
+                
+
+            </div>
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+        				
+                            
+                				<a href="/tags/#杂记" title="杂记" rel="6">
+                                    杂记
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#git" title="git" rel="2">
+                                    git
+                                </a>
+                            
+        				
+                            
+        				
+                            
+                				<a href="/tags/#java" title="java" rel="11">
+                                    java
+                                </a>
+                            
+        				
+                            
+        				
+                            
+                				<a href="/tags/#mysql" title="mysql" rel="2">
+                                    mysql
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#网络" title="网络" rel="4">
+                                    网络
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#redis" title="redis" rel="2">
+                                    redis
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#设计模式" title="设计模式" rel="7">
+                                    设计模式
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#rocketmq" title="rocketmq" rel="9">
+                                    rocketmq
+                                </a>
+                            
+        				
+        			</div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+                    
+                        <li><a href="http://huanzhikang.github.io">huanzhikang Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("http://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+                    
+
+                    <!-- add Weibo, Zhihu by Hux, add target = "_blank" to <a> by Hux -->
+                    
+                    
+
+
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/dingmingcheng">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; New Boy 2019
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("http://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

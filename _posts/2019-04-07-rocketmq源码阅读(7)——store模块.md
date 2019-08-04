@@ -16,7 +16,7 @@ tag: rocketmq
 
 先看看rocketmq的存储架构(图来源于[此博文](https://www.jianshu.com/p/b73fdd893f98))
 
-![](2.png)
+![](/img/in-post/rocketmq-7-store/2.png)
 
 可以看到在broker接收到消息后，首先会把消息写入到commitLog中，之后会异步将消息分发给ConsumerQueue和IndexFile，之后相关的细节也将主要围绕commitLog，consumerQueue，indexFIle来讲
 
@@ -24,13 +24,13 @@ tag: rocketmq
 
 在部署broker的机器上，rocketmq相关数据都存储在了**~/store**文件夹下，相关日志都存储在**~/logs/rocketmqlogs**文件夹下。
 
-![](1.png)
+![](/img/in-post/rocketmq-7-store/1.png)
 
 主要包含4个文件夹，逐个来看看
 
 **commitlog**
 
-![](3.png)
+![](/img/in-post/rocketmq-7-store/3.png)
 
 可以看到commitLog只有个大小为1G，名称为全数字的一个文件。
 
@@ -44,7 +44,7 @@ config中存储的主要是相关的最后消费的offset，消费delay值，订
 
 顾名思义，代表着消费情况，可以看看树形目录图
 
-![](4.png)
+![](/img/in-post/rocketmq-7-store/4.png)
 
 很明显，它为每个topic创建了一个文件夹，为每个topic的每个queue也创建了一个文件夹，内部的文件也存储了该队列的消费情况。consumerQueue文件的数据结构在等会也会尝试去解读
 
@@ -212,7 +212,7 @@ if (keys != null && keys.length() > 0) {
 
 接着来看看默认的index文件数据结构
 
-![](5.png)
+![](/img/in-post/rocketmq-7-store/5.png)
 
 总共420000040bytes，大约是400.5M
 

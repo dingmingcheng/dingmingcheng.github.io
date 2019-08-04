@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>fastjson学习 - New Boy</title>
+
+    <link rel="canonical" href="http://localhost:4000/2018/06/09/fastjson%E5%AD%A6%E4%B9%A0/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="http://cdn.staticfile.org/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">New Boy</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/about/">About</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/demo/">Example Post</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#java" title="java">java</a>
+                        
+                    </div>
+                    <h1>fastjson学习</h1>
+                    
+                    
+                    <h2 class="subheading"></h2>
+                    
+                    <span class="meta">Posted by New Boy on June 9, 2018</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+				<h2 id="前言">前言</h2>
+
+<p>额，json的介绍就不多说了，非常方便。对于json相关的处理也是工作中非常基础的一部分。不过之前非常乱，最近搜了搜资料，对fastjson做了一个总结，相信以后的json格式上应该是没什么问题了。</p>
+
+<h2 id="主要内容">主要内容</h2>
+
+<h3 id="概括">概括</h3>
+
+<p>先概括一下主要的知识点，理一理思绪，对下一步的学习还是十分关键的。</p>
+
+<p>1.测试中我们会接触到三种对象，分别的JSON对象，json串，javabean。JSON对象就是JSONObject，fastjson框架中提供的json对象，剩下2个就不说了。</p>
+
+<p>2.测试的对象主要包括：简单json，复杂json，json数组</p>
+
+<p>显而易见，我们测试的内容就是分别针对（简单json，复杂json，json数组）做（JSON对象，json串，javabean）的两两转换。</p>
+
+<h3 id="简单json">简单json</h3>
+
+<p>先放上简单json的测试数据：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//javabean,省略构造方法，set，get等</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Simple</span> <span class="kd">implements</span> <span class="n">Serializable</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">sex</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">Integer</span> <span class="n">age</span><span class="o">;</span>
+<span class="o">}</span>
+<span class="kd">static</span> <span class="o">{</span>
+    <span class="n">simpleBean</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Simple</span><span class="o">();</span>
+    <span class="n">simpleBean</span><span class="o">.</span><span class="na">setAge</span><span class="o">(</span><span class="mi">15</span><span class="o">);</span>
+    <span class="n">simpleBean</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">"fff"</span><span class="o">);</span>
+    <span class="n">simpleBean</span><span class="o">.</span><span class="na">setSex</span><span class="o">(</span><span class="s">"male"</span><span class="o">);</span>
+<span class="o">}</span>
+<span class="c1">//json串</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span> <span class="n">simpleJson</span> <span class="o">=</span> <span class="s">"{\"name\": \"ttt\",\"age\": 12,\"sex\": \"male\"}"</span><span class="o">;</span>
+</code></pre></div></div>
+
+<p>JSON &lt;==&gt; json串</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//JSON=&gt;json</span>
+<span class="n">JSONObject</span> <span class="n">jsonObject</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">simpleJson</span><span class="o">);</span>
+<span class="n">String</span> <span class="n">json</span> <span class="o">=</span> <span class="n">jsonObject</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">();</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">json</span><span class="o">);</span><span class="c1">//{"sex":"male","name":"ttt","age":12}</span>
+<span class="c1">//JSON&lt;=json</span>
+<span class="n">JSONObject</span> <span class="n">jsonObject</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">simpleJson</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">jsonObject</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"sex"</span><span class="o">));</span><span class="c1">//male</span>
+</code></pre></div></div>
+
+<p>JSON &lt;==&gt; javabean</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//JSON=&gt;javabean</span>
+<span class="n">JSONObject</span> <span class="n">jsonObject2</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">complexJson</span><span class="o">);</span>
+<span class="n">Simple</span> <span class="n">simple1</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">jsonObject1</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(),</span> <span class="k">new</span> <span class="n">TypeReference</span><span class="o">&lt;</span><span class="n">Simple</span><span class="o">&gt;()</span> <span class="o">{});</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">simple1</span><span class="o">);</span><span class="c1">//Simple{name='ttt', sex='male', age=12}</span>
+<span class="c1">//JSON&lt;=javabean</span>
+<span class="n">JSONObject</span> <span class="n">jsonObject</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">JSONObject</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(</span><span class="n">simpleBean</span><span class="o">));</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">jsonObject</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"name"</span><span class="o">));</span>
+</code></pre></div></div>
+
+<p>Json串 &lt;==&gt; javabean</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//json串=&gt;javabean</span>
+<span class="n">Simple</span> <span class="n">simple</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">simpleJson</span><span class="o">,</span> <span class="n">Simple</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">simple</span><span class="o">);</span><span class="c1">//Simple{name='ttt', sex='male', age=12}</span>
+<span class="n">Simple</span> <span class="n">simple1</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">simpleJson</span><span class="o">,</span> <span class="k">new</span> <span class="n">TypeReference</span><span class="o">&lt;</span><span class="n">Simple</span><span class="o">&gt;()</span> <span class="o">{});</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">simple1</span><span class="o">);</span><span class="c1">//Simple{name='ttt', sex='male', age=12}</span>
+<span class="c1">//json串&lt;=javabean</span>
+<span class="n">String</span> <span class="n">jsonString</span> <span class="o">=</span> <span class="n">JSON</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(</span><span class="n">simpleBean</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">jsonString</span><span class="o">);</span><span class="c1">//{"age":15,"name":"fff","sex":"male"}</span>
+</code></pre></div></div>
+
+<h3 id="复杂json">复杂json</h3>
+
+<p>测试数据：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//javabean</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Complex</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="n">Integer</span> <span class="n">index</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Simple</span><span class="o">&gt;</span> <span class="n">simples</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">grades</span><span class="o">;</span>
+<span class="o">}</span>
+<span class="kd">static</span> <span class="o">{</span>
+    <span class="n">complexBean</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Complex</span><span class="o">();</span>
+    <span class="n">complexBean</span><span class="o">.</span><span class="na">setGrades</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">6</span><span class="o">));</span>
+    <span class="n">complexBean</span><span class="o">.</span><span class="na">setIndex</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+    <span class="n">complexBean</span><span class="o">.</span><span class="na">setSimples</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="k">new</span> <span class="n">Simple</span><span class="o">(</span><span class="s">"ggg"</span><span class="o">,</span> <span class="s">"male"</span><span class="o">,</span> <span class="mi">17</span><span class="o">)</span>
+                                         <span class="o">,</span> <span class="k">new</span> <span class="n">Simple</span><span class="o">(</span><span class="s">"ttt"</span><span class="o">,</span> <span class="s">"male"</span><span class="o">,</span> <span class="mi">18</span><span class="o">)</span>
+                                         <span class="o">,</span> <span class="k">new</span> <span class="n">Simple</span><span class="o">(</span><span class="s">"yyy"</span><span class="o">,</span> <span class="s">"male"</span><span class="o">,</span> <span class="mi">19</span><span class="o">)</span>
+                                        <span class="o">));</span>
+<span class="o">}</span>
+<span class="c1">//json串</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span> <span class="n">complexJson</span> <span class="o">=</span> <span class="s">"{\"simples\":[{\"name\": \"ttt\",\"age\": 12,\"sex\": \"male\"},{\"name\": \"fff\",\"age\": 13,\"sex\": \"female\"}],\"index\":5,\"grades\":[12,32,43,51]}"</span><span class="o">;</span>
+
+</code></pre></div></div>
+
+<p>JSON &lt;==&gt; json串</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//JSON=&gt;json</span>
+<span class="n">JSONObject</span> <span class="n">jsonObject</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">complexJson</span><span class="o">);</span>
+<span class="n">String</span> <span class="n">json</span> <span class="o">=</span> <span class="n">jsonObject</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">();</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">json</span><span class="o">);</span>
+<span class="c1">//JSON&lt;=json</span>
+<span class="n">JSONObject</span> <span class="n">jsonObject</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">complexJson</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">jsonObject</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"grades"</span><span class="o">));</span><span class="c1">//[12,32,43,51]</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">jsonObject</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span><span class="c1">//{"index":5,"grades":[12,32,43,51],"simples":[{"sex":"male","name":"ttt","age":12},{"sex":"female","name":"fff","age":13}]}</span>
+
+<span class="k">if</span> <span class="o">(</span><span class="n">jsonObject</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"simples"</span><span class="o">)</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">JSONArray</span><span class="o">.</span><span class="na">parseArray</span><span class="o">(</span><span class="n">jsonObject</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"simples"</span><span class="o">).</span><span class="na">toString</span><span class="o">()).</span><span class="na">get</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">toString</span><span class="o">()).</span><span class="na">get</span><span class="o">(</span><span class="s">"sex"</span><span class="o">));</span><span class="c1">//female</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>JSON &lt;==&gt; javabean</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//JSON=&gt;javabean</span>
+<span class="n">JSONObject</span> <span class="n">jsonObject2</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">complexJson</span><span class="o">);</span>
+<span class="n">Complex</span> <span class="n">complex1</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">jsonObject2</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(),</span> <span class="k">new</span> <span class="n">TypeReference</span><span class="o">&lt;</span><span class="n">Complex</span><span class="o">&gt;()</span> <span class="o">{});</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">complex1</span><span class="o">);</span><span class="c1">//Complex{index=5, simples=[Simple{name='ttt', sex='male', age=12}, Simple{name='fff', sex='female', age=13}], grades=[12, 32, 43, 51]}</span>
+<span class="c1">//JSON&lt;=javabean</span>
+<span class="n">JSONObject</span> <span class="n">jsonObject</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">JSONObject</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(</span><span class="n">complexBean</span><span class="o">));</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">jsonObject</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"grades"</span><span class="o">));</span><span class="c1">//[1,2,4,5,6]</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">jsonObject</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"simples"</span><span class="o">));</span><span class="c1">//[{"sex":"male","name":"ggg","age":17},{"sex":"male","name":"ttt","age":18},{"sex":"male","name":"yyy","age":19}]</span>
+</code></pre></div></div>
+
+<p>Json串 &lt;==&gt; javabean</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//json串=&gt;javabean，有两种方式</span>
+<span class="n">Complex</span> <span class="n">complex</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">complexJson</span><span class="o">,</span> <span class="n">Complex</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">complex</span><span class="o">);</span><span class="c1">//Complex{index=5, simples=[Simple{name='ttt', sex='male', age=12}, Simple{name='fff', sex='female', age=13}], grades=[12, 32, 43, 51]}</span>
+<span class="n">Complex</span> <span class="n">complex1</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">complexJson</span><span class="o">,</span> <span class="k">new</span> <span class="n">TypeReference</span><span class="o">&lt;</span><span class="n">Complex</span><span class="o">&gt;()</span> <span class="o">{</span>
+<span class="o">});</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">complex1</span><span class="o">);</span>
+<span class="c1">//json串&lt;=javabean</span>
+<span class="n">String</span> <span class="n">jsonString1</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(</span><span class="n">complexBean</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">jsonString1</span><span class="o">);</span><span class="c1">//{"grades":[1,2,4,5,6],"index":1,"simples":[{"age":17,"name":"ggg","sex":"male"},{"age":18,"name":"ttt","sex":"male"},{"age":19,"name":"yyy","sex":"male"}]}</span>
+</code></pre></div></div>
+
+<h3 id="json数组">json数组</h3>
+
+<p>测试数据:</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//javabean</span>
+<span class="kd">static</span> <span class="o">{</span>
+    <span class="n">Simple</span> <span class="n">simple0</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Simple</span><span class="o">();</span>
+    <span class="n">simple0</span><span class="o">.</span><span class="na">setAge</span><span class="o">(</span><span class="mi">15</span><span class="o">);</span>
+    <span class="n">simple0</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">"fff"</span><span class="o">);</span>
+    <span class="n">simple0</span><span class="o">.</span><span class="na">setSex</span><span class="o">(</span><span class="s">"male"</span><span class="o">);</span>
+    <span class="n">Simple</span> <span class="n">simple1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Simple</span><span class="o">();</span>
+    <span class="n">simple1</span><span class="o">.</span><span class="na">setSex</span><span class="o">(</span><span class="s">"female"</span><span class="o">);</span>
+    <span class="n">simple1</span><span class="o">.</span><span class="na">setAge</span><span class="o">(</span><span class="mi">123</span><span class="o">);</span>
+    <span class="n">simple1</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">"asdas"</span><span class="o">);</span>
+    <span class="n">arrayBean</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">simple0</span><span class="o">);</span>
+    <span class="n">arrayBean</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">simple1</span><span class="o">);</span>
+<span class="o">}</span>
+<span class="c1">//json串</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span> <span class="n">arrayJson</span> <span class="o">=</span> <span class="s">"[{\"name\": \"ttt\",\"age\": 12,\"sex\": \"male\"},{\"name\": \"fff\",\"age\": 13,\"sex\": \"female\"}]"</span><span class="o">;</span>
+
+</code></pre></div></div>
+
+<p>JSON &lt;==&gt; json串</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//json==&gt;JSON</span>
+<span class="n">JSONArray</span> <span class="n">array</span> <span class="o">=</span> <span class="n">JSONArray</span><span class="o">.</span><span class="na">parseArray</span><span class="o">(</span><span class="n">arrayJson</span><span class="o">);</span>
+<span class="n">JSONObject</span> <span class="n">object</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">object</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"sex"</span><span class="o">));</span><span class="c1">//female</span>
+<span class="c1">//json&lt;==JSON</span>
+<span class="n">String</span> <span class="n">json</span> <span class="o">=</span> <span class="n">JSONArray</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(</span><span class="n">array</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">json</span><span class="o">);</span><span class="c1">//[{"sex":"male","name":"ttt","age":12},{"sex":"female","name":"fff","age":13}]</span>
+</code></pre></div></div>
+
+<p>JSON &lt;==&gt; javabean</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//JSON==&gt;javabean</span>
+<span class="n">JSONArray</span> <span class="n">array</span> <span class="o">=</span> <span class="n">JSONArray</span><span class="o">.</span><span class="na">parseArray</span><span class="o">(</span><span class="n">arrayJson</span><span class="o">);</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">Simple</span><span class="o">&gt;</span> <span class="n">simples</span> <span class="o">=</span> <span class="n">JSONArray</span><span class="o">.</span><span class="na">parseArray</span><span class="o">(</span><span class="n">array</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(),</span> <span class="n">Simple</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">simples</span><span class="o">);</span><span class="c1">//[Simple{name='ttt', sex='male', age=12}, Simple{name='fff', sex='female', age=13}]</span>
+<span class="c1">//JSON&lt;==javabean</span>
+<span class="n">JSONArray</span> <span class="n">array1</span> <span class="o">=</span> <span class="n">JSONArray</span><span class="o">.</span><span class="na">parseArray</span><span class="o">(</span><span class="n">JSONArray</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(</span><span class="n">arrayBean</span><span class="o">));</span>
+<span class="n">JSONObject</span> <span class="n">object</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">object</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"sex"</span><span class="o">));</span><span class="c1">//female</span>
+</code></pre></div></div>
+
+<p>Json串 &lt;==&gt; javabean</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//json=&gt;javabean</span>
+<span class="c1">//第一种方式</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">Simple</span><span class="o">&gt;</span> <span class="n">simples</span> <span class="o">=</span> <span class="n">JSONArray</span><span class="o">.</span><span class="na">parseArray</span><span class="o">(</span><span class="n">arrayJson</span><span class="o">,</span> <span class="n">Simple</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">simples</span><span class="o">);</span><span class="c1">//[Simple{name='ttt', sex='male', age=12}, Simple{name='fff', sex='female', age=13}]</span>
+<span class="c1">//第二种方式</span>
+<span class="n">JSONArray</span> <span class="n">array</span> <span class="o">=</span> <span class="n">JSONArray</span><span class="o">.</span><span class="na">parseArray</span><span class="o">(</span><span class="n">arrayJson</span><span class="o">);</span>
+<span class="n">Type</span><span class="o">[]</span> <span class="n">types</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Type</span><span class="o">[</span><span class="n">array</span><span class="o">.</span><span class="na">size</span><span class="o">()];</span>
+<span class="n">Arrays</span><span class="o">.</span><span class="na">fill</span><span class="o">(</span><span class="n">types</span><span class="o">,</span> <span class="n">Map</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">simples1</span> <span class="o">=</span> <span class="n">JSONArray</span><span class="o">.</span><span class="na">parseArray</span><span class="o">(</span><span class="n">arrayJson</span><span class="o">,</span> <span class="n">types</span><span class="o">);</span>
+<span class="n">simples1</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">simples2</span> <span class="o">-&gt;</span> <span class="o">{</span>
+    <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">asd</span> <span class="o">=</span> <span class="o">(</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;)</span> <span class="n">simples2</span><span class="o">;</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">asd</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"name"</span><span class="o">));</span>
+<span class="o">});</span><span class="c1">//ttt fff</span>
+<span class="c1">//json&lt;=javabean</span>
+<span class="n">String</span> <span class="n">str</span> <span class="o">=</span> <span class="n">JSON</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(</span><span class="n">arrayBean</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">str</span><span class="o">);</span><span class="c1">//[{"age":15,"name":"fff","sex":"male"},{"age":123,"name":"asdas","sex":"female"}]</span>
+</code></pre></div></div>
+
+<h2 id="总结">总结</h2>
+
+<p>整体测试下来，对于简单json和复杂json来说，其实两者没什么差别，其中转化过程中主要就是涉及到了JSONObject类，涉及到的方法就是JSONObject.parseObject()方法，它可以将string格式转为JSONObject或着bean对象。而对于JSONArray来说，也是大同小异，只不过是用JSONArray.parseArray()。另外还有一个方法，就是将bean转为String的函数：JSONObject.toJSONString(),JSONArray.toJSONString,JSON.toJSONString。看源码可以发现，前两者实际上都是在调用JSON.toJSONString()。总的来说，主要是这些东西，还是要在实际工作中不断应用总结。</p>
+
+
+                <hr>
+
+                
+
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2018/05/20/come-back/" data-toggle="tooltip" data-placement="top" title="come back">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2018/06/17/OAuth1.0a%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/" data-toggle="tooltip" data-placement="top" title="OAuth1.0a踩坑记录">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+
+                
+
+                
+
+            </div>
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+        				
+                            
+                				<a href="/tags/#杂记" title="杂记" rel="6">
+                                    杂记
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#git" title="git" rel="2">
+                                    git
+                                </a>
+                            
+        				
+                            
+        				
+                            
+                				<a href="/tags/#java" title="java" rel="11">
+                                    java
+                                </a>
+                            
+        				
+                            
+        				
+                            
+                				<a href="/tags/#mysql" title="mysql" rel="2">
+                                    mysql
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#网络" title="网络" rel="4">
+                                    网络
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#redis" title="redis" rel="2">
+                                    redis
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#设计模式" title="设计模式" rel="7">
+                                    设计模式
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#rocketmq" title="rocketmq" rel="9">
+                                    rocketmq
+                                </a>
+                            
+        				
+        			</div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+                    
+                        <li><a href="http://huanzhikang.github.io">huanzhikang Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("http://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+                    
+
+                    <!-- add Weibo, Zhihu by Hux, add target = "_blank" to <a> by Hux -->
+                    
+                    
+
+
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/dingmingcheng">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; New Boy 2019
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("http://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
