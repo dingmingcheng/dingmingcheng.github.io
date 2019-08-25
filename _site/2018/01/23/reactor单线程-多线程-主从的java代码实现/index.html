@@ -12,7 +12,7 @@
 
     <title>reactor单线程，多线程，主从的java代码实现 - New Boy</title>
 
-    <link rel="canonical" href="http://localhost:4000/2018/01/23/reactor%E5%8D%95%E7%BA%BF%E7%A8%8B-%E5%A4%9A%E7%BA%BF%E7%A8%8B-%E4%B8%BB%E4%BB%8E%E7%9A%84java%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/">
+    <link rel="canonical" href="http://0.0.0.0:4000/2018/01/23/reactor%E5%8D%95%E7%BA%BF%E7%A8%8B-%E5%A4%9A%E7%BA%BF%E7%A8%8B-%E4%B8%BB%E4%BB%8E%E7%9A%84java%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -179,9 +179,9 @@
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//AsysWriter.java</span>
 <span class="c1">//写字节函数，之后服务端会使用该函数</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">AsysWriter</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">doWrite</span><span class="o">(</span><span class="n">SocketChannel</span> <span class="n">channel</span><span class="o">,</span> <span class="n">String</span> <span class="n">response</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">doWrite</span><span class="o">(</span><span class="nc">SocketChannel</span> <span class="n">channel</span><span class="o">,</span> <span class="nc">String</span> <span class="n">response</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
         <span class="kt">byte</span><span class="o">[]</span> <span class="n">bytes</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="na">getBytes</span><span class="o">();</span>
-        <span class="n">ByteBuffer</span> <span class="n">writeBuffer</span> <span class="o">=</span> <span class="n">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="n">bytes</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+        <span class="nc">ByteBuffer</span> <span class="n">writeBuffer</span> <span class="o">=</span> <span class="nc">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="n">bytes</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
         <span class="n">writeBuffer</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
         <span class="n">writeBuffer</span><span class="o">.</span><span class="na">flip</span><span class="o">();</span>
         <span class="n">channel</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">writeBuffer</span><span class="o">);</span>
@@ -209,78 +209,78 @@
 
 <span class="kn">import</span> <span class="nn">static</span> <span class="n">com</span><span class="o">.</span><span class="na">dmc</span><span class="o">.</span><span class="na">common</span><span class="o">.</span><span class="na">AsysWriter</span><span class="o">.</span><span class="na">doWrite</span><span class="o">;</span>
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Client</span> <span class="kd">implements</span> <span class="n">Runnable</span><span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Client</span> <span class="kd">implements</span> <span class="nc">Runnable</span><span class="o">{</span>
 
-    <span class="kd">private</span> <span class="n">SocketChannel</span> <span class="n">clientChannel</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">SocketChannel</span> <span class="n">clientChannel</span><span class="o">;</span>
 
-    <span class="kd">private</span> <span class="n">Selector</span> <span class="n">selector</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">Selector</span> <span class="n">selector</span><span class="o">;</span>
 
-    <span class="kd">private</span> <span class="kd">volatile</span> <span class="n">Boolean</span> <span class="n">connected</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">volatile</span> <span class="nc">Boolean</span> <span class="n">connected</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
 
-    <span class="kd">private</span> <span class="n">ReentrantLock</span> <span class="n">lock</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ReentrantLock</span><span class="o">();</span>
-    <span class="kd">private</span> <span class="n">Condition</span> <span class="n">condition</span> <span class="o">=</span> <span class="n">lock</span><span class="o">.</span><span class="na">newCondition</span><span class="o">();</span>
+    <span class="kd">private</span> <span class="nc">ReentrantLock</span> <span class="n">lock</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ReentrantLock</span><span class="o">();</span>
+    <span class="kd">private</span> <span class="nc">Condition</span> <span class="n">condition</span> <span class="o">=</span> <span class="n">lock</span><span class="o">.</span><span class="na">newCondition</span><span class="o">();</span>
     <span class="kd">public</span> <span class="nf">Client</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">try</span> <span class="o">{</span>
-            <span class="n">clientChannel</span> <span class="o">=</span> <span class="n">SocketChannel</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
-            <span class="n">selector</span> <span class="o">=</span> <span class="n">Selector</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+            <span class="n">clientChannel</span> <span class="o">=</span> <span class="nc">SocketChannel</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+            <span class="n">selector</span> <span class="o">=</span> <span class="nc">Selector</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
             <span class="n">clientChannel</span><span class="o">.</span><span class="na">configureBlocking</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-            <span class="n">clientChannel</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector</span><span class="o">,</span> <span class="n">SelectionKey</span><span class="o">.</span><span class="na">OP_CONNECT</span><span class="o">);</span>
-            <span class="n">clientChannel</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="k">new</span> <span class="n">InetSocketAddress</span><span class="o">(</span><span class="s">"127.0.0.1"</span><span class="o">,</span> <span class="mi">9090</span><span class="o">));</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">clientChannel</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector</span><span class="o">,</span> <span class="nc">SelectionKey</span><span class="o">.</span><span class="na">OP_CONNECT</span><span class="o">);</span>
+            <span class="n">clientChannel</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="s">"127.0.0.1"</span><span class="o">,</span> <span class="mi">9090</span><span class="o">));</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
             <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
         <span class="o">}</span>
     <span class="o">}</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">try</span> <span class="o">{</span>
 
-            <span class="n">Set</span><span class="o">&lt;</span><span class="n">SelectionKey</span><span class="o">&gt;</span> <span class="n">selectionKeys</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+            <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">SelectionKey</span><span class="o">&gt;</span> <span class="n">selectionKeys</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
             <span class="k">while</span> <span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
                 <span class="n">selector</span><span class="o">.</span><span class="na">select</span><span class="o">();</span>
                 <span class="n">selectionKeys</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="na">selectedKeys</span><span class="o">();</span>
 
-                <span class="k">for</span> <span class="o">(</span><span class="n">Iterator</span><span class="o">&lt;</span><span class="n">SelectionKey</span><span class="o">&gt;</span> <span class="n">it</span> <span class="o">=</span> <span class="n">selectionKeys</span><span class="o">.</span><span class="na">iterator</span><span class="o">();</span> <span class="n">it</span><span class="o">.</span><span class="na">hasNext</span><span class="o">();</span> <span class="o">)</span> <span class="o">{</span>
-                    <span class="n">SelectionKey</span> <span class="n">key</span> <span class="o">=</span> <span class="n">it</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+                <span class="k">for</span> <span class="o">(</span><span class="nc">Iterator</span><span class="o">&lt;</span><span class="nc">SelectionKey</span><span class="o">&gt;</span> <span class="n">it</span> <span class="o">=</span> <span class="n">selectionKeys</span><span class="o">.</span><span class="na">iterator</span><span class="o">();</span> <span class="n">it</span><span class="o">.</span><span class="na">hasNext</span><span class="o">();</span> <span class="o">)</span> <span class="o">{</span>
+                    <span class="nc">SelectionKey</span> <span class="n">key</span> <span class="o">=</span> <span class="n">it</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
                     <span class="n">it</span><span class="o">.</span><span class="na">remove</span><span class="o">();</span>
 
-                    <span class="n">SocketChannel</span> <span class="n">sc</span> <span class="o">=</span> <span class="o">(</span><span class="n">SocketChannel</span><span class="o">)</span> <span class="n">key</span><span class="o">.</span><span class="na">channel</span><span class="o">();</span>
+                    <span class="nc">SocketChannel</span> <span class="n">sc</span> <span class="o">=</span> <span class="o">(</span><span class="nc">SocketChannel</span><span class="o">)</span> <span class="n">key</span><span class="o">.</span><span class="na">channel</span><span class="o">();</span>
                     <span class="k">if</span> <span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">isConnectable</span><span class="o">())</span> <span class="o">{</span>
                         <span class="n">lock</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
                         <span class="k">try</span> <span class="o">{</span>
-                            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"client connect..."</span><span class="o">);</span>
+                            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"client connect..."</span><span class="o">);</span>
                             <span class="k">if</span> <span class="o">(</span><span class="n">sc</span><span class="o">.</span><span class="na">finishConnect</span><span class="o">())</span> <span class="o">;</span>
-                            <span class="k">else</span> <span class="n">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
-                            <span class="n">sc</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector</span><span class="o">,</span> <span class="n">SelectionKey</span><span class="o">.</span><span class="na">OP_READ</span><span class="o">);</span>
+                            <span class="k">else</span> <span class="nc">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+                            <span class="n">sc</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector</span><span class="o">,</span> <span class="nc">SelectionKey</span><span class="o">.</span><span class="na">OP_READ</span><span class="o">);</span>
                             <span class="k">this</span><span class="o">.</span><span class="na">connected</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
-                            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"this.connect is "</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">connected</span><span class="o">);</span>
+                            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"this.connect is "</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">connected</span><span class="o">);</span>
                             <span class="n">condition</span><span class="o">.</span><span class="na">signal</span><span class="o">();</span>
                         <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
                             <span class="n">lock</span><span class="o">.</span><span class="na">unlock</span><span class="o">();</span>
                         <span class="o">}</span>
                     <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">isReadable</span><span class="o">())</span> <span class="o">{</span>
-                        <span class="n">ByteBuffer</span> <span class="n">byteBuffer</span> <span class="o">=</span> <span class="n">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="mi">1024</span><span class="o">);</span>
+                        <span class="nc">ByteBuffer</span> <span class="n">byteBuffer</span> <span class="o">=</span> <span class="nc">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="mi">1024</span><span class="o">);</span>
                         <span class="kt">int</span> <span class="n">length</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">byteBuffer</span><span class="o">);</span>
                         <span class="k">if</span> <span class="o">(</span><span class="n">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
                             <span class="n">byteBuffer</span><span class="o">.</span><span class="na">flip</span><span class="o">();</span>
                             <span class="kt">byte</span><span class="o">[]</span> <span class="n">ans</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">byteBuffer</span><span class="o">.</span><span class="na">remaining</span><span class="o">()];</span>
                             <span class="n">byteBuffer</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">ans</span><span class="o">);</span>
-                            <span class="n">String</span> <span class="n">response</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">ans</span><span class="o">,</span> <span class="s">"UTF-8"</span><span class="o">);</span>
-                            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"get the result from server : "</span> <span class="o">+</span> <span class="n">response</span><span class="o">);</span>
+                            <span class="nc">String</span> <span class="n">response</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">String</span><span class="o">(</span><span class="n">ans</span><span class="o">,</span> <span class="s">"UTF-8"</span><span class="o">);</span>
+                            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"get the result from server : "</span> <span class="o">+</span> <span class="n">response</span><span class="o">);</span>
                         <span class="o">}</span>
                     <span class="o">}</span>
                 <span class="o">}</span>
             <span class="o">}</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
             <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
         <span class="o">}</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sendMsg</span><span class="o">(</span><span class="n">String</span> <span class="n">sendString</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">sendMsg</span><span class="o">(</span><span class="nc">String</span> <span class="n">sendString</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
         <span class="n">lock</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
         <span class="k">try</span> <span class="o">{</span>
             <span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="na">connected</span><span class="o">)</span> <span class="o">{</span>
                 <span class="n">condition</span><span class="o">.</span><span class="na">await</span><span class="o">();</span>
             <span class="o">}</span>
-            <span class="n">clientChannel</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector</span><span class="o">,</span> <span class="n">SelectionKey</span><span class="o">.</span><span class="na">OP_READ</span><span class="o">);</span>
+            <span class="n">clientChannel</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector</span><span class="o">,</span> <span class="nc">SelectionKey</span><span class="o">.</span><span class="na">OP_READ</span><span class="o">);</span>
             <span class="n">doWrite</span><span class="o">(</span><span class="n">clientChannel</span><span class="o">,</span> <span class="n">sendString</span><span class="o">);</span>
         <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
             <span class="n">lock</span><span class="o">.</span><span class="na">unlock</span><span class="o">();</span>
@@ -296,15 +296,15 @@
 <span class="kn">import</span> <span class="nn">java.util.Scanner</span><span class="o">;</span>
 
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">ClientStart</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
         <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">++)</span> <span class="o">{</span>
-            <span class="n">Client</span> <span class="n">client1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Client</span><span class="o">();</span>
-            <span class="n">Thread</span> <span class="n">thread</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Thread</span><span class="o">(</span><span class="n">client1</span><span class="o">);</span>
+            <span class="nc">Client</span> <span class="n">client1</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Client</span><span class="o">();</span>
+            <span class="nc">Thread</span> <span class="n">thread</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span><span class="n">client1</span><span class="o">);</span>
             <span class="n">thread</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
 
-            <span class="n">Scanner</span> <span class="n">in</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Scanner</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">in</span><span class="o">);</span>
+            <span class="nc">Scanner</span> <span class="n">in</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Scanner</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">in</span><span class="o">);</span>
             <span class="k">while</span> <span class="o">(</span><span class="n">in</span><span class="o">.</span><span class="na">hasNextLine</span><span class="o">())</span> <span class="o">{</span>
-                <span class="n">String</span> <span class="n">str</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">nextLine</span><span class="o">();</span>
+                <span class="nc">String</span> <span class="n">str</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">nextLine</span><span class="o">();</span>
                 <span class="n">client1</span><span class="o">.</span><span class="na">sendMsg</span><span class="o">(</span><span class="n">str</span><span class="o">);</span>
             <span class="o">}</span>
         <span class="o">}</span>
@@ -335,49 +335,49 @@
 <span class="kn">import</span> <span class="nn">static</span> <span class="n">com</span><span class="o">.</span><span class="na">dmc</span><span class="o">.</span><span class="na">common</span><span class="o">.</span><span class="na">AsysWriter</span><span class="o">.</span><span class="na">doWrite</span><span class="o">;</span>
 
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Server</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">){</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">){</span>
         <span class="k">try</span> <span class="o">{</span>
-            <span class="n">ServerSocketChannel</span> <span class="n">serverSocketChannel</span><span class="o">;</span>
-            <span class="n">Selector</span> <span class="n">selector</span><span class="o">;</span>
-            <span class="n">Selector</span> <span class="n">selector1</span><span class="o">;</span>
-            <span class="n">Set</span><span class="o">&lt;</span><span class="n">SelectionKey</span><span class="o">&gt;</span> <span class="n">selectionKeys</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+            <span class="nc">ServerSocketChannel</span> <span class="n">serverSocketChannel</span><span class="o">;</span>
+            <span class="nc">Selector</span> <span class="n">selector</span><span class="o">;</span>
+            <span class="nc">Selector</span> <span class="n">selector1</span><span class="o">;</span>
+            <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">SelectionKey</span><span class="o">&gt;</span> <span class="n">selectionKeys</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
 
-            <span class="n">serverSocketChannel</span> <span class="o">=</span> <span class="n">ServerSocketChannel</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
-            <span class="n">selector</span> <span class="o">=</span> <span class="n">Selector</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
-            <span class="n">selector1</span> <span class="o">=</span> <span class="n">Selector</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+            <span class="n">serverSocketChannel</span> <span class="o">=</span> <span class="nc">ServerSocketChannel</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+            <span class="n">selector</span> <span class="o">=</span> <span class="nc">Selector</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+            <span class="n">selector1</span> <span class="o">=</span> <span class="nc">Selector</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
 
             <span class="n">serverSocketChannel</span><span class="o">.</span><span class="na">configureBlocking</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-            <span class="n">serverSocketChannel</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector</span><span class="o">,</span> <span class="n">SelectionKey</span><span class="o">.</span><span class="na">OP_ACCEPT</span><span class="o">);</span>
-            <span class="n">serverSocketChannel</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector1</span><span class="o">,</span> <span class="n">SelectionKey</span><span class="o">.</span><span class="na">OP_ACCEPT</span><span class="o">);</span>
-            <span class="n">serverSocketChannel</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="k">new</span> <span class="n">InetSocketAddress</span><span class="o">(</span><span class="s">"127.0.0.1"</span><span class="o">,</span> <span class="mi">9090</span><span class="o">));</span>
+            <span class="n">serverSocketChannel</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector</span><span class="o">,</span> <span class="nc">SelectionKey</span><span class="o">.</span><span class="na">OP_ACCEPT</span><span class="o">);</span>
+            <span class="n">serverSocketChannel</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector1</span><span class="o">,</span> <span class="nc">SelectionKey</span><span class="o">.</span><span class="na">OP_ACCEPT</span><span class="o">);</span>
+            <span class="n">serverSocketChannel</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="s">"127.0.0.1"</span><span class="o">,</span> <span class="mi">9090</span><span class="o">));</span>
 
-            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"server is start"</span><span class="o">);</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"server is start"</span><span class="o">);</span>
             <span class="k">while</span> <span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
                 <span class="n">selector</span><span class="o">.</span><span class="na">select</span><span class="o">();</span>
                 <span class="n">selectionKeys</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="na">selectedKeys</span><span class="o">();</span>
-                <span class="k">for</span> <span class="o">(</span><span class="n">Iterator</span><span class="o">&lt;</span><span class="n">SelectionKey</span><span class="o">&gt;</span> <span class="n">it</span> <span class="o">=</span> <span class="n">selectionKeys</span><span class="o">.</span><span class="na">iterator</span><span class="o">();</span> <span class="n">it</span><span class="o">.</span><span class="na">hasNext</span><span class="o">();</span> <span class="o">)</span> <span class="o">{</span>
-                    <span class="n">SelectionKey</span> <span class="n">key</span> <span class="o">=</span> <span class="n">it</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+                <span class="k">for</span> <span class="o">(</span><span class="nc">Iterator</span><span class="o">&lt;</span><span class="nc">SelectionKey</span><span class="o">&gt;</span> <span class="n">it</span> <span class="o">=</span> <span class="n">selectionKeys</span><span class="o">.</span><span class="na">iterator</span><span class="o">();</span> <span class="n">it</span><span class="o">.</span><span class="na">hasNext</span><span class="o">();</span> <span class="o">)</span> <span class="o">{</span>
+                    <span class="nc">SelectionKey</span> <span class="n">key</span> <span class="o">=</span> <span class="n">it</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
                     <span class="n">it</span><span class="o">.</span><span class="na">remove</span><span class="o">();</span>
 
                     <span class="k">if</span> <span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">isAcceptable</span><span class="o">())</span> <span class="o">{</span>
-                        <span class="n">ServerSocketChannel</span> <span class="n">ssc</span> <span class="o">=</span> <span class="o">(</span><span class="n">ServerSocketChannel</span><span class="o">)</span> <span class="n">key</span><span class="o">.</span><span class="na">channel</span><span class="o">();</span>
-                        <span class="n">SocketChannel</span> <span class="n">client</span> <span class="o">=</span> <span class="n">ssc</span><span class="o">.</span><span class="na">accept</span><span class="o">();</span>
+                        <span class="nc">ServerSocketChannel</span> <span class="n">ssc</span> <span class="o">=</span> <span class="o">(</span><span class="nc">ServerSocketChannel</span><span class="o">)</span> <span class="n">key</span><span class="o">.</span><span class="na">channel</span><span class="o">();</span>
+                        <span class="nc">SocketChannel</span> <span class="n">client</span> <span class="o">=</span> <span class="n">ssc</span><span class="o">.</span><span class="na">accept</span><span class="o">();</span>
                         <span class="n">client</span><span class="o">.</span><span class="na">configureBlocking</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-                        <span class="n">client</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector</span><span class="o">,</span> <span class="n">SelectionKey</span><span class="o">.</span><span class="na">OP_READ</span><span class="o">);</span>
-                        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"connected..."</span><span class="o">);</span>
+                        <span class="n">client</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector</span><span class="o">,</span> <span class="nc">SelectionKey</span><span class="o">.</span><span class="na">OP_READ</span><span class="o">);</span>
+                        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"connected..."</span><span class="o">);</span>
                     <span class="o">}</span>
                     <span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">isReadable</span><span class="o">())</span> <span class="o">{</span>
-                        <span class="n">SocketChannel</span> <span class="n">sc</span> <span class="o">=</span> <span class="o">(</span><span class="n">SocketChannel</span><span class="o">)</span> <span class="n">key</span><span class="o">.</span><span class="na">channel</span><span class="o">();</span>
-                        <span class="n">ByteBuffer</span> <span class="n">byteBuffer</span> <span class="o">=</span> <span class="n">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="mi">1024</span><span class="o">);</span>
+                        <span class="nc">SocketChannel</span> <span class="n">sc</span> <span class="o">=</span> <span class="o">(</span><span class="nc">SocketChannel</span><span class="o">)</span> <span class="n">key</span><span class="o">.</span><span class="na">channel</span><span class="o">();</span>
+                        <span class="nc">ByteBuffer</span> <span class="n">byteBuffer</span> <span class="o">=</span> <span class="nc">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="mi">1024</span><span class="o">);</span>
                         <span class="kt">int</span> <span class="n">readBytes</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">byteBuffer</span><span class="o">);</span>
                         <span class="k">if</span> <span class="o">(</span><span class="n">readBytes</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
                             <span class="n">byteBuffer</span><span class="o">.</span><span class="na">flip</span><span class="o">();</span>
                             <span class="kt">byte</span><span class="o">[]</span> <span class="n">bytes</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">byteBuffer</span><span class="o">.</span><span class="na">remaining</span><span class="o">()];</span>
                             <span class="n">byteBuffer</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
-                            <span class="n">String</span> <span class="n">response</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">bytes</span><span class="o">,</span> <span class="s">"UTF-8"</span><span class="o">);</span>
-                            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"GET, the request is "</span> <span class="o">+</span> <span class="n">response</span> <span class="o">+</span> <span class="s">" it's from "</span> <span class="o">+</span> <span class="n">sc</span><span class="o">.</span><span class="na">getRemoteAddress</span><span class="o">());</span>
-                            <span class="n">String</span> <span class="n">result</span> <span class="o">=</span> <span class="n">response</span> <span class="o">+</span> <span class="s">" 's result"</span><span class="o">;</span>
-                            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"send result..."</span><span class="o">);</span>
+                            <span class="nc">String</span> <span class="n">response</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">String</span><span class="o">(</span><span class="n">bytes</span><span class="o">,</span> <span class="s">"UTF-8"</span><span class="o">);</span>
+                            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"GET, the request is "</span> <span class="o">+</span> <span class="n">response</span> <span class="o">+</span> <span class="s">" it's from "</span> <span class="o">+</span> <span class="n">sc</span><span class="o">.</span><span class="na">getRemoteAddress</span><span class="o">());</span>
+                            <span class="nc">String</span> <span class="n">result</span> <span class="o">=</span> <span class="n">response</span> <span class="o">+</span> <span class="s">" 's result"</span><span class="o">;</span>
+                            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"send result..."</span><span class="o">);</span>
                             <span class="n">doWrite</span><span class="o">(</span><span class="n">sc</span><span class="o">,</span> <span class="n">result</span> <span class="o">+</span> <span class="s">""</span><span class="o">);</span>
                         <span class="o">}</span>
                         <span class="c1">//链路已经关闭，释放资源</span>
@@ -388,7 +388,7 @@
                     <span class="o">}</span>
                 <span class="o">}</span>
             <span class="o">}</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
             <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
         <span class="o">}</span>
     <span class="o">}</span>
@@ -409,7 +409,7 @@
 
 <p>Acceptor类</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">ThreadGroupTest</span><span class="o">;</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="nc">ThreadGroupTest</span><span class="o">;</span>
 
 <span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.net.InetSocketAddress</span><span class="o">;</span>
@@ -422,38 +422,38 @@
 
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Acceptor</span> <span class="o">{</span>
 
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IOException</span> <span class="o">{</span>
         <span class="cm">/**
          * init
          */</span>
-        <span class="n">ServerSocketChannel</span> <span class="n">serverSocketChannel</span><span class="o">;</span>
-        <span class="n">Selector</span> <span class="n">selector</span><span class="o">;</span>
-        <span class="n">Set</span><span class="o">&lt;</span><span class="n">SelectionKey</span><span class="o">&gt;</span> <span class="n">selectionKeys</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="nc">ServerSocketChannel</span> <span class="n">serverSocketChannel</span><span class="o">;</span>
+        <span class="nc">Selector</span> <span class="n">selector</span><span class="o">;</span>
+        <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">SelectionKey</span><span class="o">&gt;</span> <span class="n">selectionKeys</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
 
-        <span class="n">serverSocketChannel</span> <span class="o">=</span> <span class="n">ServerSocketChannel</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
-        <span class="n">selector</span> <span class="o">=</span> <span class="n">Selector</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+        <span class="n">serverSocketChannel</span> <span class="o">=</span> <span class="nc">ServerSocketChannel</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+        <span class="n">selector</span> <span class="o">=</span> <span class="nc">Selector</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
 
-        <span class="n">serverSocketChannel</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="k">new</span> <span class="n">InetSocketAddress</span><span class="o">(</span><span class="s">"127.0.0.1"</span><span class="o">,</span> <span class="mi">9090</span><span class="o">));</span>
+        <span class="n">serverSocketChannel</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="k">new</span> <span class="nc">InetSocketAddress</span><span class="o">(</span><span class="s">"127.0.0.1"</span><span class="o">,</span> <span class="mi">9090</span><span class="o">));</span>
         <span class="n">serverSocketChannel</span><span class="o">.</span><span class="na">configureBlocking</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-        <span class="n">serverSocketChannel</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector</span><span class="o">,</span> <span class="n">SelectionKey</span><span class="o">.</span><span class="na">OP_ACCEPT</span><span class="o">);</span>
+        <span class="n">serverSocketChannel</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector</span><span class="o">,</span> <span class="nc">SelectionKey</span><span class="o">.</span><span class="na">OP_ACCEPT</span><span class="o">);</span>
 
 
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"server is start..."</span><span class="o">);</span>
-        <span class="n">ReactorThreadGroup</span> <span class="n">group</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ReactorThreadGroup</span><span class="o">(</span><span class="mi">10</span><span class="o">);</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"server is start..."</span><span class="o">);</span>
+        <span class="nc">ReactorThreadGroup</span> <span class="n">group</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ReactorThreadGroup</span><span class="o">(</span><span class="mi">10</span><span class="o">);</span>
         <span class="k">while</span> <span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
             <span class="n">selector</span><span class="o">.</span><span class="na">select</span><span class="o">();</span>
             <span class="n">selectionKeys</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="na">selectedKeys</span><span class="o">();</span>
 
-            <span class="n">Iterator</span><span class="o">&lt;</span><span class="n">SelectionKey</span><span class="o">&gt;</span> <span class="n">it</span> <span class="o">=</span> <span class="n">selectionKeys</span><span class="o">.</span><span class="na">iterator</span><span class="o">();</span>
+            <span class="nc">Iterator</span><span class="o">&lt;</span><span class="nc">SelectionKey</span><span class="o">&gt;</span> <span class="n">it</span> <span class="o">=</span> <span class="n">selectionKeys</span><span class="o">.</span><span class="na">iterator</span><span class="o">();</span>
             <span class="k">for</span> <span class="o">(;</span> <span class="n">it</span><span class="o">.</span><span class="na">hasNext</span><span class="o">();</span> <span class="o">)</span> <span class="o">{</span>
-                <span class="n">SelectionKey</span> <span class="n">key</span> <span class="o">=</span> <span class="n">it</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+                <span class="nc">SelectionKey</span> <span class="n">key</span> <span class="o">=</span> <span class="n">it</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
                 <span class="n">it</span><span class="o">.</span><span class="na">remove</span><span class="o">();</span>
 
                 <span class="k">if</span> <span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">isAcceptable</span><span class="o">())</span> <span class="o">{</span>
-                    <span class="n">ServerSocketChannel</span> <span class="n">sc</span> <span class="o">=</span> <span class="o">(</span><span class="n">ServerSocketChannel</span><span class="o">)</span> <span class="n">key</span><span class="o">.</span><span class="na">channel</span><span class="o">();</span>
-                    <span class="n">SocketChannel</span> <span class="n">client</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">accept</span><span class="o">();</span>
+                    <span class="nc">ServerSocketChannel</span> <span class="n">sc</span> <span class="o">=</span> <span class="o">(</span><span class="nc">ServerSocketChannel</span><span class="o">)</span> <span class="n">key</span><span class="o">.</span><span class="na">channel</span><span class="o">();</span>
+                    <span class="nc">SocketChannel</span> <span class="n">client</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">accept</span><span class="o">();</span>
                     <span class="n">client</span><span class="o">.</span><span class="na">configureBlocking</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-                    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"connected..."</span><span class="o">);</span>
+                    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"connected..."</span><span class="o">);</span>
                     <span class="n">group</span><span class="o">.</span><span class="na">dispatch</span><span class="o">(</span><span class="n">client</span><span class="o">);</span>
                 <span class="o">}</span>
             <span class="o">}</span>
@@ -464,7 +464,7 @@
 
 <p>ReactorThreadGroup类</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">ThreadGroupTest</span><span class="o">;</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="nc">ThreadGroupTest</span><span class="o">;</span>
 
 <span class="kn">import</span> <span class="nn">java.nio.channels.SocketChannel</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.util.ArrayList</span><span class="o">;</span>
@@ -477,33 +477,33 @@
 
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">ReactorThreadGroup</span> <span class="o">{</span>
 
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">DEFAULT_THREADPOOL_SIZE</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="no">DEFAULT_THREADPOOL_SIZE</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
 
-    <span class="kd">private</span> <span class="n">Integer</span> <span class="n">threadNum</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">Integer</span> <span class="n">threadNum</span><span class="o">;</span>
 
-    <span class="kd">private</span> <span class="n">AtomicInteger</span> <span class="n">currentNum</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AtomicInteger</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+    <span class="kd">private</span> <span class="nc">AtomicInteger</span> <span class="n">currentNum</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AtomicInteger</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
 
-    <span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Handler</span><span class="o">&gt;</span> <span class="n">handlerWorkers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Handler</span><span class="o">&gt;();</span>
+    <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Handler</span><span class="o">&gt;</span> <span class="n">handlerWorkers</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="nc">Handler</span><span class="o">&gt;();</span>
 
     <span class="kd">public</span> <span class="nf">ReactorThreadGroup</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">(</span><span class="n">DEFAULT_THREADPOOL_SIZE</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">(</span><span class="no">DEFAULT_THREADPOOL_SIZE</span><span class="o">);</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="nf">ReactorThreadGroup</span><span class="o">(</span><span class="n">Integer</span> <span class="n">threadNum</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">ReactorThreadGroup</span><span class="o">(</span><span class="nc">Integer</span> <span class="n">threadNum</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">threadNum</span> <span class="o">=</span> <span class="n">threadNum</span><span class="o">;</span>
         <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">threadNum</span><span class="o">;</span> <span class="n">i</span> <span class="o">++)</span> <span class="o">{</span>
-            <span class="n">Handler</span> <span class="n">worker</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Handler</span><span class="o">();</span>
+            <span class="nc">Handler</span> <span class="n">worker</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Handler</span><span class="o">();</span>
             <span class="n">handlerWorkers</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">worker</span><span class="o">);</span>
             <span class="n">worker</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
         <span class="o">}</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"threadpool create success"</span><span class="o">);</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"threadpool create success"</span><span class="o">);</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">dispatch</span><span class="o">(</span><span class="n">SocketChannel</span> <span class="n">sc</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">dispatch</span><span class="o">(</span><span class="nc">SocketChannel</span> <span class="n">sc</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">next</span><span class="o">().</span><span class="na">add</span><span class="o">(</span><span class="n">sc</span><span class="o">);</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="n">Handler</span> <span class="nf">next</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nc">Handler</span> <span class="nf">next</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">handlerWorkers</span><span class="o">.</span><span class="na">get</span><span class="o">((</span><span class="n">currentNum</span><span class="o">.</span><span class="na">getAndIncrement</span><span class="o">())</span> <span class="o">%</span> <span class="n">threadNum</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span>
@@ -512,7 +512,7 @@
 
 <p>Handler类</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">ThreadGroupTest</span><span class="o">;</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="nc">ThreadGroupTest</span><span class="o">;</span>
 
 <span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.nio.ByteBuffer</span><span class="o">;</span>
@@ -527,38 +527,38 @@
 
 <span class="kn">import</span> <span class="nn">static</span> <span class="n">com</span><span class="o">.</span><span class="na">dmc</span><span class="o">.</span><span class="na">common</span><span class="o">.</span><span class="na">AsysWriter</span><span class="o">.</span><span class="na">doWrite</span><span class="o">;</span>
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Handler</span> <span class="kd">extends</span> <span class="n">Thread</span><span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Handler</span> <span class="kd">extends</span> <span class="nc">Thread</span><span class="o">{</span>
 
-    <span class="kd">private</span> <span class="n">ReentrantLock</span> <span class="n">lock</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ReentrantLock</span><span class="o">();</span>
+    <span class="kd">private</span> <span class="nc">ReentrantLock</span> <span class="n">lock</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ReentrantLock</span><span class="o">();</span>
 
-    <span class="kd">private</span> <span class="n">Condition</span> <span class="n">condition</span> <span class="o">=</span> <span class="n">lock</span><span class="o">.</span><span class="na">newCondition</span><span class="o">();</span>
+    <span class="kd">private</span> <span class="nc">Condition</span> <span class="n">condition</span> <span class="o">=</span> <span class="n">lock</span><span class="o">.</span><span class="na">newCondition</span><span class="o">();</span>
 
-    <span class="kd">private</span> <span class="kd">volatile</span> <span class="n">Boolean</span> <span class="n">running</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">volatile</span> <span class="nc">Boolean</span> <span class="n">running</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
 
-    <span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">SocketChannel</span><span class="o">&gt;</span> <span class="n">socketChannelList</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">SocketChannel</span><span class="o">&gt;</span> <span class="n">socketChannelList</span><span class="o">;</span>
 
-    <span class="kd">private</span> <span class="n">Selector</span> <span class="n">selector</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">Selector</span> <span class="n">selector</span><span class="o">;</span>
 
-    <span class="kd">private</span> <span class="n">Boolean</span> <span class="n">isConnected</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">Boolean</span> <span class="n">isConnected</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
 
-    <span class="n">Handler</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">Handler</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">try</span> <span class="o">{</span>
-            <span class="n">socketChannelList</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
-            <span class="n">selector</span> <span class="o">=</span> <span class="n">Selector</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">socketChannelList</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+            <span class="n">selector</span> <span class="o">=</span> <span class="nc">Selector</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
             <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
         <span class="o">}</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">add</span><span class="o">(</span><span class="n">SocketChannel</span> <span class="n">socketChannel</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">add</span><span class="o">(</span><span class="nc">SocketChannel</span> <span class="n">socketChannel</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">lock</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
         <span class="k">try</span> <span class="o">{</span>
             <span class="n">selector</span><span class="o">.</span><span class="na">wakeup</span><span class="o">();</span>
-            <span class="n">socketChannel</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector</span><span class="o">,</span> <span class="n">SelectionKey</span><span class="o">.</span><span class="na">OP_READ</span><span class="o">);</span>
+            <span class="n">socketChannel</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector</span><span class="o">,</span> <span class="nc">SelectionKey</span><span class="o">.</span><span class="na">OP_READ</span><span class="o">);</span>
             <span class="n">socketChannelList</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">socketChannel</span><span class="o">);</span>
             <span class="n">condition</span><span class="o">.</span><span class="na">signal</span><span class="o">();</span>
             <span class="n">isConnected</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">ClosedChannelException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">ClosedChannelException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
             <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
         <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
             <span class="n">lock</span><span class="o">.</span><span class="na">unlock</span><span class="o">();</span>
@@ -575,36 +575,36 @@
                 <span class="o">}</span>
                 <span class="n">selector</span><span class="o">.</span><span class="na">select</span><span class="o">();</span>
 
-                <span class="n">Set</span><span class="o">&lt;</span><span class="n">SelectionKey</span><span class="o">&gt;</span> <span class="n">selectionKeys</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="na">selectedKeys</span><span class="o">();</span>
-                <span class="n">Iterator</span><span class="o">&lt;</span><span class="n">SelectionKey</span><span class="o">&gt;</span> <span class="n">it</span> <span class="o">=</span> <span class="n">selectionKeys</span><span class="o">.</span><span class="na">iterator</span><span class="o">();</span>
+                <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">SelectionKey</span><span class="o">&gt;</span> <span class="n">selectionKeys</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="na">selectedKeys</span><span class="o">();</span>
+                <span class="nc">Iterator</span><span class="o">&lt;</span><span class="nc">SelectionKey</span><span class="o">&gt;</span> <span class="n">it</span> <span class="o">=</span> <span class="n">selectionKeys</span><span class="o">.</span><span class="na">iterator</span><span class="o">();</span>
 
                 <span class="k">for</span> <span class="o">(;</span> <span class="n">it</span><span class="o">.</span><span class="na">hasNext</span><span class="o">();)</span> <span class="o">{</span>
-                    <span class="n">SelectionKey</span> <span class="n">key</span> <span class="o">=</span> <span class="n">it</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+                    <span class="nc">SelectionKey</span> <span class="n">key</span> <span class="o">=</span> <span class="n">it</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
                     <span class="n">it</span><span class="o">.</span><span class="na">remove</span><span class="o">();</span>
                     <span class="k">if</span> <span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">isReadable</span><span class="o">())</span> <span class="o">{</span>
-                        <span class="n">SocketChannel</span> <span class="n">sc</span> <span class="o">=</span> <span class="o">(</span><span class="n">SocketChannel</span><span class="o">)</span> <span class="n">key</span><span class="o">.</span><span class="na">channel</span><span class="o">();</span>
+                        <span class="nc">SocketChannel</span> <span class="n">sc</span> <span class="o">=</span> <span class="o">(</span><span class="nc">SocketChannel</span><span class="o">)</span> <span class="n">key</span><span class="o">.</span><span class="na">channel</span><span class="o">();</span>
 
-                        <span class="n">ByteBuffer</span> <span class="n">byteBuffer</span> <span class="o">=</span> <span class="n">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="mi">1024</span><span class="o">);</span>
+                        <span class="nc">ByteBuffer</span> <span class="n">byteBuffer</span> <span class="o">=</span> <span class="nc">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="mi">1024</span><span class="o">);</span>
                         <span class="kt">int</span> <span class="n">readBytes</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">byteBuffer</span><span class="o">);</span>
                         <span class="k">if</span> <span class="o">(</span><span class="n">readBytes</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
-                            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"connected to thread "</span> <span class="o">+</span> <span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">());</span>
+                            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"connected to thread "</span> <span class="o">+</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">());</span>
                             <span class="n">byteBuffer</span><span class="o">.</span><span class="na">flip</span><span class="o">();</span>
                             <span class="kt">byte</span><span class="o">[]</span> <span class="n">bytes</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">byteBuffer</span><span class="o">.</span><span class="na">remaining</span><span class="o">()];</span>
                             <span class="n">byteBuffer</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
-                            <span class="n">String</span> <span class="n">response</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">bytes</span><span class="o">,</span> <span class="s">"UTF-8"</span><span class="o">);</span>
-                            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"GET, the request is "</span> <span class="o">+</span> <span class="n">response</span> <span class="o">+</span> <span class="s">" it's from "</span> <span class="o">+</span> <span class="n">sc</span><span class="o">.</span><span class="na">getRemoteAddress</span><span class="o">());</span>
-                            <span class="n">String</span> <span class="n">result</span> <span class="o">=</span> <span class="n">response</span> <span class="o">+</span> <span class="s">" 's result"</span><span class="o">;</span>
-                            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"send result..."</span><span class="o">);</span>
+                            <span class="nc">String</span> <span class="n">response</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">String</span><span class="o">(</span><span class="n">bytes</span><span class="o">,</span> <span class="s">"UTF-8"</span><span class="o">);</span>
+                            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"GET, the request is "</span> <span class="o">+</span> <span class="n">response</span> <span class="o">+</span> <span class="s">" it's from "</span> <span class="o">+</span> <span class="n">sc</span><span class="o">.</span><span class="na">getRemoteAddress</span><span class="o">());</span>
+                            <span class="nc">String</span> <span class="n">result</span> <span class="o">=</span> <span class="n">response</span> <span class="o">+</span> <span class="s">" 's result"</span><span class="o">;</span>
+                            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"send result..."</span><span class="o">);</span>
                             <span class="n">doWrite</span><span class="o">(</span><span class="n">sc</span><span class="o">,</span> <span class="n">result</span> <span class="o">+</span> <span class="s">""</span><span class="o">);</span>
                         <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">readBytes</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
-                            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">" disconnected"</span><span class="o">);</span>
+                            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">" disconnected"</span><span class="o">);</span>
                             <span class="n">key</span><span class="o">.</span><span class="na">cancel</span><span class="o">();</span>
                             <span class="n">sc</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
                         <span class="o">}</span>
                     <span class="o">}</span>
                 <span class="o">}</span>
             <span class="o">}</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
             <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
         <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
             <span class="n">lock</span><span class="o">.</span><span class="na">unlock</span><span class="o">();</span>
@@ -619,11 +619,11 @@
 
 <p>ServerStart.java</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">MasterSlaveReactor</span><span class="o">;</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="nc">MasterSlaveReactor</span><span class="o">;</span>
 
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">ServerStart</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">MainReactor</span> <span class="n">mainReactor</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MainReactor</span><span class="o">();</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">MainReactor</span> <span class="n">mainReactor</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MainReactor</span><span class="o">();</span>
         <span class="k">new</span> <span class="nf">Thread</span><span class="o">(</span><span class="n">mainReactor</span><span class="o">).</span><span class="na">start</span><span class="o">();</span>
     <span class="o">}</span>
 <span class="o">}</span>
@@ -745,7 +745,7 @@ public class MainReactor implements Runnable, CallBack{
 
 <p>Acceptor.java</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">MasterSlaveReactor</span><span class="o">;</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="nc">MasterSlaveReactor</span><span class="o">;</span>
 
 <span class="kn">import</span> <span class="nn">ThreadGroupTest.ReactorThreadGroup</span><span class="o">;</span>
 
@@ -756,21 +756,21 @@ public class MainReactor implements Runnable, CallBack{
 <span class="kn">import</span> <span class="nn">java.nio.channels.ServerSocketChannel</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.nio.channels.SocketChannel</span><span class="o">;</span>
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Acceptor</span> <span class="kd">implements</span> <span class="n">Runnable</span><span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Acceptor</span> <span class="kd">implements</span> <span class="nc">Runnable</span><span class="o">{</span>
 
-    <span class="kd">private</span> <span class="n">SocketChannel</span> <span class="n">socketChannel</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">SocketChannel</span> <span class="n">socketChannel</span><span class="o">;</span>
 
-    <span class="kd">private</span> <span class="n">CallBack</span> <span class="n">callBack</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">CallBack</span> <span class="n">callBack</span><span class="o">;</span>
 
-    <span class="kd">public</span> <span class="n">CallBack</span> <span class="nf">getCallBack</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nc">CallBack</span> <span class="nf">getCallBack</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">callBack</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setCallBack</span><span class="o">(</span><span class="n">CallBack</span> <span class="n">callBack</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setCallBack</span><span class="o">(</span><span class="nc">CallBack</span> <span class="n">callBack</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">callBack</span> <span class="o">=</span> <span class="n">callBack</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="n">Acceptor</span><span class="o">(</span><span class="n">SocketChannel</span> <span class="n">socketChannel</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">Acceptor</span><span class="o">(</span><span class="nc">SocketChannel</span> <span class="n">socketChannel</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">socketChannel</span> <span class="o">=</span> <span class="n">socketChannel</span><span class="o">;</span>
     <span class="o">}</span>
 
@@ -778,9 +778,9 @@ public class MainReactor implements Runnable, CallBack{
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">try</span> <span class="o">{</span>
             <span class="c1">// TODO</span>
-            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span> <span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">" "</span> <span class="o">+</span> <span class="n">socketChannel</span><span class="o">.</span><span class="na">getRemoteAddress</span><span class="o">()</span> <span class="o">+</span>  <span class="s">" connected..."</span><span class="o">);</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">" "</span> <span class="o">+</span> <span class="n">socketChannel</span><span class="o">.</span><span class="na">getRemoteAddress</span><span class="o">()</span> <span class="o">+</span>  <span class="s">" connected..."</span><span class="o">);</span>
             <span class="n">callBack</span><span class="o">.</span><span class="na">Dispatch</span><span class="o">(</span><span class="n">socketChannel</span><span class="o">);</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
             <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
         <span class="o">}</span>
     <span class="o">}</span>
@@ -790,7 +790,7 @@ public class MainReactor implements Runnable, CallBack{
 
 <p>SubReactor.java</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">MasterSlaveReactor</span><span class="o">;</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="nc">MasterSlaveReactor</span><span class="o">;</span>
 
 <span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.nio.ByteBuffer</span><span class="o">;</span>
@@ -805,30 +805,30 @@ public class MainReactor implements Runnable, CallBack{
 
 <span class="kn">import</span> <span class="nn">static</span> <span class="n">com</span><span class="o">.</span><span class="na">dmc</span><span class="o">.</span><span class="na">common</span><span class="o">.</span><span class="na">AsysWriter</span><span class="o">.</span><span class="na">doWrite</span><span class="o">;</span>
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SubReactor</span> <span class="kd">implements</span> <span class="n">Runnable</span><span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SubReactor</span> <span class="kd">implements</span> <span class="nc">Runnable</span><span class="o">{</span>
 
-    <span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">SocketChannel</span><span class="o">&gt;</span> <span class="n">socketChannels</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">SocketChannel</span><span class="o">&gt;</span> <span class="n">socketChannels</span><span class="o">;</span>
 
-    <span class="kd">private</span> <span class="n">Selector</span> <span class="n">selector</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">Selector</span> <span class="n">selector</span><span class="o">;</span>
 
-    <span class="n">SubReactor</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">SubReactor</span><span class="o">()</span> <span class="o">{</span>
         <span class="n">init</span><span class="o">();</span>
     <span class="o">}</span>
 
     <span class="kd">private</span> <span class="kt">void</span> <span class="nf">init</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">try</span> <span class="o">{</span>
-            <span class="n">selector</span> <span class="o">=</span> <span class="n">Selector</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
-            <span class="n">socketChannels</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">selector</span> <span class="o">=</span> <span class="nc">Selector</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+            <span class="n">socketChannels</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
             <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
         <span class="o">}</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">register</span><span class="o">(</span><span class="n">SocketChannel</span> <span class="n">socketChannel</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">register</span><span class="o">(</span><span class="nc">SocketChannel</span> <span class="n">socketChannel</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">try</span> <span class="o">{</span>
-            <span class="n">socketChannel</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector</span><span class="o">,</span> <span class="n">SelectionKey</span><span class="o">.</span><span class="na">OP_READ</span><span class="o">);</span>
+            <span class="n">socketChannel</span><span class="o">.</span><span class="na">register</span><span class="o">(</span><span class="n">selector</span><span class="o">,</span> <span class="nc">SelectionKey</span><span class="o">.</span><span class="na">OP_READ</span><span class="o">);</span>
             <span class="n">socketChannels</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">socketChannel</span><span class="o">);</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">ClosedChannelException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">ClosedChannelException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
             <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
         <span class="o">}</span>
     <span class="o">}</span>
@@ -839,34 +839,34 @@ public class MainReactor implements Runnable, CallBack{
             <span class="k">try</span> <span class="o">{</span>
                 <span class="n">selector</span><span class="o">.</span><span class="na">select</span><span class="o">(</span><span class="mi">1000</span><span class="o">);</span>
 
-                <span class="n">Set</span><span class="o">&lt;</span><span class="n">SelectionKey</span><span class="o">&gt;</span> <span class="n">keys</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="na">selectedKeys</span><span class="o">();</span>
-                <span class="n">Iterator</span><span class="o">&lt;</span><span class="n">SelectionKey</span><span class="o">&gt;</span> <span class="n">it</span> <span class="o">=</span> <span class="n">keys</span><span class="o">.</span><span class="na">iterator</span><span class="o">();</span>
+                <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">SelectionKey</span><span class="o">&gt;</span> <span class="n">keys</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="na">selectedKeys</span><span class="o">();</span>
+                <span class="nc">Iterator</span><span class="o">&lt;</span><span class="nc">SelectionKey</span><span class="o">&gt;</span> <span class="n">it</span> <span class="o">=</span> <span class="n">keys</span><span class="o">.</span><span class="na">iterator</span><span class="o">();</span>
                 <span class="k">for</span> <span class="o">(;</span> <span class="n">it</span><span class="o">.</span><span class="na">hasNext</span><span class="o">();)</span> <span class="o">{</span>
-                    <span class="n">SelectionKey</span> <span class="n">key</span> <span class="o">=</span> <span class="n">it</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+                    <span class="nc">SelectionKey</span> <span class="n">key</span> <span class="o">=</span> <span class="n">it</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
                     <span class="k">if</span> <span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">isReadable</span><span class="o">())</span> <span class="o">{</span>
-                        <span class="n">SocketChannel</span> <span class="n">sc</span> <span class="o">=</span> <span class="o">(</span><span class="n">SocketChannel</span><span class="o">)</span> <span class="n">key</span><span class="o">.</span><span class="na">channel</span><span class="o">();</span>
+                        <span class="nc">SocketChannel</span> <span class="n">sc</span> <span class="o">=</span> <span class="o">(</span><span class="nc">SocketChannel</span><span class="o">)</span> <span class="n">key</span><span class="o">.</span><span class="na">channel</span><span class="o">();</span>
 
-                        <span class="n">ByteBuffer</span> <span class="n">byteBuffer</span> <span class="o">=</span> <span class="n">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="mi">1024</span><span class="o">);</span>
+                        <span class="nc">ByteBuffer</span> <span class="n">byteBuffer</span> <span class="o">=</span> <span class="nc">ByteBuffer</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="mi">1024</span><span class="o">);</span>
                         <span class="kt">int</span> <span class="n">readBytes</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">byteBuffer</span><span class="o">);</span>
                         <span class="k">if</span> <span class="o">(</span><span class="n">readBytes</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
-                            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"connected to thread "</span> <span class="o">+</span> <span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">());</span>
+                            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"connected to thread "</span> <span class="o">+</span> <span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">());</span>
                             <span class="n">byteBuffer</span><span class="o">.</span><span class="na">flip</span><span class="o">();</span>
                             <span class="kt">byte</span><span class="o">[]</span> <span class="n">bytes</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">byteBuffer</span><span class="o">.</span><span class="na">remaining</span><span class="o">()];</span>
                             <span class="n">byteBuffer</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
-                            <span class="n">String</span> <span class="n">response</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">bytes</span><span class="o">,</span> <span class="s">"UTF-8"</span><span class="o">);</span>
-                            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"GET, the request is "</span> <span class="o">+</span> <span class="n">response</span> <span class="o">+</span> <span class="s">" it's from "</span> <span class="o">+</span> <span class="n">sc</span><span class="o">.</span><span class="na">getRemoteAddress</span><span class="o">());</span>
-                            <span class="n">String</span> <span class="n">result</span> <span class="o">=</span> <span class="n">response</span> <span class="o">+</span> <span class="s">" 's result"</span><span class="o">;</span>
-                            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"send result..."</span><span class="o">);</span>
+                            <span class="nc">String</span> <span class="n">response</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">String</span><span class="o">(</span><span class="n">bytes</span><span class="o">,</span> <span class="s">"UTF-8"</span><span class="o">);</span>
+                            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"GET, the request is "</span> <span class="o">+</span> <span class="n">response</span> <span class="o">+</span> <span class="s">" it's from "</span> <span class="o">+</span> <span class="n">sc</span><span class="o">.</span><span class="na">getRemoteAddress</span><span class="o">());</span>
+                            <span class="nc">String</span> <span class="n">result</span> <span class="o">=</span> <span class="n">response</span> <span class="o">+</span> <span class="s">" 's result"</span><span class="o">;</span>
+                            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"send result..."</span><span class="o">);</span>
                             <span class="n">doWrite</span><span class="o">(</span><span class="n">sc</span><span class="o">,</span> <span class="n">result</span> <span class="o">+</span> <span class="s">""</span><span class="o">);</span>
                         <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">readBytes</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
-                            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">" disconnected"</span><span class="o">);</span>
+                            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">" disconnected"</span><span class="o">);</span>
                             <span class="n">key</span><span class="o">.</span><span class="na">cancel</span><span class="o">();</span>
                             <span class="n">sc</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
                         <span class="o">}</span>
                     <span class="o">}</span>
                     <span class="n">it</span><span class="o">.</span><span class="na">remove</span><span class="o">();</span>
                 <span class="o">}</span>
-            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
                 <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
             <span class="o">}</span>
         <span class="o">}</span>
@@ -876,12 +876,12 @@ public class MainReactor implements Runnable, CallBack{
 
 <p>callback接口</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">MasterSlaveReactor</span><span class="o">;</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="nc">MasterSlaveReactor</span><span class="o">;</span>
 
 <span class="kn">import</span> <span class="nn">java.nio.channels.SocketChannel</span><span class="o">;</span>
 
 <span class="kd">public</span> <span class="kd">interface</span> <span class="nc">CallBack</span> <span class="o">{</span>
-    <span class="kt">void</span> <span class="nf">Dispatch</span><span class="o">(</span><span class="n">SocketChannel</span> <span class="n">socketChannel</span><span class="o">);</span>
+    <span class="kt">void</span> <span class="nf">Dispatch</span><span class="o">(</span><span class="nc">SocketChannel</span> <span class="n">socketChannel</span><span class="o">);</span>
 <span class="o">}</span>
 </code></pre></div></div>
 

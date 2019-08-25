@@ -12,7 +12,7 @@
 
     <title>责任链模式java实现 - New Boy</title>
 
-    <link rel="canonical" href="http://localhost:4000/2018/02/11/%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8Fjava%E5%AE%9E%E7%8E%B0/">
+    <link rel="canonical" href="http://0.0.0.0:4000/2018/02/11/%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8Fjava%E5%AE%9E%E7%8E%B0/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -176,41 +176,41 @@
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//Filter接口</span>
 <span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Filter</span> <span class="o">{</span>
-    <span class="kt">void</span> <span class="nf">doFilter</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">FilterChain</span> <span class="n">filterChain</span><span class="o">);</span>
+    <span class="kt">void</span> <span class="nf">doFilter</span><span class="o">(</span><span class="nc">Request</span> <span class="n">request</span><span class="o">,</span> <span class="nc">Response</span> <span class="n">response</span><span class="o">,</span> <span class="nc">FilterChain</span> <span class="n">filterChain</span><span class="o">);</span>
 <span class="o">}</span>
 </code></pre></div></div>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//具体实现Filter</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Filter1</span> <span class="kd">implements</span> <span class="n">Filter</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Filter1</span> <span class="kd">implements</span> <span class="nc">Filter</span> <span class="o">{</span>
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doFilter</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">FilterChain</span> <span class="n">filterChain</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"get into filter1...."</span><span class="o">);</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doFilter</span><span class="o">(</span><span class="nc">Request</span> <span class="n">request</span><span class="o">,</span> <span class="nc">Response</span> <span class="n">response</span><span class="o">,</span> <span class="nc">FilterChain</span> <span class="n">filterChain</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"get into filter1...."</span><span class="o">);</span>
         <span class="n">filterChain</span><span class="o">.</span><span class="na">doFilter</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">filterChain</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div></div>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//请求pojo</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Request</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
-    <span class="n">T</span> <span class="n">t</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="nf">Request</span><span class="o">(</span><span class="n">T</span> <span class="n">t</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Request</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="o">{</span>
+    <span class="no">T</span> <span class="n">t</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="nf">Request</span><span class="o">(</span><span class="no">T</span> <span class="n">t</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">t</span> <span class="o">=</span> <span class="n">t</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div></div>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//响应pojo</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Response</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
-    <span class="n">T</span> <span class="n">t</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="nf">Response</span><span class="o">(</span><span class="n">T</span> <span class="n">t</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Response</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="o">{</span>
+    <span class="no">T</span> <span class="n">t</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="nf">Response</span><span class="o">(</span><span class="no">T</span> <span class="n">t</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">t</span> <span class="o">=</span> <span class="n">t</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div></div>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FilterChain</span> <span class="kd">implements</span> <span class="n">Filter</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FilterChain</span> <span class="kd">implements</span> <span class="nc">Filter</span> <span class="o">{</span>
 
-    <span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Filter</span><span class="o">&gt;</span> <span class="n">filters</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Filter</span><span class="o">&gt;</span> <span class="n">filters</span><span class="o">;</span>
 
     <span class="kd">private</span> <span class="kt">int</span> <span class="n">index</span><span class="o">;</span>
 
@@ -220,21 +220,21 @@
     <span class="kd">private</span> <span class="kt">int</span> <span class="n">flag</span><span class="o">;</span>
 
     <span class="kd">public</span> <span class="nf">FilterChain</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">filters</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Filter</span><span class="o">&gt;();</span>
+        <span class="n">filters</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="nc">Filter</span><span class="o">&gt;();</span>
         <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
         <span class="n">flag</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">addFilter</span><span class="o">(</span><span class="n">Filter</span> <span class="n">filter</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">addFilter</span><span class="o">(</span><span class="nc">Filter</span> <span class="n">filter</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">filters</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">filter</span><span class="o">);</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doFilter</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">,</span> <span class="n">Response</span> <span class="n">response</span><span class="o">,</span> <span class="n">FilterChain</span> <span class="n">filterChain</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doFilter</span><span class="o">(</span><span class="nc">Request</span> <span class="n">request</span><span class="o">,</span> <span class="nc">Response</span> <span class="n">response</span><span class="o">,</span> <span class="nc">FilterChain</span> <span class="n">filterChain</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">index</span> <span class="o">==</span> <span class="n">filters</span><span class="o">.</span><span class="na">size</span><span class="o">())</span> <span class="o">{</span>
             <span class="n">flag</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
             <span class="n">index</span> <span class="o">--;</span>
-            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"do service .........."</span><span class="o">);</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"do service .........."</span><span class="o">);</span>
             <span class="c1">//do service, asyn or syn;</span>
             <span class="c1">//...</span>
             <span class="c1">//...</span>
@@ -243,14 +243,14 @@
             <span class="n">doFilter</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">filterChain</span><span class="o">);</span><span class="c1">//get out</span>
             <span class="k">return</span><span class="o">;</span>
         <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">index</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">flag</span> <span class="o">==</span> <span class="mi">1</span><span class="o">){</span>
-            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"leave the filterChain..."</span><span class="o">);</span>
+            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"leave the filterChain..."</span><span class="o">);</span>
             <span class="k">return</span><span class="o">;</span>
         <span class="o">}</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">flag</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">Filter</span> <span class="n">filter</span> <span class="o">=</span> <span class="n">filters</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">index</span><span class="o">++);</span>
+            <span class="nc">Filter</span> <span class="n">filter</span> <span class="o">=</span> <span class="n">filters</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">index</span><span class="o">++);</span>
             <span class="n">filter</span><span class="o">.</span><span class="na">doFilter</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">filterChain</span><span class="o">);</span>
         <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">flag</span> <span class="o">==</span> <span class="mi">1</span><span class="o">){</span>
-            <span class="n">Filter</span> <span class="n">filter</span> <span class="o">=</span> <span class="n">filters</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">index</span><span class="o">--);</span>
+            <span class="nc">Filter</span> <span class="n">filter</span> <span class="o">=</span> <span class="n">filters</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">index</span><span class="o">--);</span>
             <span class="n">filter</span><span class="o">.</span><span class="na">doFilter</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">filterChain</span><span class="o">);</span>
         <span class="o">}</span>
     <span class="o">}</span>
@@ -260,14 +260,14 @@
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//启动类</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">StartApplication</span> <span class="o">{</span>
 
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">FilterChain</span> <span class="n">filterChain</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FilterChain</span><span class="o">();</span>
-        <span class="n">filterChain</span><span class="o">.</span><span class="na">addFilter</span><span class="o">(</span><span class="k">new</span> <span class="n">Filter1</span><span class="o">());</span>
-        <span class="n">filterChain</span><span class="o">.</span><span class="na">addFilter</span><span class="o">(</span><span class="k">new</span> <span class="n">Filter2</span><span class="o">());</span>
-        <span class="n">filterChain</span><span class="o">.</span><span class="na">addFilter</span><span class="o">(</span><span class="k">new</span> <span class="n">Filter3</span><span class="o">());</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">FilterChain</span> <span class="n">filterChain</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">FilterChain</span><span class="o">();</span>
+        <span class="n">filterChain</span><span class="o">.</span><span class="na">addFilter</span><span class="o">(</span><span class="k">new</span> <span class="nc">Filter1</span><span class="o">());</span>
+        <span class="n">filterChain</span><span class="o">.</span><span class="na">addFilter</span><span class="o">(</span><span class="k">new</span> <span class="nc">Filter2</span><span class="o">());</span>
+        <span class="n">filterChain</span><span class="o">.</span><span class="na">addFilter</span><span class="o">(</span><span class="k">new</span> <span class="nc">Filter3</span><span class="o">());</span>
 
-        <span class="n">Request</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">request</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Request</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;(</span><span class="s">"test request"</span><span class="o">);</span>
-        <span class="n">Response</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">response</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Response</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;(</span><span class="s">"test response"</span><span class="o">);</span>
+        <span class="nc">Request</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">request</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Request</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;(</span><span class="s">"test request"</span><span class="o">);</span>
+        <span class="nc">Response</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">response</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Response</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;(</span><span class="s">"test response"</span><span class="o">);</span>
         <span class="n">filterChain</span><span class="o">.</span><span class="na">doFilter</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">filterChain</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span>

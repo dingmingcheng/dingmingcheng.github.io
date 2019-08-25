@@ -12,7 +12,7 @@
 
     <title>rocketmq源码阅读(7)——store模块 - New Boy</title>
 
-    <link rel="canonical" href="http://localhost:4000/2019/04/07/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(7)-store%E6%A8%A1%E5%9D%97/">
+    <link rel="canonical" href="http://0.0.0.0:4000/2019/04/07/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(7)-store%E6%A8%A1%E5%9D%97/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -220,9 +220,9 @@
 
 <p>在DefaultMessageStore.java中，也可以看到3个关键的变量</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">private</span> <span class="kd">final</span> <span class="n">CommitLog</span> <span class="n">commitLog</span><span class="o">;</span>
-<span class="kd">private</span> <span class="kd">final</span> <span class="n">ConcurrentMap</span><span class="o">&lt;</span><span class="n">String</span><span class="cm">/* topic */</span><span class="o">,</span> <span class="n">ConcurrentMap</span><span class="o">&lt;</span><span class="n">Integer</span><span class="cm">/* queueId */</span><span class="o">,</span> <span class="n">ConsumeQueue</span><span class="o">&gt;&gt;</span> <span class="n">consumeQueueTable</span><span class="o">;</span>
-<span class="kd">private</span> <span class="kd">final</span> <span class="n">IndexService</span> <span class="n">indexService</span><span class="o">;</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">private</span> <span class="kd">final</span> <span class="nc">CommitLog</span> <span class="n">commitLog</span><span class="o">;</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="nc">ConcurrentMap</span><span class="o">&lt;</span><span class="nc">String</span><span class="cm">/* topic */</span><span class="o">,</span> <span class="nc">ConcurrentMap</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="cm">/* queueId */</span><span class="o">,</span> <span class="nc">ConsumeQueue</span><span class="o">&gt;&gt;</span> <span class="n">consumeQueueTable</span><span class="o">;</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="nc">IndexService</span> <span class="n">indexService</span><span class="o">;</span>
 </code></pre></div></div>
 
 <p>需要提一下的是，存储模型中的dispatch操作是由reputMessageService来异步完成的，reputMessageService会从commitLog中读取消息相关信息，然后写入到indexFile和consumerQueue对应的文件中去</p>
@@ -233,7 +233,7 @@
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//org/apache/rocketmq/store/CommitLog#putMessage(final MessageExtBrokerInner msg)</span>
 <span class="c1">//找到最后创建的CommitLog文件</span>
-<span class="n">MappedFile</span> <span class="n">mappedFile</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">mappedFileQueue</span><span class="o">.</span><span class="na">getLastMappedFile</span><span class="o">();</span>
+<span class="nc">MappedFile</span> <span class="n">mappedFile</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">mappedFileQueue</span><span class="o">.</span><span class="na">getLastMappedFile</span><span class="o">();</span>
 <span class="o">.....</span>
 <span class="k">if</span> <span class="o">(</span><span class="kc">null</span> <span class="o">==</span> <span class="n">mappedFile</span> <span class="o">||</span> <span class="n">mappedFile</span><span class="o">.</span><span class="na">isFull</span><span class="o">())</span> <span class="o">{</span>
   <span class="n">mappedFile</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">mappedFileQueue</span><span class="o">.</span><span class="na">getLastMappedFile</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span> <span class="c1">// Mark: NewFile may be cause noise</span>
@@ -250,51 +250,51 @@
 
 <p>先来看看MappedFile内的所有字段</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">OS_PAGE_SIZE</span> <span class="o">=</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">4</span><span class="o">;</span>
-<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">AtomicLong</span> <span class="n">TOTAL_MAPPED_VIRTUAL_MEMORY</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AtomicLong</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="no">OS_PAGE_SIZE</span> <span class="o">=</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">4</span><span class="o">;</span>
+<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">AtomicLong</span> <span class="no">TOTAL_MAPPED_VIRTUAL_MEMORY</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AtomicLong</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
 
-<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">AtomicInteger</span> <span class="n">TOTAL_MAPPED_FILES</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AtomicInteger</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+<span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">AtomicInteger</span> <span class="no">TOTAL_MAPPED_FILES</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AtomicInteger</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
 <span class="c1">//当前文件的写入的字节位置</span>
-<span class="kd">protected</span> <span class="kd">final</span> <span class="n">AtomicInteger</span> <span class="n">wrotePosition</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AtomicInteger</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
-<span class="kd">protected</span> <span class="kd">final</span> <span class="n">AtomicInteger</span> <span class="n">committedPosition</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AtomicInteger</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
-<span class="kd">private</span> <span class="kd">final</span> <span class="n">AtomicInteger</span> <span class="n">flushedPosition</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AtomicInteger</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+<span class="kd">protected</span> <span class="kd">final</span> <span class="nc">AtomicInteger</span> <span class="n">wrotePosition</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AtomicInteger</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+<span class="kd">protected</span> <span class="kd">final</span> <span class="nc">AtomicInteger</span> <span class="n">committedPosition</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AtomicInteger</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="nc">AtomicInteger</span> <span class="n">flushedPosition</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AtomicInteger</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
 <span class="kd">protected</span> <span class="kt">int</span> <span class="n">fileSize</span><span class="o">;</span>
-<span class="kd">protected</span> <span class="n">FileChannel</span> <span class="n">fileChannel</span><span class="o">;</span>
+<span class="kd">protected</span> <span class="nc">FileChannel</span> <span class="n">fileChannel</span><span class="o">;</span>
 <span class="cm">/**
 * Message will put to here first, and then reput to FileChannel if writeBuffer is not null.
 */</span>
 <span class="c1">//内存缓冲区，依赖TransientStorePool的开启，默认不开启</span>
-<span class="kd">protected</span> <span class="n">ByteBuffer</span> <span class="n">writeBuffer</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+<span class="kd">protected</span> <span class="nc">ByteBuffer</span> <span class="n">writeBuffer</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
 <span class="c1">//默认缓存了5个大小为1G的DirectByteBuffer</span>
-<span class="kd">protected</span> <span class="n">TransientStorePool</span> <span class="n">transientStorePool</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-<span class="kd">private</span> <span class="n">String</span> <span class="n">fileName</span><span class="o">;</span>
+<span class="kd">protected</span> <span class="nc">TransientStorePool</span> <span class="n">transientStorePool</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+<span class="kd">private</span> <span class="nc">String</span> <span class="n">fileName</span><span class="o">;</span>
 <span class="kd">private</span> <span class="kt">long</span> <span class="n">fileFromOffset</span><span class="o">;</span>
-<span class="kd">private</span> <span class="n">File</span> <span class="n">file</span><span class="o">;</span>
+<span class="kd">private</span> <span class="nc">File</span> <span class="n">file</span><span class="o">;</span>
 <span class="c1">//文件内存缓冲区</span>
-<span class="kd">private</span> <span class="n">MappedByteBuffer</span> <span class="n">mappedByteBuffer</span><span class="o">;</span>
+<span class="kd">private</span> <span class="nc">MappedByteBuffer</span> <span class="n">mappedByteBuffer</span><span class="o">;</span>
 <span class="kd">private</span> <span class="kd">volatile</span> <span class="kt">long</span> <span class="n">storeTimestamp</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
 <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">firstCreateInQueue</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
 </code></pre></div></div>
 
 <p>再来看看写入消息的函数</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="n">AppendMessageResult</span> <span class="nf">appendMessagesInner</span><span class="o">(</span><span class="kd">final</span> <span class="n">MessageExt</span> <span class="n">messageExt</span><span class="o">,</span> <span class="kd">final</span> <span class="n">AppendMessageCallback</span> <span class="n">cb</span><span class="o">)</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="nc">AppendMessageResult</span> <span class="nf">appendMessagesInner</span><span class="o">(</span><span class="kd">final</span> <span class="nc">MessageExt</span> <span class="n">messageExt</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">AppendMessageCallback</span> <span class="n">cb</span><span class="o">)</span> <span class="o">{</span>
   <span class="kt">int</span> <span class="n">currentPos</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">wrotePosition</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
 
   <span class="k">if</span> <span class="o">(</span><span class="n">currentPos</span> <span class="o">&lt;</span> <span class="k">this</span><span class="o">.</span><span class="na">fileSize</span><span class="o">)</span> <span class="o">{</span>
     <span class="c1">//截取未写入数据的内存缓冲区</span>
-    <span class="n">ByteBuffer</span> <span class="n">byteBuffer</span> <span class="o">=</span> <span class="n">writeBuffer</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">?</span> <span class="n">writeBuffer</span><span class="o">.</span><span class="na">slice</span><span class="o">()</span> <span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="na">mappedByteBuffer</span><span class="o">.</span><span class="na">slice</span><span class="o">();</span>
+    <span class="nc">ByteBuffer</span> <span class="n">byteBuffer</span> <span class="o">=</span> <span class="n">writeBuffer</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">?</span> <span class="n">writeBuffer</span><span class="o">.</span><span class="na">slice</span><span class="o">()</span> <span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="na">mappedByteBuffer</span><span class="o">.</span><span class="na">slice</span><span class="o">();</span>
     <span class="n">byteBuffer</span><span class="o">.</span><span class="na">position</span><span class="o">(</span><span class="n">currentPos</span><span class="o">);</span>
-    <span class="n">AppendMessageResult</span> <span class="n">result</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="nc">AppendMessageResult</span> <span class="n">result</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
     <span class="c1">//...</span>
     <span class="c1">//将消息体按照固定的规则，逐个字节写入到ByteBuffer中，后续读取文件也主要参考doAppend这个方法</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">cb</span><span class="o">.</span><span class="na">doAppend</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getFileFromOffset</span><span class="o">(),</span> <span class="n">byteBuffer</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">fileSize</span> <span class="o">-</span> <span class="n">currentPos</span><span class="o">,</span> <span class="o">(</span><span class="n">MessageExtBrokerInner</span><span class="o">)</span> <span class="n">messageExt</span><span class="o">);</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">cb</span><span class="o">.</span><span class="na">doAppend</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getFileFromOffset</span><span class="o">(),</span> <span class="n">byteBuffer</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">fileSize</span> <span class="o">-</span> <span class="n">currentPos</span><span class="o">,</span> <span class="o">(</span><span class="nc">MessageExtBrokerInner</span><span class="o">)</span> <span class="n">messageExt</span><span class="o">);</span>
     <span class="c1">//...</span>
     <span class="k">this</span><span class="o">.</span><span class="na">wrotePosition</span><span class="o">.</span><span class="na">addAndGet</span><span class="o">(</span><span class="n">result</span><span class="o">.</span><span class="na">getWroteBytes</span><span class="o">());</span>
     <span class="k">this</span><span class="o">.</span><span class="na">storeTimestamp</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="na">getStoreTimestamp</span><span class="o">();</span>
     <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
   <span class="o">}</span>
-  <span class="k">return</span> <span class="k">new</span> <span class="nf">AppendMessageResult</span><span class="o">(</span><span class="n">AppendMessageStatus</span><span class="o">.</span><span class="na">UNKNOWN_ERROR</span><span class="o">);</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="nf">AppendMessageResult</span><span class="o">(</span><span class="nc">AppendMessageStatus</span><span class="o">.</span><span class="na">UNKNOWN_ERROR</span><span class="o">);</span>
 <span class="o">}</span>
 
 </code></pre></div></div>
@@ -342,7 +342,7 @@
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//org/apache/rocketmq/store/ConsumeQueue#putMessagePositionInfo(final long offset, final int size, final long tagsCode, final long cqOffset)</span>
 <span class="o">...</span>
 <span class="k">this</span><span class="o">.</span><span class="na">byteBufferIndex</span><span class="o">.</span><span class="na">flip</span><span class="o">();</span>
-<span class="k">this</span><span class="o">.</span><span class="na">byteBufferIndex</span><span class="o">.</span><span class="na">limit</span><span class="o">(</span><span class="n">CQ_STORE_UNIT_SIZE</span><span class="o">);</span>
+<span class="k">this</span><span class="o">.</span><span class="na">byteBufferIndex</span><span class="o">.</span><span class="na">limit</span><span class="o">(</span><span class="no">CQ_STORE_UNIT_SIZE</span><span class="o">);</span>
 <span class="k">this</span><span class="o">.</span><span class="na">byteBufferIndex</span><span class="o">.</span><span class="na">putLong</span><span class="o">(</span><span class="n">offset</span><span class="o">);</span><span class="c1">//offset是对应commitLog中的offset</span>
 <span class="k">this</span><span class="o">.</span><span class="na">byteBufferIndex</span><span class="o">.</span><span class="na">putInt</span><span class="o">(</span><span class="n">size</span><span class="o">);</span>
 <span class="k">this</span><span class="o">.</span><span class="na">byteBufferIndex</span><span class="o">.</span><span class="na">putLong</span><span class="o">(</span><span class="n">tagsCode</span><span class="o">);</span>
@@ -357,9 +357,9 @@
 <span class="o">}</span>
 
 <span class="k">if</span> <span class="o">(</span><span class="n">keys</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">keys</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
-  <span class="n">String</span><span class="o">[]</span> <span class="n">keyset</span> <span class="o">=</span> <span class="n">keys</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="n">MessageConst</span><span class="o">.</span><span class="na">KEY_SEPARATOR</span><span class="o">);</span>
+  <span class="nc">String</span><span class="o">[]</span> <span class="n">keyset</span> <span class="o">=</span> <span class="n">keys</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="nc">MessageConst</span><span class="o">.</span><span class="na">KEY_SEPARATOR</span><span class="o">);</span>
   <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">keyset</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-    <span class="n">String</span> <span class="n">key</span> <span class="o">=</span> <span class="n">keyset</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+    <span class="nc">String</span> <span class="n">key</span> <span class="o">=</span> <span class="n">keyset</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
     <span class="k">if</span> <span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
       <span class="n">indexFile</span> <span class="o">=</span> <span class="n">putKey</span><span class="o">(</span><span class="n">indexFile</span><span class="o">,</span> <span class="n">msg</span><span class="o">,</span> <span class="n">buildKey</span><span class="o">(</span><span class="n">topic</span><span class="o">,</span> <span class="n">key</span><span class="o">));</span>
     <span class="o">}</span>

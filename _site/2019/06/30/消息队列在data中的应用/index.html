@@ -12,7 +12,7 @@
 
     <title>消息队列在data中的应用 - New Boy</title>
 
-    <link rel="canonical" href="http://localhost:4000/2019/06/30/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%9C%A8data%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/">
+    <link rel="canonical" href="http://0.0.0.0:4000/2019/06/30/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%9C%A8data%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -172,8 +172,8 @@
 
 <p>记得在去年11月初的时候，确切来说是在ebay API的限流正式放开之后。某日早上，日常检查线上error日志，发现了几条之前从未出现过的信息</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sendKernelImpl</span> <span class="n">exception</span><span class="o">,</span> <span class="n">resend</span> <span class="n">at</span> <span class="n">once</span><span class="o">,</span> <span class="nl">InvokeID:</span> <span class="mi">6395301748774370577</span><span class="o">,</span> <span class="nl">RT:</span> <span class="mi">213</span><span class="n">ms</span><span class="o">,</span> <span class="nl">Broker:</span> <span class="n">MessageQueue</span> <span class="o">[</span><span class="n">topic</span><span class="o">=</span><span class="n">ORDER</span><span class="o">,</span> <span class="n">brokerName</span><span class="o">=</span><span class="n">prd</span><span class="o">-</span><span class="n">idc</span><span class="o">-</span><span class="n">broker</span><span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="n">queueId</span><span class="o">=</span><span class="mi">10</span><span class="o">]</span>
-<span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">rocketmq</span><span class="o">.</span><span class="na">client</span><span class="o">.</span><span class="na">exception</span><span class="o">.</span><span class="na">MQBrokerException</span><span class="o">:</span> <span class="nl">CODE:</span> <span class="mi">2</span>  <span class="nl">DESC:</span> <span class="o">[</span><span class="n">TIMEOUT_CLEAN_QUEUE</span><span class="o">]</span><span class="n">broker</span> <span class="n">busy</span><span class="o">,</span> <span class="n">start</span> <span class="n">flow</span> <span class="n">control</span> <span class="k">for</span> <span class="n">a</span> <span class="k">while</span><span class="o">,</span> <span class="n">period</span> <span class="n">in</span> <span class="nl">queue:</span> <span class="mi">209</span><span class="n">ms</span><span class="o">,</span> <span class="n">size</span> <span class="n">of</span> <span class="nl">queue:</span> <span class="mi">0</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sendKernelImpl</span> <span class="n">exception</span><span class="o">,</span> <span class="n">resend</span> <span class="n">at</span> <span class="n">once</span><span class="o">,</span> <span class="nl">InvokeID:</span> <span class="mi">6395301748774370577</span><span class="o">,</span> <span class="nl">RT:</span> <span class="mi">213</span><span class="n">ms</span><span class="o">,</span> <span class="nl">Broker:</span> <span class="nc">MessageQueue</span> <span class="o">[</span><span class="n">topic</span><span class="o">=</span><span class="no">ORDER</span><span class="o">,</span> <span class="n">brokerName</span><span class="o">=</span><span class="n">prd</span><span class="o">-</span><span class="n">idc</span><span class="o">-</span><span class="n">broker</span><span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="n">queueId</span><span class="o">=</span><span class="mi">10</span><span class="o">]</span>
+<span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">rocketmq</span><span class="o">.</span><span class="na">client</span><span class="o">.</span><span class="na">exception</span><span class="o">.</span><span class="na">MQBrokerException</span><span class="o">:</span> <span class="nl">CODE:</span> <span class="mi">2</span>  <span class="nl">DESC:</span> <span class="o">[</span><span class="no">TIMEOUT_CLEAN_QUEUE</span><span class="o">]</span><span class="n">broker</span> <span class="n">busy</span><span class="o">,</span> <span class="n">start</span> <span class="n">flow</span> <span class="n">control</span> <span class="k">for</span> <span class="n">a</span> <span class="k">while</span><span class="o">,</span> <span class="n">period</span> <span class="n">in</span> <span class="nl">queue:</span> <span class="mi">209</span><span class="n">ms</span><span class="o">,</span> <span class="n">size</span> <span class="n">of</span> <span class="nl">queue:</span> <span class="mi">0</span>
 <span class="o">....(</span><span class="err">具体的消息体</span><span class="o">)</span>
 </code></pre></div></div>
 
@@ -196,12 +196,12 @@
 
 <p>然后再来看看相应的处理生产者请求的线程池的配置（相关参数均为默认参数）</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">this</span><span class="o">.</span><span class="na">sendMessageExecutor</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BrokerFixedThreadPoolExecutor</span><span class="o">(</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">this</span><span class="o">.</span><span class="na">sendMessageExecutor</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BrokerFixedThreadPoolExecutor</span><span class="o">(</span>
   <span class="mi">1</span><span class="o">,</span>
   <span class="mi">1</span><span class="o">,</span>
   <span class="mi">1000</span> <span class="o">*</span> <span class="mi">60</span><span class="o">,</span>
-  <span class="n">TimeUnit</span><span class="o">.</span><span class="na">MILLISECONDS</span><span class="o">,</span>
-  <span class="k">new</span> <span class="n">LinkedBlockingQueue</span><span class="o">&lt;</span><span class="n">Runnable</span><span class="o">&gt;(</span><span class="mi">10000</span><span class="o">),</span>
+  <span class="nc">TimeUnit</span><span class="o">.</span><span class="na">MILLISECONDS</span><span class="o">,</span>
+  <span class="k">new</span> <span class="nc">LinkedBlockingQueue</span><span class="o">&lt;</span><span class="nc">Runnable</span><span class="o">&gt;(</span><span class="mi">10000</span><span class="o">),</span>
   <span class="k">new</span> <span class="nf">ThreadFactoryImpl</span><span class="o">(</span><span class="s">"SendMessageThread_"</span><span class="o">));</span>
 </code></pre></div></div>
 

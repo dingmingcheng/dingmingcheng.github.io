@@ -12,7 +12,7 @@
 
     <title>[转]java基础-内存泄漏与内存溢出 - New Boy</title>
 
-    <link rel="canonical" href="http://localhost:4000/2017/12/23/%E8%BD%AC-java%E5%9F%BA%E7%A1%80-%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E4%B8%8E%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA/">
+    <link rel="canonical" href="http://0.0.0.0:4000/2017/12/23/%E8%BD%AC-java%E5%9F%BA%E7%A1%80-%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E4%B8%8E%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -233,10 +233,10 @@
 
 <p>Java代码</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Vector</span> <span class="n">v</span><span class="o">=</span><span class="k">new</span> <span class="n">Vector</span><span class="o">(</span><span class="mi">10</span><span class="o">);</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Vector</span> <span class="n">v</span><span class="o">=</span><span class="k">new</span> <span class="nc">Vector</span><span class="o">(</span><span class="mi">10</span><span class="o">);</span>
 <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="o">;</span><span class="n">i</span><span class="o">&lt;</span><span class="mi">100</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
 <span class="o">{</span>
-  <span class="n">Object</span> <span class="n">o</span><span class="o">=</span><span class="k">new</span> <span class="n">Object</span><span class="o">();</span>
+  <span class="nc">Object</span> <span class="n">o</span><span class="o">=</span><span class="k">new</span> <span class="nc">Object</span><span class="o">();</span>
   <span class="n">v</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">o</span><span class="o">);</span>
   <span class="n">o</span><span class="o">=</span><span class="kc">null</span><span class="o">;</span> 
 <span class="o">}</span> 
@@ -270,9 +270,9 @@
 
 <p>​          因为每一个String对象都会独立占用内存一块区域，如：</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">String</span> <span class="n">str</span> <span class="o">=</span> <span class="s">"aaa"</span><span class="o">;</span>
-<span class="n">String</span> <span class="n">str2</span> <span class="o">=</span> <span class="s">"bbb"</span><span class="o">;</span>
-<span class="n">String</span> <span class="n">str3</span> <span class="o">=</span> <span class="n">str</span> <span class="n">str2</span><span class="o">;</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">String</span> <span class="n">str</span> <span class="o">=</span> <span class="s">"aaa"</span><span class="o">;</span>
+<span class="nc">String</span> <span class="n">str2</span> <span class="o">=</span> <span class="s">"bbb"</span><span class="o">;</span>
+<span class="nc">String</span> <span class="n">str3</span> <span class="o">=</span> <span class="n">str</span> <span class="n">str2</span><span class="o">;</span>
 <span class="c1">//假如执行此次之后str , str2再不被调用，那么它们就会在内存中等待GC回收;</span>
 <span class="c1">//假如程序中存在过多的类似情况就会出现内存错误；</span>
 </code></pre></div></div>
