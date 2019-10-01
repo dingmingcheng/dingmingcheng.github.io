@@ -12,7 +12,7 @@
 
     <title>rocketmq源码阅读(4)——mq负载均衡服务 - New Boy</title>
 
-    <link rel="canonical" href="http://0.0.0.0:4000/2019/01/13/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(4)-mq%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%9C%8D%E5%8A%A1/">
+    <link rel="canonical" href="http://localhost:4000/2019/01/13/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(4)-mq%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%9C%8D%E5%8A%A1/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -177,18 +177,18 @@
 <h3 id="相关参数">相关参数</h3>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//key代表当前实例对应处理的队列，value代表处理队列快照。代表该应用所对应的queue</span>
-<span class="kd">protected</span> <span class="kd">final</span> <span class="nc">ConcurrentMap</span><span class="o">&lt;</span><span class="nc">MessageQueue</span><span class="o">,</span> <span class="nc">ProcessQueue</span><span class="o">&gt;</span> <span class="n">processQueueTable</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ConcurrentHashMap</span><span class="o">&lt;</span><span class="nc">MessageQueue</span><span class="o">,</span> <span class="nc">ProcessQueue</span><span class="o">&gt;(</span><span class="mi">64</span><span class="o">);</span>
+<span class="kd">protected</span> <span class="kd">final</span> <span class="n">ConcurrentMap</span><span class="o">&lt;</span><span class="n">MessageQueue</span><span class="o">,</span> <span class="n">ProcessQueue</span><span class="o">&gt;</span> <span class="n">processQueueTable</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConcurrentHashMap</span><span class="o">&lt;</span><span class="n">MessageQueue</span><span class="o">,</span> <span class="n">ProcessQueue</span><span class="o">&gt;(</span><span class="mi">64</span><span class="o">);</span>
 <span class="c1">//topic与对应的所有queue的存储</span>
-<span class="kd">protected</span> <span class="kd">final</span> <span class="nc">ConcurrentMap</span><span class="o">&lt;</span><span class="nc">String</span><span class="cm">/* topic */</span><span class="o">,</span> <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">MessageQueue</span><span class="o">&gt;&gt;</span> <span class="n">topicSubscribeInfoTable</span> <span class="o">=</span>
-    <span class="k">new</span> <span class="nc">ConcurrentHashMap</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">MessageQueue</span><span class="o">&gt;&gt;();</span>
+<span class="kd">protected</span> <span class="kd">final</span> <span class="n">ConcurrentMap</span><span class="o">&lt;</span><span class="n">String</span><span class="cm">/* topic */</span><span class="o">,</span> <span class="n">Set</span><span class="o">&lt;</span><span class="n">MessageQueue</span><span class="o">&gt;&gt;</span> <span class="n">topicSubscribeInfoTable</span> <span class="o">=</span>
+    <span class="k">new</span> <span class="n">ConcurrentHashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Set</span><span class="o">&lt;</span><span class="n">MessageQueue</span><span class="o">&gt;&gt;();</span>
 <span class="c1">//topic对应的相关信息，初始化DefaultMQPushConsumer时copy进去</span>
-<span class="kd">protected</span> <span class="kd">final</span> <span class="nc">ConcurrentMap</span><span class="o">&lt;</span><span class="nc">String</span> <span class="cm">/* topic */</span><span class="o">,</span> <span class="nc">SubscriptionData</span><span class="o">&gt;</span> <span class="n">subscriptionInner</span> <span class="o">=</span>
-    <span class="k">new</span> <span class="nc">ConcurrentHashMap</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">SubscriptionData</span><span class="o">&gt;();</span>
-<span class="kd">protected</span> <span class="nc">String</span> <span class="n">consumerGroup</span><span class="o">;</span>
-<span class="kd">protected</span> <span class="nc">MessageModel</span> <span class="n">messageModel</span><span class="o">;</span>
+<span class="kd">protected</span> <span class="kd">final</span> <span class="n">ConcurrentMap</span><span class="o">&lt;</span><span class="n">String</span> <span class="cm">/* topic */</span><span class="o">,</span> <span class="n">SubscriptionData</span><span class="o">&gt;</span> <span class="n">subscriptionInner</span> <span class="o">=</span>
+    <span class="k">new</span> <span class="n">ConcurrentHashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">SubscriptionData</span><span class="o">&gt;();</span>
+<span class="kd">protected</span> <span class="n">String</span> <span class="n">consumerGroup</span><span class="o">;</span>
+<span class="kd">protected</span> <span class="n">MessageModel</span> <span class="n">messageModel</span><span class="o">;</span>
 <span class="c1">//队列分配算法</span>
-<span class="kd">protected</span> <span class="nc">AllocateMessageQueueStrategy</span> <span class="n">allocateMessageQueueStrategy</span><span class="o">;</span>
-<span class="kd">protected</span> <span class="nc">MQClientInstance</span> <span class="n">mQClientFactory</span><span class="o">;</span>
+<span class="kd">protected</span> <span class="n">AllocateMessageQueueStrategy</span> <span class="n">allocateMessageQueueStrategy</span><span class="o">;</span>
+<span class="kd">protected</span> <span class="n">MQClientInstance</span> <span class="n">mQClientFactory</span><span class="o">;</span>
 </code></pre></div></div>
 
 <p>###启动流程</p>
@@ -196,13 +196,13 @@
 <p>MQClientInstance在start()时，会调用<strong>rebalanceService.start();</strong>。跟踪下去，会调用<strong>MQClientInstance.doRebalance()</strong></p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kt">void</span> <span class="nf">doRebalance</span><span class="o">()</span> <span class="o">{</span>
-    <span class="k">for</span> <span class="o">(</span><span class="nc">Map</span><span class="o">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">MQConsumerInner</span><span class="o">&gt;</span> <span class="n">entry</span> <span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="na">consumerTable</span><span class="o">.</span><span class="na">entrySet</span><span class="o">())</span> <span class="o">{</span>
+    <span class="k">for</span> <span class="o">(</span><span class="n">Map</span><span class="o">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">MQConsumerInner</span><span class="o">&gt;</span> <span class="n">entry</span> <span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="na">consumerTable</span><span class="o">.</span><span class="na">entrySet</span><span class="o">())</span> <span class="o">{</span>
         <span class="c1">//针对每个消费者group执行负载均衡服务</span>
-        <span class="nc">MQConsumerInner</span> <span class="n">impl</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="na">getValue</span><span class="o">();</span>
+        <span class="n">MQConsumerInner</span> <span class="n">impl</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="na">getValue</span><span class="o">();</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">impl</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
             <span class="k">try</span> <span class="o">{</span>
                 <span class="n">impl</span><span class="o">.</span><span class="na">doRebalance</span><span class="o">();</span>
-            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Throwable</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Throwable</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
                 <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"doRebalance exception"</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
             <span class="o">}</span>
         <span class="o">}</span>
@@ -215,16 +215,16 @@
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//做负载均衡，判断是否是顺序消费</span>
 <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doRebalance</span><span class="o">(</span><span class="kd">final</span> <span class="kt">boolean</span> <span class="n">isOrder</span><span class="o">)</span> <span class="o">{</span>
     <span class="c1">//获取该消费者group下的topic信息</span>
-    <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">SubscriptionData</span><span class="o">&gt;</span> <span class="n">subTable</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getSubscriptionInner</span><span class="o">();</span>
+    <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">SubscriptionData</span><span class="o">&gt;</span> <span class="n">subTable</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getSubscriptionInner</span><span class="o">();</span>
     <span class="k">if</span> <span class="o">(</span><span class="n">subTable</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">for</span> <span class="o">(</span><span class="kd">final</span> <span class="nc">Map</span><span class="o">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">SubscriptionData</span><span class="o">&gt;</span> <span class="n">entry</span> <span class="o">:</span> <span class="n">subTable</span><span class="o">.</span><span class="na">entrySet</span><span class="o">())</span> <span class="o">{</span>
-            <span class="kd">final</span> <span class="nc">String</span> <span class="n">topic</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="na">getKey</span><span class="o">();</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kd">final</span> <span class="n">Map</span><span class="o">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">SubscriptionData</span><span class="o">&gt;</span> <span class="n">entry</span> <span class="o">:</span> <span class="n">subTable</span><span class="o">.</span><span class="na">entrySet</span><span class="o">())</span> <span class="o">{</span>
+            <span class="kd">final</span> <span class="n">String</span> <span class="n">topic</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="na">getKey</span><span class="o">();</span>
             <span class="k">try</span> <span class="o">{</span>
                 <span class="c1">//对每一个topic进行负载均衡</span>
                 <span class="k">this</span><span class="o">.</span><span class="na">rebalanceByTopic</span><span class="o">(</span><span class="n">topic</span><span class="o">,</span> <span class="n">isOrder</span><span class="o">);</span>
-            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Throwable</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Throwable</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
                 <span class="c1">//如果不是retry队列</span>
-                <span class="k">if</span> <span class="o">(!</span><span class="n">topic</span><span class="o">.</span><span class="na">startsWith</span><span class="o">(</span><span class="nc">MixAll</span><span class="o">.</span><span class="na">RETRY_GROUP_TOPIC_PREFIX</span><span class="o">))</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(!</span><span class="n">topic</span><span class="o">.</span><span class="na">startsWith</span><span class="o">(</span><span class="n">MixAll</span><span class="o">.</span><span class="na">RETRY_GROUP_TOPIC_PREFIX</span><span class="o">))</span> <span class="o">{</span>
                     <span class="n">log</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">"rebalanceByTopic Exception"</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
                 <span class="o">}</span>
             <span class="o">}</span>
@@ -239,32 +239,32 @@
 <p>接着往下走，就是队列分配的核心实现。我们来看一下集群模式的负载均衡实现(去除了日志)</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//所有的messageQueue</span>
-<span class="nc">Set</span><span class="o">&lt;</span><span class="nc">MessageQueue</span><span class="o">&gt;</span> <span class="n">mqSet</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">topicSubscribeInfoTable</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">topic</span><span class="o">);</span>
+<span class="n">Set</span><span class="o">&lt;</span><span class="n">MessageQueue</span><span class="o">&gt;</span> <span class="n">mqSet</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">topicSubscribeInfoTable</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">topic</span><span class="o">);</span>
 <span class="c1">//所有的实例名称 ip@pid</span>
-<span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">cidAll</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">mQClientFactory</span><span class="o">.</span><span class="na">findConsumerIdList</span><span class="o">(</span><span class="n">topic</span><span class="o">,</span> <span class="n">consumerGroup</span><span class="o">);</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">cidAll</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">mQClientFactory</span><span class="o">.</span><span class="na">findConsumerIdList</span><span class="o">(</span><span class="n">topic</span><span class="o">,</span> <span class="n">consumerGroup</span><span class="o">);</span>
 
 <span class="k">if</span> <span class="o">(</span><span class="n">mqSet</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">cidAll</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">MessageQueue</span><span class="o">&gt;</span> <span class="n">mqAll</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="nc">MessageQueue</span><span class="o">&gt;();</span>
+    <span class="n">List</span><span class="o">&lt;</span><span class="n">MessageQueue</span><span class="o">&gt;</span> <span class="n">mqAll</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">MessageQueue</span><span class="o">&gt;();</span>
     <span class="n">mqAll</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">mqSet</span><span class="o">);</span>
 
-    <span class="nc">Collections</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">mqAll</span><span class="o">);</span>
-    <span class="nc">Collections</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">cidAll</span><span class="o">);</span>
+    <span class="n">Collections</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">mqAll</span><span class="o">);</span>
+    <span class="n">Collections</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">cidAll</span><span class="o">);</span>
 
     <span class="c1">//默认为AllocateMessageQueueAveragely，在DefaultMQPushConsumer构造函数中生成</span>
-    <span class="nc">AllocateMessageQueueStrategy</span> <span class="n">strategy</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">allocateMessageQueueStrategy</span><span class="o">;</span>
+    <span class="n">AllocateMessageQueueStrategy</span> <span class="n">strategy</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">allocateMessageQueueStrategy</span><span class="o">;</span>
 
-    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">MessageQueue</span><span class="o">&gt;</span> <span class="n">allocateResult</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="n">List</span><span class="o">&lt;</span><span class="n">MessageQueue</span><span class="o">&gt;</span> <span class="n">allocateResult</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
     <span class="k">try</span> <span class="o">{</span>
         <span class="n">allocateResult</span> <span class="o">=</span> <span class="n">strategy</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span>
             <span class="k">this</span><span class="o">.</span><span class="na">consumerGroup</span><span class="o">,</span>
             <span class="k">this</span><span class="o">.</span><span class="na">mQClientFactory</span><span class="o">.</span><span class="na">getClientId</span><span class="o">(),</span>
             <span class="n">mqAll</span><span class="o">,</span>
             <span class="n">cidAll</span><span class="o">);</span>
-    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Throwable</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Throwable</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">return</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">MessageQueue</span><span class="o">&gt;</span> <span class="n">allocateResultSet</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashSet</span><span class="o">&lt;</span><span class="nc">MessageQueue</span><span class="o">&gt;();</span>
+    <span class="n">Set</span><span class="o">&lt;</span><span class="n">MessageQueue</span><span class="o">&gt;</span> <span class="n">allocateResultSet</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashSet</span><span class="o">&lt;</span><span class="n">MessageQueue</span><span class="o">&gt;();</span>
     <span class="k">if</span> <span class="o">(</span><span class="n">allocateResult</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">allocateResultSet</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">allocateResult</span><span class="o">);</span>
     <span class="o">}</span>
@@ -306,12 +306,12 @@
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//根据机器对MesaageQueue进行分组</span>
 <span class="c1">//machineRoomResolver为接口，需要具体实现，用于获取相关的machine room唯一标志</span>
-<span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="cm">/*machine room */</span><span class="o">,</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">MessageQueue</span><span class="o">&gt;&gt;</span> <span class="n">mr2Mq</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">TreeMap</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">MessageQueue</span><span class="o">&gt;&gt;();</span>
-<span class="k">for</span> <span class="o">(</span><span class="nc">MessageQueue</span> <span class="n">mq</span> <span class="o">:</span> <span class="n">mqAll</span><span class="o">)</span> <span class="o">{</span>
-    <span class="nc">String</span> <span class="n">brokerMachineRoom</span> <span class="o">=</span> <span class="n">machineRoomResolver</span><span class="o">.</span><span class="na">brokerDeployIn</span><span class="o">(</span><span class="n">mq</span><span class="o">);</span>
-    <span class="k">if</span> <span class="o">(</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">isNoneEmpty</span><span class="o">(</span><span class="n">brokerMachineRoom</span><span class="o">))</span> <span class="o">{</span>
+<span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="cm">/*machine room */</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">MessageQueue</span><span class="o">&gt;&gt;</span> <span class="n">mr2Mq</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TreeMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">MessageQueue</span><span class="o">&gt;&gt;();</span>
+<span class="k">for</span> <span class="o">(</span><span class="n">MessageQueue</span> <span class="n">mq</span> <span class="o">:</span> <span class="n">mqAll</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">String</span> <span class="n">brokerMachineRoom</span> <span class="o">=</span> <span class="n">machineRoomResolver</span><span class="o">.</span><span class="na">brokerDeployIn</span><span class="o">(</span><span class="n">mq</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">isNoneEmpty</span><span class="o">(</span><span class="n">brokerMachineRoom</span><span class="o">))</span> <span class="o">{</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">mr2Mq</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">brokerMachineRoom</span><span class="o">)</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">mr2Mq</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">brokerMachineRoom</span><span class="o">,</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="nc">MessageQueue</span><span class="o">&gt;());</span>
+            <span class="n">mr2Mq</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">brokerMachineRoom</span><span class="o">,</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">MessageQueue</span><span class="o">&gt;());</span>
         <span class="o">}</span>
         <span class="n">mr2Mq</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">brokerMachineRoom</span><span class="o">).</span><span class="na">add</span><span class="o">(</span><span class="n">mq</span><span class="o">);</span>
     <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
@@ -320,12 +320,12 @@
 <span class="o">}</span>
 
 <span class="c1">//根据机器对消费者实例进行分组</span>
-<span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="cm">/*machine room */</span><span class="o">,</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="cm">/*clientId*/</span><span class="o">&gt;&gt;</span> <span class="n">mr2c</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">TreeMap</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;&gt;();</span>
-<span class="k">for</span> <span class="o">(</span><span class="nc">String</span> <span class="n">cid</span> <span class="o">:</span> <span class="n">cidAll</span><span class="o">)</span> <span class="o">{</span>
-    <span class="nc">String</span> <span class="n">consumerMachineRoom</span> <span class="o">=</span> <span class="n">machineRoomResolver</span><span class="o">.</span><span class="na">consumerDeployIn</span><span class="o">(</span><span class="n">cid</span><span class="o">);</span>
-    <span class="k">if</span> <span class="o">(</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">isNoneEmpty</span><span class="o">(</span><span class="n">consumerMachineRoom</span><span class="o">))</span> <span class="o">{</span>
+<span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="cm">/*machine room */</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="cm">/*clientId*/</span><span class="o">&gt;&gt;</span> <span class="n">mr2c</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TreeMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;&gt;();</span>
+<span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">cid</span> <span class="o">:</span> <span class="n">cidAll</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">String</span> <span class="n">consumerMachineRoom</span> <span class="o">=</span> <span class="n">machineRoomResolver</span><span class="o">.</span><span class="na">consumerDeployIn</span><span class="o">(</span><span class="n">cid</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">isNoneEmpty</span><span class="o">(</span><span class="n">consumerMachineRoom</span><span class="o">))</span> <span class="o">{</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">mr2c</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">consumerMachineRoom</span><span class="o">)</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">mr2c</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">consumerMachineRoom</span><span class="o">,</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;());</span>
+            <span class="n">mr2c</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">consumerMachineRoom</span><span class="o">,</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;());</span>
         <span class="o">}</span>
         <span class="n">mr2c</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">consumerMachineRoom</span><span class="o">).</span><span class="na">add</span><span class="o">(</span><span class="n">cid</span><span class="o">);</span>
     <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
@@ -333,19 +333,19 @@
     <span class="o">}</span>
 <span class="o">}</span>
 
-<span class="nc">List</span><span class="o">&lt;</span><span class="nc">MessageQueue</span><span class="o">&gt;</span> <span class="n">allocateResults</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="nc">MessageQueue</span><span class="o">&gt;();</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">MessageQueue</span><span class="o">&gt;</span> <span class="n">allocateResults</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">MessageQueue</span><span class="o">&gt;();</span>
 
 <span class="c1">//1.allocate the mq that deploy in the same machine room with the current consumer</span>
-<span class="nc">String</span> <span class="n">currentMachineRoom</span> <span class="o">=</span> <span class="n">machineRoomResolver</span><span class="o">.</span><span class="na">consumerDeployIn</span><span class="o">(</span><span class="n">currentCID</span><span class="o">);</span>
-<span class="nc">List</span><span class="o">&lt;</span><span class="nc">MessageQueue</span><span class="o">&gt;</span> <span class="n">mqInThisMachineRoom</span> <span class="o">=</span> <span class="n">mr2Mq</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">currentMachineRoom</span><span class="o">);</span>
-<span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">consumerInThisMachineRoom</span> <span class="o">=</span> <span class="n">mr2c</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">currentMachineRoom</span><span class="o">);</span>
+<span class="n">String</span> <span class="n">currentMachineRoom</span> <span class="o">=</span> <span class="n">machineRoomResolver</span><span class="o">.</span><span class="na">consumerDeployIn</span><span class="o">(</span><span class="n">currentCID</span><span class="o">);</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">MessageQueue</span><span class="o">&gt;</span> <span class="n">mqInThisMachineRoom</span> <span class="o">=</span> <span class="n">mr2Mq</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">currentMachineRoom</span><span class="o">);</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">consumerInThisMachineRoom</span> <span class="o">=</span> <span class="n">mr2c</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">currentMachineRoom</span><span class="o">);</span>
 <span class="k">if</span> <span class="o">(</span><span class="n">mqInThisMachineRoom</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">mqInThisMachineRoom</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
     <span class="c1">//具体的allocateMessageQueueStrategy需要传入构造函数中</span>
     <span class="n">allocateResults</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">allocateMessageQueueStrategy</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="n">consumerGroup</span><span class="o">,</span> <span class="n">currentCID</span><span class="o">,</span> <span class="n">mqInThisMachineRoom</span><span class="o">,</span> <span class="n">consumerInThisMachineRoom</span><span class="o">));</span>
 <span class="o">}</span>
 
 <span class="c1">//2.allocate the rest mq to each machine room if there are no consumer alive in that machine room</span>
-<span class="k">for</span> <span class="o">(</span><span class="nc">String</span> <span class="n">machineRoom</span> <span class="o">:</span> <span class="n">mr2Mq</span><span class="o">.</span><span class="na">keySet</span><span class="o">())</span> <span class="o">{</span>
+<span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">machineRoom</span> <span class="o">:</span> <span class="n">mr2Mq</span><span class="o">.</span><span class="na">keySet</span><span class="o">())</span> <span class="o">{</span>
     <span class="k">if</span> <span class="o">(!</span><span class="n">mr2c</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="n">machineRoom</span><span class="o">))</span> <span class="o">{</span> <span class="c1">// no alive consumer in the corresponding machine room, so all consumers share these queues</span>
         <span class="n">allocateResults</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">allocateMessageQueueStrategy</span><span class="o">.</span><span class="na">allocate</span><span class="o">(</span><span class="n">consumerGroup</span><span class="o">,</span> <span class="n">currentCID</span><span class="o">,</span> <span class="n">mr2Mq</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">machineRoom</span><span class="o">),</span> <span class="n">cidAll</span><span class="o">));</span>
     <span class="o">}</span>
@@ -369,7 +369,7 @@
 <span class="c1">//确定下标</span>
 <span class="kt">int</span> <span class="n">startIndex</span> <span class="o">=</span> <span class="o">(</span><span class="n">mod</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="n">mod</span><span class="o">)</span> <span class="o">?</span> <span class="n">index</span> <span class="o">*</span> <span class="n">averageSize</span> <span class="o">:</span> <span class="n">index</span> <span class="o">*</span> <span class="n">averageSize</span> <span class="o">+</span> <span class="n">mod</span><span class="o">;</span>
 <span class="c1">//确定范围</span>
-<span class="kt">int</span> <span class="n">range</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">averageSize</span><span class="o">,</span> <span class="n">mqAll</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">-</span> <span class="n">startIndex</span><span class="o">);</span>
+<span class="kt">int</span> <span class="n">range</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">averageSize</span><span class="o">,</span> <span class="n">mqAll</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">-</span> <span class="n">startIndex</span><span class="o">);</span>
 <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">range</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
     <span class="n">result</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">mqAll</span><span class="o">.</span><span class="na">get</span><span class="o">((</span><span class="n">startIndex</span> <span class="o">+</span> <span class="n">i</span><span class="o">)</span> <span class="o">%</span> <span class="n">mqAll</span><span class="o">.</span><span class="na">size</span><span class="o">()));</span>
 <span class="o">}</span>
@@ -395,10 +395,10 @@
 
 <p>通过配置来分配队列</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">MessageQueue</span><span class="o">&gt;</span> <span class="n">messageQueueList</span><span class="o">;</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">MessageQueue</span><span class="o">&gt;</span> <span class="n">messageQueueList</span><span class="o">;</span>
 
 <span class="nd">@Override</span>
-<span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">MessageQueue</span><span class="o">&gt;</span> <span class="nf">allocate</span><span class="o">(</span><span class="nc">String</span> <span class="n">consumerGroup</span><span class="o">,</span> <span class="nc">String</span> <span class="n">currentCID</span><span class="o">,</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">MessageQueue</span><span class="o">&gt;</span> <span class="n">mqAll</span><span class="o">,</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">cidAll</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">MessageQueue</span><span class="o">&gt;</span> <span class="nf">allocate</span><span class="o">(</span><span class="n">String</span> <span class="n">consumerGroup</span><span class="o">,</span> <span class="n">String</span> <span class="n">currentCID</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">MessageQueue</span><span class="o">&gt;</span> <span class="n">mqAll</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">cidAll</span><span class="o">)</span> <span class="o">{</span>
     <span class="c1">//自定义</span>
     <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">messageQueueList</span><span class="o">;</span>
 <span class="o">}</span>
@@ -408,8 +408,8 @@
 
 <h4 id="allocatemessagequeuebymachineroom">AllocateMessageQueueByMachineRoom</h4>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="o">(</span><span class="nc">MessageQueue</span> <span class="n">mq</span> <span class="o">:</span> <span class="n">mqAll</span><span class="o">)</span> <span class="o">{</span>
-    <span class="nc">String</span><span class="o">[]</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">mq</span><span class="o">.</span><span class="na">getBrokerName</span><span class="o">().</span><span class="na">split</span><span class="o">(</span><span class="s">"@"</span><span class="o">);</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="o">(</span><span class="n">MessageQueue</span> <span class="n">mq</span> <span class="o">:</span> <span class="n">mqAll</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">String</span><span class="o">[]</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">mq</span><span class="o">.</span><span class="na">getBrokerName</span><span class="o">().</span><span class="na">split</span><span class="o">(</span><span class="s">"@"</span><span class="o">);</span>
     <span class="c1">//统计所有broker有效的messageQueue，consumeridcs为初始化时配置</span>
     <span class="k">if</span> <span class="o">(</span><span class="n">temp</span><span class="o">.</span><span class="na">length</span> <span class="o">==</span> <span class="mi">2</span> <span class="o">&amp;&amp;</span> <span class="n">consumeridcs</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">temp</span><span class="o">[</span><span class="mi">0</span><span class="o">]))</span> <span class="o">{</span>
         <span class="n">premqAll</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">mq</span><span class="o">);</span>
@@ -438,26 +438,26 @@
 <span class="c1">//虚拟节点个数，默认为10</span>
 <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">virtualNodeCnt</span><span class="o">;</span>
 <span class="c1">//hash算法实现类，默认为org.apache.rocketmq.common.consistenthash.ConsistentHashRouter.MD5Hash</span>
-<span class="kd">private</span> <span class="kd">final</span> <span class="nc">HashFunction</span> <span class="n">customHashFunction</span><span class="o">;</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="n">HashFunction</span> <span class="n">customHashFunction</span><span class="o">;</span>
 </code></pre></div></div>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Collection</span><span class="o">&lt;</span><span class="nc">ClientNode</span><span class="o">&gt;</span> <span class="n">cidNodes</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="nc">ClientNode</span><span class="o">&gt;();</span>
-<span class="k">for</span> <span class="o">(</span><span class="nc">String</span> <span class="n">cid</span> <span class="o">:</span> <span class="n">cidAll</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">cidNodes</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="nc">ClientNode</span><span class="o">(</span><span class="n">cid</span><span class="o">));</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Collection</span><span class="o">&lt;</span><span class="n">ClientNode</span><span class="o">&gt;</span> <span class="n">cidNodes</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">ClientNode</span><span class="o">&gt;();</span>
+<span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">cid</span> <span class="o">:</span> <span class="n">cidAll</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">cidNodes</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">ClientNode</span><span class="o">(</span><span class="n">cid</span><span class="o">));</span>
 <span class="o">}</span>
 
 <span class="c1">//构建hash环</span>
-<span class="kd">final</span> <span class="nc">ConsistentHashRouter</span><span class="o">&lt;</span><span class="nc">ClientNode</span><span class="o">&gt;</span> <span class="n">router</span><span class="o">;</span> 
+<span class="kd">final</span> <span class="n">ConsistentHashRouter</span><span class="o">&lt;</span><span class="n">ClientNode</span><span class="o">&gt;</span> <span class="n">router</span><span class="o">;</span> 
 <span class="k">if</span> <span class="o">(</span><span class="n">customHashFunction</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">router</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ConsistentHashRouter</span><span class="o">&lt;</span><span class="nc">ClientNode</span><span class="o">&gt;(</span><span class="n">cidNodes</span><span class="o">,</span> <span class="n">virtualNodeCnt</span><span class="o">,</span> <span class="n">customHashFunction</span><span class="o">);</span>
+    <span class="n">router</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConsistentHashRouter</span><span class="o">&lt;</span><span class="n">ClientNode</span><span class="o">&gt;(</span><span class="n">cidNodes</span><span class="o">,</span> <span class="n">virtualNodeCnt</span><span class="o">,</span> <span class="n">customHashFunction</span><span class="o">);</span>
 <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-    <span class="n">router</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ConsistentHashRouter</span><span class="o">&lt;</span><span class="nc">ClientNode</span><span class="o">&gt;(</span><span class="n">cidNodes</span><span class="o">,</span> <span class="n">virtualNodeCnt</span><span class="o">);</span>
+    <span class="n">router</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConsistentHashRouter</span><span class="o">&lt;</span><span class="n">ClientNode</span><span class="o">&gt;(</span><span class="n">cidNodes</span><span class="o">,</span> <span class="n">virtualNodeCnt</span><span class="o">);</span>
 <span class="o">}</span>
 
-<span class="nc">List</span><span class="o">&lt;</span><span class="nc">MessageQueue</span><span class="o">&gt;</span> <span class="n">results</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="nc">MessageQueue</span><span class="o">&gt;();</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">MessageQueue</span><span class="o">&gt;</span> <span class="n">results</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">MessageQueue</span><span class="o">&gt;();</span>
 <span class="c1">//对每个messageQueue计算对应的Client节点</span>
-<span class="k">for</span> <span class="o">(</span><span class="nc">MessageQueue</span> <span class="n">mq</span> <span class="o">:</span> <span class="n">mqAll</span><span class="o">)</span> <span class="o">{</span>
-    <span class="nc">ClientNode</span> <span class="n">clientNode</span> <span class="o">=</span> <span class="n">router</span><span class="o">.</span><span class="na">routeNode</span><span class="o">(</span><span class="n">mq</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+<span class="k">for</span> <span class="o">(</span><span class="n">MessageQueue</span> <span class="n">mq</span> <span class="o">:</span> <span class="n">mqAll</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">ClientNode</span> <span class="n">clientNode</span> <span class="o">=</span> <span class="n">router</span><span class="o">.</span><span class="na">routeNode</span><span class="o">(</span><span class="n">mq</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
     <span class="k">if</span> <span class="o">(</span><span class="n">clientNode</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">currentCID</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">clientNode</span><span class="o">.</span><span class="na">getKey</span><span class="o">()))</span> <span class="o">{</span>
         <span class="n">results</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">mq</span><span class="o">);</span>
     <span class="o">}</span>
@@ -472,7 +472,7 @@
 <span class="c1">//统计pNode(可以理解为cid，也就是实例名称)目前含有的虚拟节点的个数，用于创建虚拟节点时传入的下标</span>
 <span class="kt">int</span> <span class="n">existingReplicas</span> <span class="o">=</span> <span class="n">getExistingReplicas</span><span class="o">(</span><span class="n">pNode</span><span class="o">);</span>
 <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">vNodeCount</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-    <span class="nc">VirtualNode</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">vNode</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">VirtualNode</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;(</span><span class="n">pNode</span><span class="o">,</span> <span class="n">i</span> <span class="o">+</span> <span class="n">existingReplicas</span><span class="o">);</span>
+    <span class="n">VirtualNode</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">vNode</span> <span class="o">=</span> <span class="k">new</span> <span class="n">VirtualNode</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;(</span><span class="n">pNode</span><span class="o">,</span> <span class="n">i</span> <span class="o">+</span> <span class="n">existingReplicas</span><span class="o">);</span>
     <span class="c1">//ring为一个TreeMap</span>
     <span class="n">ring</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">hashFunction</span><span class="o">.</span><span class="na">hash</span><span class="o">(</span><span class="n">vNode</span><span class="o">.</span><span class="na">getKey</span><span class="o">()),</span> <span class="n">vNode</span><span class="o">);</span>
 <span class="o">}</span>
@@ -481,9 +481,9 @@
 <p>router.routerNode():</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//找到大于或等于传入的MessageQueue的hash值的第一个虚拟节点。类似于C++中的lower_bound()</span>
-<span class="nc">Long</span> <span class="n">hashVal</span> <span class="o">=</span> <span class="n">hashFunction</span><span class="o">.</span><span class="na">hash</span><span class="o">(</span><span class="n">objectKey</span><span class="o">);</span>
-<span class="nc">SortedMap</span><span class="o">&lt;</span><span class="nc">Long</span><span class="o">,</span> <span class="nc">VirtualNode</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;&gt;</span> <span class="n">tailMap</span> <span class="o">=</span> <span class="n">ring</span><span class="o">.</span><span class="na">tailMap</span><span class="o">(</span><span class="n">hashVal</span><span class="o">);</span>
-<span class="nc">Long</span> <span class="n">nodeHashVal</span> <span class="o">=</span> <span class="o">!</span><span class="n">tailMap</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">()</span> <span class="o">?</span> <span class="n">tailMap</span><span class="o">.</span><span class="na">firstKey</span><span class="o">()</span> <span class="o">:</span> <span class="n">ring</span><span class="o">.</span><span class="na">firstKey</span><span class="o">();</span>
+<span class="n">Long</span> <span class="n">hashVal</span> <span class="o">=</span> <span class="n">hashFunction</span><span class="o">.</span><span class="na">hash</span><span class="o">(</span><span class="n">objectKey</span><span class="o">);</span>
+<span class="n">SortedMap</span><span class="o">&lt;</span><span class="n">Long</span><span class="o">,</span> <span class="n">VirtualNode</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&gt;</span> <span class="n">tailMap</span> <span class="o">=</span> <span class="n">ring</span><span class="o">.</span><span class="na">tailMap</span><span class="o">(</span><span class="n">hashVal</span><span class="o">);</span>
+<span class="n">Long</span> <span class="n">nodeHashVal</span> <span class="o">=</span> <span class="o">!</span><span class="n">tailMap</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">()</span> <span class="o">?</span> <span class="n">tailMap</span><span class="o">.</span><span class="na">firstKey</span><span class="o">()</span> <span class="o">:</span> <span class="n">ring</span><span class="o">.</span><span class="na">firstKey</span><span class="o">();</span>
 <span class="k">return</span> <span class="n">ring</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">nodeHashVal</span><span class="o">).</span><span class="na">getPhysicalNode</span><span class="o">();</span>
 </code></pre></div></div>
 
@@ -494,9 +494,9 @@
 <p>在分配好queue后，还需要更新ProcessQueue信息，才能开始消费消息，<strong>ProcessQueue</strong>和<strong>MessageQueue</strong>是一一对应的，它存储的是这个队列的消费快照，包括offset，拉取的消息实体等。在<strong>MQClientInstance</strong>中，提到了<strong>PullMessageService</strong>，其中有一个存放pullRequest的阻塞队列，其中第一次分发pullRequest也就是在这边执行的。来看一下核心的代码</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//org/apache/rocketmq/client/impl/consumer/RebalanceImpl#updateProcessQueueTableInRebalance</span>
-<span class="nc">List</span><span class="o">&lt;</span><span class="nc">PullRequest</span><span class="o">&gt;</span> <span class="n">pullRequestList</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="nc">PullRequest</span><span class="o">&gt;();</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">PullRequest</span><span class="o">&gt;</span> <span class="n">pullRequestList</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">PullRequest</span><span class="o">&gt;();</span>
 <span class="c1">//进行添加，遍历分配的queue，以及pullrequest的添加</span>
-<span class="k">for</span> <span class="o">(</span><span class="nc">MessageQueue</span> <span class="n">mq</span> <span class="o">:</span> <span class="n">mqSet</span><span class="o">)</span> <span class="o">{</span>
+<span class="k">for</span> <span class="o">(</span><span class="n">MessageQueue</span> <span class="n">mq</span> <span class="o">:</span> <span class="n">mqSet</span><span class="o">)</span> <span class="o">{</span>
     <span class="c1">//如果当前没有该MessageQueue</span>
     <span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="na">processQueueTable</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="n">mq</span><span class="o">))</span> <span class="o">{</span>
         <span class="c1">//对于顺序消费的情况</span>
@@ -507,16 +507,16 @@
 
         <span class="c1">//移除失效的queue对应的offset</span>
         <span class="k">this</span><span class="o">.</span><span class="na">removeDirtyOffset</span><span class="o">(</span><span class="n">mq</span><span class="o">);</span>
-        <span class="nc">ProcessQueue</span> <span class="n">pq</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ProcessQueue</span><span class="o">();</span>
+        <span class="n">ProcessQueue</span> <span class="n">pq</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ProcessQueue</span><span class="o">();</span>
         <span class="c1">//计算消费下标，有三种策略，CONSUME_FROM_LAST_OFFSET，CONSUME_FROM_FIRST_OFFSET，CONSUME_FROM_TIMESTAMP</span>
         <span class="kt">long</span> <span class="n">nextOffset</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">computePullFromWhere</span><span class="o">(</span><span class="n">mq</span><span class="o">);</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">nextOffset</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
-            <span class="nc">ProcessQueue</span> <span class="n">pre</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">processQueueTable</span><span class="o">.</span><span class="na">putIfAbsent</span><span class="o">(</span><span class="n">mq</span><span class="o">,</span> <span class="n">pq</span><span class="o">);</span>
+            <span class="n">ProcessQueue</span> <span class="n">pre</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">processQueueTable</span><span class="o">.</span><span class="na">putIfAbsent</span><span class="o">(</span><span class="n">mq</span><span class="o">,</span> <span class="n">pq</span><span class="o">);</span>
             <span class="k">if</span> <span class="o">(</span><span class="n">pre</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
                 <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"doRebalance, {}, mq already exists, {}"</span><span class="o">,</span> <span class="n">consumerGroup</span><span class="o">,</span> <span class="n">mq</span><span class="o">);</span>
             <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
                 <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"doRebalance, {}, add a new mq, {}"</span><span class="o">,</span> <span class="n">consumerGroup</span><span class="o">,</span> <span class="n">mq</span><span class="o">);</span>
-                <span class="nc">PullRequest</span> <span class="n">pullRequest</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">PullRequest</span><span class="o">();</span>
+                <span class="n">PullRequest</span> <span class="n">pullRequest</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PullRequest</span><span class="o">();</span>
                 <span class="n">pullRequest</span><span class="o">.</span><span class="na">setConsumerGroup</span><span class="o">(</span><span class="n">consumerGroup</span><span class="o">);</span>
                 <span class="n">pullRequest</span><span class="o">.</span><span class="na">setNextOffset</span><span class="o">(</span><span class="n">nextOffset</span><span class="o">);</span>
                 <span class="n">pullRequest</span><span class="o">.</span><span class="na">setMessageQueue</span><span class="o">(</span><span class="n">mq</span><span class="o">);</span>
@@ -580,7 +580,7 @@
                     <div class="tags">
         				
                             
-                				<a href="/tags/#杂记" title="杂记" rel="8">
+                				<a href="/tags/#杂记" title="杂记" rel="7">
                                     杂记
                                 </a>
                             

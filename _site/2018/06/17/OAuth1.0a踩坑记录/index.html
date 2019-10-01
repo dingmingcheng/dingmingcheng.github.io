@@ -12,7 +12,7 @@
 
     <title>OAuth1.0a踩坑记录 - New Boy</title>
 
-    <link rel="canonical" href="http://0.0.0.0:4000/2018/06/17/OAuth1.0a%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/">
+    <link rel="canonical" href="http://localhost:4000/2018/06/17/OAuth1.0a%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -192,7 +192,7 @@
 
 <p>请求url，需要注意进行url编码，java中我是这么写的，一开始测试时是用网站在线编码的，但是特殊符号的编码字母全是小写的，导致生成了错误的签名，一直没认证成功。</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">URLEncoder</span><span class="o">.</span><span class="na">encode</span><span class="o">(</span><span class="n">requestUri</span><span class="o">.</span><span class="na">toString</span><span class="o">(),</span> <span class="s">"utf-8"</span><span class="o">)</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">URLEncoder</span><span class="o">.</span><span class="na">encode</span><span class="o">(</span><span class="n">requestUri</span><span class="o">.</span><span class="na">toString</span><span class="o">(),</span> <span class="s">"utf-8"</span><span class="o">)</span>
 </code></pre></div></div>
 
 <p>对于请求参数，一般都包括这几个，oauth_timestamp，oauth_signature_method，oauth_version，oauth_nonce，oauth_consumer_key等，其余的参数根据接口情况进行添加。这边参数的拼接也有讲究，需要按照key的字典序来，例如：</p>
@@ -247,7 +247,7 @@
                     <div class="tags">
         				
                             
-                				<a href="/tags/#杂记" title="杂记" rel="8">
+                				<a href="/tags/#杂记" title="杂记" rel="7">
                                     杂记
                                 </a>
                             

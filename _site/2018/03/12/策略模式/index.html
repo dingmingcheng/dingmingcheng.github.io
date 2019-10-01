@@ -12,7 +12,7 @@
 
     <title>策略模式 - New Boy</title>
 
-    <link rel="canonical" href="http://0.0.0.0:4000/2018/03/12/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/">
+    <link rel="canonical" href="http://localhost:4000/2018/03/12/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -177,30 +177,30 @@
 <p>Teacher：</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Teacher</span> <span class="o">{</span>
-    <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Student</span><span class="o">&gt;</span> <span class="n">students</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="nc">Student</span><span class="o">&gt;();</span>
+    <span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Student</span><span class="o">&gt;</span> <span class="n">students</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Student</span><span class="o">&gt;();</span>
 
-    <span class="kd">private</span> <span class="nc">Comparator</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="nc">Student</span><span class="o">&gt;</span>  <span class="n">comparator</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">Comparator</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="n">Student</span><span class="o">&gt;</span>  <span class="n">comparator</span><span class="o">;</span>
 
-    <span class="nc">Teacher</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">Teacher</span><span class="o">()</span> <span class="o">{</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="nc">Teacher</span> <span class="nf">addStudent</span><span class="o">(</span><span class="nc">Student</span> <span class="n">student</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">Teacher</span> <span class="nf">addStudent</span><span class="o">(</span><span class="n">Student</span> <span class="n">student</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">students</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">student</span><span class="o">);</span>
         <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
     <span class="o">}</span>
 
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">showRankByStrategy</span><span class="o">()</span> <span class="o">{</span>
-        <span class="nc">Collections</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">students</span><span class="o">,</span> <span class="n">comparator</span><span class="o">);</span>
-        <span class="k">for</span> <span class="o">(</span><span class="nc">Student</span> <span class="n">student</span> <span class="o">:</span> <span class="n">students</span><span class="o">)</span> <span class="o">{</span>
-            <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">student</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+        <span class="n">Collections</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">students</span><span class="o">,</span> <span class="n">comparator</span><span class="o">);</span>
+        <span class="k">for</span> <span class="o">(</span><span class="n">Student</span> <span class="n">student</span> <span class="o">:</span> <span class="n">students</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">student</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
         <span class="o">}</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="nc">Comparator</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="nc">Student</span><span class="o">&gt;</span> <span class="nf">getComparator</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">Comparator</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="n">Student</span><span class="o">&gt;</span> <span class="nf">getComparator</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">comparator</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setComparator</span><span class="o">(</span><span class="nc">Comparator</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="nc">Student</span><span class="o">&gt;</span> <span class="n">comparator</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setComparator</span><span class="o">(</span><span class="n">Comparator</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="n">Student</span><span class="o">&gt;</span> <span class="n">comparator</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">comparator</span> <span class="o">=</span> <span class="n">comparator</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span>
@@ -217,9 +217,9 @@
 
     <span class="kd">private</span> <span class="kt">int</span> <span class="n">englishGrade</span><span class="o">;</span>
 
-    <span class="kd">private</span> <span class="nc">String</span> <span class="n">name</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
 
-    <span class="kd">public</span> <span class="nf">Student</span><span class="o">(</span><span class="kt">int</span> <span class="n">mathGrade</span><span class="o">,</span> <span class="kt">int</span> <span class="n">historyGrade</span><span class="o">,</span> <span class="kt">int</span> <span class="n">scienceGrade</span><span class="o">,</span> <span class="kt">int</span> <span class="n">englishGrade</span><span class="o">,</span> <span class="nc">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">Student</span><span class="o">(</span><span class="kt">int</span> <span class="n">mathGrade</span><span class="o">,</span> <span class="kt">int</span> <span class="n">historyGrade</span><span class="o">,</span> <span class="kt">int</span> <span class="n">scienceGrade</span><span class="o">,</span> <span class="kt">int</span> <span class="n">englishGrade</span><span class="o">,</span> <span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">mathGrade</span> <span class="o">=</span> <span class="n">mathGrade</span><span class="o">;</span>
         <span class="k">this</span><span class="o">.</span><span class="na">historyGrade</span> <span class="o">=</span> <span class="n">historyGrade</span><span class="o">;</span>
         <span class="k">this</span><span class="o">.</span><span class="na">scienceGrade</span> <span class="o">=</span> <span class="n">scienceGrade</span><span class="o">;</span>
@@ -228,24 +228,24 @@
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">equals</span><span class="o">(</span><span class="nc">Object</span> <span class="n">o</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">equals</span><span class="o">(</span><span class="n">Object</span> <span class="n">o</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">if</span> <span class="o">(</span><span class="k">this</span> <span class="o">==</span> <span class="n">o</span><span class="o">)</span> <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">o</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">getClass</span><span class="o">()</span> <span class="o">!=</span> <span class="n">o</span><span class="o">.</span><span class="na">getClass</span><span class="o">())</span> <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
-        <span class="nc">Student</span> <span class="n">student</span> <span class="o">=</span> <span class="o">(</span><span class="nc">Student</span><span class="o">)</span> <span class="n">o</span><span class="o">;</span>
+        <span class="n">Student</span> <span class="n">student</span> <span class="o">=</span> <span class="o">(</span><span class="n">Student</span><span class="o">)</span> <span class="n">o</span><span class="o">;</span>
         <span class="k">return</span> <span class="n">mathGrade</span> <span class="o">==</span> <span class="n">student</span><span class="o">.</span><span class="na">mathGrade</span> <span class="o">&amp;&amp;</span>
                 <span class="n">historyGrade</span> <span class="o">==</span> <span class="n">student</span><span class="o">.</span><span class="na">historyGrade</span> <span class="o">&amp;&amp;</span>
                 <span class="n">scienceGrade</span> <span class="o">==</span> <span class="n">student</span><span class="o">.</span><span class="na">scienceGrade</span> <span class="o">&amp;&amp;</span>
                 <span class="n">englishGrade</span> <span class="o">==</span> <span class="n">student</span><span class="o">.</span><span class="na">englishGrade</span> <span class="o">&amp;&amp;</span>
-                <span class="nc">Objects</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">name</span><span class="o">,</span> <span class="n">student</span><span class="o">.</span><span class="na">name</span><span class="o">);</span>
+                <span class="n">Objects</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">name</span><span class="o">,</span> <span class="n">student</span><span class="o">.</span><span class="na">name</span><span class="o">);</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
     <span class="kd">public</span> <span class="kt">int</span> <span class="nf">hashCode</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="nc">Objects</span><span class="o">.</span><span class="na">hash</span><span class="o">(</span><span class="n">mathGrade</span><span class="o">,</span> <span class="n">historyGrade</span><span class="o">,</span> <span class="n">scienceGrade</span><span class="o">,</span> <span class="n">englishGrade</span><span class="o">,</span> <span class="n">name</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">Objects</span><span class="o">.</span><span class="na">hash</span><span class="o">(</span><span class="n">mathGrade</span><span class="o">,</span> <span class="n">historyGrade</span><span class="o">,</span> <span class="n">scienceGrade</span><span class="o">,</span> <span class="n">englishGrade</span><span class="o">,</span> <span class="n">name</span><span class="o">);</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="s">"Student{"</span> <span class="o">+</span>
                 <span class="s">"mathGrade="</span> <span class="o">+</span> <span class="n">mathGrade</span> <span class="o">+</span>
                 <span class="s">", historyGrade="</span> <span class="o">+</span> <span class="n">historyGrade</span> <span class="o">+</span>
@@ -255,11 +255,11 @@
                 <span class="sc">'}'</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">name</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="nc">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
     <span class="o">}</span>
 
@@ -301,38 +301,38 @@
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">StrategyFactory</span> <span class="o">{</span>
 
-    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Comparator</span><span class="o">&gt;</span> <span class="n">strategyList</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashMap</span><span class="o">&lt;&gt;();</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Comparator</span><span class="o">&gt;</span> <span class="n">strategyList</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span>
 
     <span class="kd">static</span> <span class="o">{</span>
-        <span class="nc">Field</span><span class="o">[]</span> <span class="n">fields</span> <span class="o">=</span> <span class="nc">Student</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getDeclaredFields</span><span class="o">();</span>
-        <span class="nc">Method</span><span class="o">[]</span> <span class="n">methods</span> <span class="o">=</span> <span class="nc">Student</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getMethods</span><span class="o">();</span>
+        <span class="n">Field</span><span class="o">[]</span> <span class="n">fields</span> <span class="o">=</span> <span class="n">Student</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getDeclaredFields</span><span class="o">();</span>
+        <span class="n">Method</span><span class="o">[]</span> <span class="n">methods</span> <span class="o">=</span> <span class="n">Student</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getMethods</span><span class="o">();</span>
         <span class="c1">//System.out.println("asdasd");</span>
-        <span class="k">for</span> <span class="o">(</span><span class="nc">Field</span> <span class="n">field</span> <span class="o">:</span> <span class="n">fields</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">for</span> <span class="o">(</span><span class="n">Field</span> <span class="n">field</span> <span class="o">:</span> <span class="n">fields</span><span class="o">)</span> <span class="o">{</span>
             <span class="n">field</span><span class="o">.</span><span class="na">setAccessible</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-            <span class="n">strategyList</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">field</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span> <span class="k">new</span> <span class="nc">Comparator</span><span class="o">&lt;</span><span class="nc">Student</span><span class="o">&gt;()</span> <span class="o">{</span>
+            <span class="n">strategyList</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">field</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span> <span class="k">new</span> <span class="n">Comparator</span><span class="o">&lt;</span><span class="n">Student</span><span class="o">&gt;()</span> <span class="o">{</span>
                 <span class="nd">@Override</span>
-                <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="o">(</span><span class="nc">Student</span> <span class="n">o1</span><span class="o">,</span> <span class="nc">Student</span> <span class="n">o2</span><span class="o">)</span> <span class="o">{</span>
+                <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="o">(</span><span class="n">Student</span> <span class="n">o1</span><span class="o">,</span> <span class="n">Student</span> <span class="n">o2</span><span class="o">)</span> <span class="o">{</span>
                     <span class="k">try</span> <span class="o">{</span>
-                        <span class="nc">Object</span> <span class="n">obj1</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">o1</span><span class="o">);</span>
-                        <span class="nc">Object</span> <span class="n">obj2</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">o2</span><span class="o">);</span>
-                        <span class="k">if</span> <span class="o">(</span><span class="n">obj1</span> <span class="k">instanceof</span> <span class="nc">Integer</span><span class="o">)</span> <span class="o">{</span>
-                            <span class="nc">Integer</span> <span class="n">fieldOne</span> <span class="o">=</span> <span class="o">(</span><span class="nc">Integer</span><span class="o">)</span> <span class="n">obj1</span><span class="o">;</span>
-                            <span class="nc">Integer</span> <span class="n">fieldTwo</span> <span class="o">=</span> <span class="o">(</span><span class="nc">Integer</span><span class="o">)</span> <span class="n">obj2</span><span class="o">;</span>
+                        <span class="n">Object</span> <span class="n">obj1</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">o1</span><span class="o">);</span>
+                        <span class="n">Object</span> <span class="n">obj2</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">o2</span><span class="o">);</span>
+                        <span class="k">if</span> <span class="o">(</span><span class="n">obj1</span> <span class="k">instanceof</span> <span class="n">Integer</span><span class="o">)</span> <span class="o">{</span>
+                            <span class="n">Integer</span> <span class="n">fieldOne</span> <span class="o">=</span> <span class="o">(</span><span class="n">Integer</span><span class="o">)</span> <span class="n">obj1</span><span class="o">;</span>
+                            <span class="n">Integer</span> <span class="n">fieldTwo</span> <span class="o">=</span> <span class="o">(</span><span class="n">Integer</span><span class="o">)</span> <span class="n">obj2</span><span class="o">;</span>
                             <span class="k">if</span> <span class="o">(</span><span class="n">fieldOne</span><span class="o">.</span><span class="na">compareTo</span><span class="o">(</span><span class="n">fieldTwo</span><span class="o">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
                                 <span class="k">return</span> <span class="mi">1</span><span class="o">;</span>
                             <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">fieldOne</span><span class="o">.</span><span class="na">compareTo</span><span class="o">(</span><span class="n">fieldTwo</span><span class="o">)</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
                                 <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
                             <span class="o">}</span>
-                        <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">obj1</span> <span class="k">instanceof</span> <span class="nc">String</span><span class="o">){</span>
-                            <span class="nc">String</span> <span class="n">fieldOne</span> <span class="o">=</span> <span class="o">(</span><span class="nc">String</span><span class="o">)</span> <span class="n">obj1</span><span class="o">;</span>
-                            <span class="nc">String</span> <span class="n">fieldTwo</span> <span class="o">=</span> <span class="o">(</span><span class="nc">String</span><span class="o">)</span> <span class="n">obj2</span><span class="o">;</span>
+                        <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">obj1</span> <span class="k">instanceof</span> <span class="n">String</span><span class="o">){</span>
+                            <span class="n">String</span> <span class="n">fieldOne</span> <span class="o">=</span> <span class="o">(</span><span class="n">String</span><span class="o">)</span> <span class="n">obj1</span><span class="o">;</span>
+                            <span class="n">String</span> <span class="n">fieldTwo</span> <span class="o">=</span> <span class="o">(</span><span class="n">String</span><span class="o">)</span> <span class="n">obj2</span><span class="o">;</span>
                             <span class="k">if</span> <span class="o">(</span><span class="n">fieldOne</span><span class="o">.</span><span class="na">compareTo</span><span class="o">(</span><span class="n">fieldTwo</span><span class="o">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
                                 <span class="k">return</span> <span class="mi">1</span><span class="o">;</span>
                             <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">fieldOne</span><span class="o">.</span><span class="na">compareTo</span><span class="o">(</span><span class="n">fieldTwo</span><span class="o">)</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
                                 <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
                             <span class="o">}</span>
                         <span class="o">}</span>
-                    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
                         <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
                     <span class="o">}</span>
                     <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
@@ -341,7 +341,7 @@
         <span class="o">}</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">Comparator</span> <span class="nf">getStrategy</span><span class="o">(</span><span class="nc">String</span> <span class="n">strategyName</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">Comparator</span> <span class="nf">getStrategy</span><span class="o">(</span><span class="n">String</span> <span class="n">strategyName</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">strategyList</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">strategyName</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span>
@@ -350,15 +350,15 @@
 <p>测试程序</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MainTest</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-        <span class="nc">Teacher</span> <span class="n">teacher</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Teacher</span><span class="o">();</span>
-        <span class="n">teacher</span><span class="o">.</span><span class="na">addStudent</span><span class="o">(</span><span class="k">new</span> <span class="nc">Student</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span><span class="mi">4</span><span class="o">,</span> <span class="s">"a"</span><span class="o">))</span>
-                <span class="o">.</span><span class="na">addStudent</span><span class="o">(</span><span class="k">new</span> <span class="nc">Student</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span><span class="mi">1</span><span class="o">,</span><span class="mi">13</span><span class="o">,</span><span class="mi">1</span><span class="o">,</span> <span class="s">"b"</span><span class="o">))</span>
-                <span class="o">.</span><span class="na">addStudent</span><span class="o">(</span><span class="k">new</span> <span class="nc">Student</span><span class="o">(</span><span class="mi">5</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="mi">23</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span> <span class="s">"c"</span><span class="o">))</span>
-                <span class="o">.</span><span class="na">addStudent</span><span class="o">(</span><span class="k">new</span> <span class="nc">Student</span><span class="o">(</span><span class="mi">7</span><span class="o">,</span><span class="mi">5</span><span class="o">,</span><span class="mi">7</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span> <span class="s">"d"</span><span class="o">))</span>
-                <span class="o">.</span><span class="na">addStudent</span><span class="o">(</span><span class="k">new</span> <span class="nc">Student</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span><span class="mi">13</span><span class="o">,</span><span class="mi">1</span><span class="o">,</span><span class="mi">10</span><span class="o">,</span> <span class="s">"e"</span><span class="o">));</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">Teacher</span> <span class="n">teacher</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Teacher</span><span class="o">();</span>
+        <span class="n">teacher</span><span class="o">.</span><span class="na">addStudent</span><span class="o">(</span><span class="k">new</span> <span class="n">Student</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span><span class="mi">4</span><span class="o">,</span> <span class="s">"a"</span><span class="o">))</span>
+                <span class="o">.</span><span class="na">addStudent</span><span class="o">(</span><span class="k">new</span> <span class="n">Student</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span><span class="mi">1</span><span class="o">,</span><span class="mi">13</span><span class="o">,</span><span class="mi">1</span><span class="o">,</span> <span class="s">"b"</span><span class="o">))</span>
+                <span class="o">.</span><span class="na">addStudent</span><span class="o">(</span><span class="k">new</span> <span class="n">Student</span><span class="o">(</span><span class="mi">5</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="mi">23</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span> <span class="s">"c"</span><span class="o">))</span>
+                <span class="o">.</span><span class="na">addStudent</span><span class="o">(</span><span class="k">new</span> <span class="n">Student</span><span class="o">(</span><span class="mi">7</span><span class="o">,</span><span class="mi">5</span><span class="o">,</span><span class="mi">7</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span> <span class="s">"d"</span><span class="o">))</span>
+                <span class="o">.</span><span class="na">addStudent</span><span class="o">(</span><span class="k">new</span> <span class="n">Student</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span><span class="mi">13</span><span class="o">,</span><span class="mi">1</span><span class="o">,</span><span class="mi">10</span><span class="o">,</span> <span class="s">"e"</span><span class="o">));</span>
 
-        <span class="nc">Comparator</span> <span class="n">strategy</span> <span class="o">=</span> <span class="nc">StrategyFactory</span><span class="o">.</span><span class="na">getStrategy</span><span class="o">(</span><span class="s">"scienceGrade"</span><span class="o">);</span>
+        <span class="n">Comparator</span> <span class="n">strategy</span> <span class="o">=</span> <span class="n">StrategyFactory</span><span class="o">.</span><span class="na">getStrategy</span><span class="o">(</span><span class="s">"scienceGrade"</span><span class="o">);</span>
         <span class="n">teacher</span><span class="o">.</span><span class="na">setComparator</span><span class="o">(</span><span class="n">strategy</span><span class="o">);</span>
         <span class="n">teacher</span><span class="o">.</span><span class="na">showRankByStrategy</span><span class="o">();</span>
     <span class="o">}</span>
@@ -406,7 +406,7 @@
                     <div class="tags">
         				
                             
-                				<a href="/tags/#杂记" title="杂记" rel="8">
+                				<a href="/tags/#杂记" title="杂记" rel="7">
                                     杂记
                                 </a>
                             

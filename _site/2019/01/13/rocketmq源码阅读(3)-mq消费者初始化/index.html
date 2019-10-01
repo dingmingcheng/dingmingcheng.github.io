@@ -12,7 +12,7 @@
 
     <title>rocketmq源码阅读(3)——mq消费者初始化 - New Boy</title>
 
-    <link rel="canonical" href="http://0.0.0.0:4000/2019/01/13/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(3)-mq%E6%B6%88%E8%B4%B9%E8%80%85%E5%88%9D%E5%A7%8B%E5%8C%96/">
+    <link rel="canonical" href="http://localhost:4000/2019/01/13/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(3)-mq%E6%B6%88%E8%B4%B9%E8%80%85%E5%88%9D%E5%A7%8B%E5%8C%96/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -180,12 +180,12 @@
 <span class="c1">//复制topic的信息到负载均衡服务中</span>
 <span class="k">this</span><span class="o">.</span><span class="na">copySubscription</span><span class="o">();</span>
 
-<span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">defaultMQPushConsumer</span><span class="o">.</span><span class="na">getMessageModel</span><span class="o">()</span> <span class="o">==</span> <span class="nc">MessageModel</span><span class="o">.</span><span class="na">CLUSTERING</span><span class="o">)</span> <span class="o">{</span>
+<span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">defaultMQPushConsumer</span><span class="o">.</span><span class="na">getMessageModel</span><span class="o">()</span> <span class="o">==</span> <span class="n">MessageModel</span><span class="o">.</span><span class="na">CLUSTERING</span><span class="o">)</span> <span class="o">{</span>
     <span class="k">this</span><span class="o">.</span><span class="na">defaultMQPushConsumer</span><span class="o">.</span><span class="na">changeInstanceNameToPID</span><span class="o">();</span>
 <span class="o">}</span>
 
 <span class="c1">//...</span>
-<span class="k">this</span><span class="o">.</span><span class="na">mQClientFactory</span> <span class="o">=</span> <span class="nc">MQClientManager</span><span class="o">.</span><span class="na">getInstance</span><span class="o">().</span><span class="na">getAndCreateMQClientInstance</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">defaultMQPushConsumer</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">rpcHook</span><span class="o">);</span>
+<span class="k">this</span><span class="o">.</span><span class="na">mQClientFactory</span> <span class="o">=</span> <span class="n">MQClientManager</span><span class="o">.</span><span class="na">getInstance</span><span class="o">().</span><span class="na">getAndCreateMQClientInstance</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">defaultMQPushConsumer</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">rpcHook</span><span class="o">);</span>
 
 <span class="c1">//配置负载均衡服务</span>
 <span class="k">this</span><span class="o">.</span><span class="na">rebalanceImpl</span><span class="o">.</span><span class="na">setConsumerGroup</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">defaultMQPushConsumer</span><span class="o">.</span><span class="na">getConsumerGroup</span><span class="o">());</span>
@@ -194,7 +194,7 @@
 <span class="k">this</span><span class="o">.</span><span class="na">rebalanceImpl</span><span class="o">.</span><span class="na">setmQClientFactory</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">mQClientFactory</span><span class="o">);</span>
 
 <span class="c1">//拉消息包装</span>
-<span class="k">this</span><span class="o">.</span><span class="na">pullAPIWrapper</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">PullAPIWrapper</span><span class="o">(</span>
+<span class="k">this</span><span class="o">.</span><span class="na">pullAPIWrapper</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PullAPIWrapper</span><span class="o">(</span>
     <span class="n">mQClientFactory</span><span class="o">,</span>
     <span class="k">this</span><span class="o">.</span><span class="na">defaultMQPushConsumer</span><span class="o">.</span><span class="na">getConsumerGroup</span><span class="o">(),</span> <span class="n">isUnitMode</span><span class="o">());</span>
 <span class="k">this</span><span class="o">.</span><span class="na">pullAPIWrapper</span><span class="o">.</span><span class="na">registerFilterMessageHook</span><span class="o">(</span><span class="n">filterMessageHookList</span><span class="o">);</span>
@@ -205,10 +205,10 @@
     <span class="k">switch</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">defaultMQPushConsumer</span><span class="o">.</span><span class="na">getMessageModel</span><span class="o">())</span> <span class="o">{</span>
         <span class="k">case</span> <span class="nl">BROADCASTING:</span>
             <span class="c1">//offset存储在本地LocalFileOffsetStore.LOCAL_OFFSET_STORE_DIR</span>
-            <span class="k">this</span><span class="o">.</span><span class="na">offsetStore</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LocalFileOffsetStore</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">mQClientFactory</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">defaultMQPushConsumer</span><span class="o">.</span><span class="na">getConsumerGroup</span><span class="o">());</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">offsetStore</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LocalFileOffsetStore</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">mQClientFactory</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">defaultMQPushConsumer</span><span class="o">.</span><span class="na">getConsumerGroup</span><span class="o">());</span>
             <span class="k">break</span><span class="o">;</span>
         <span class="k">case</span> <span class="nl">CLUSTERING:</span>
-            <span class="k">this</span><span class="o">.</span><span class="na">offsetStore</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">RemoteBrokerOffsetStore</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">mQClientFactory</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">defaultMQPushConsumer</span><span class="o">.</span><span class="na">getConsumerGroup</span><span class="o">());</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">offsetStore</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RemoteBrokerOffsetStore</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">mQClientFactory</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">defaultMQPushConsumer</span><span class="o">.</span><span class="na">getConsumerGroup</span><span class="o">());</span>
             <span class="k">break</span><span class="o">;</span>
         <span class="k">default</span><span class="o">:</span>
             <span class="k">break</span><span class="o">;</span>
@@ -217,16 +217,16 @@
 <span class="o">}</span>
 <span class="k">this</span><span class="o">.</span><span class="na">offsetStore</span><span class="o">.</span><span class="na">load</span><span class="o">();</span>
 
-<span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getMessageListenerInner</span><span class="o">()</span> <span class="k">instanceof</span> <span class="nc">MessageListenerOrderly</span><span class="o">)</span> <span class="o">{</span>
+<span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getMessageListenerInner</span><span class="o">()</span> <span class="k">instanceof</span> <span class="n">MessageListenerOrderly</span><span class="o">)</span> <span class="o">{</span>
     <span class="c1">//顺序消费</span>
     <span class="k">this</span><span class="o">.</span><span class="na">consumeOrderly</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
     <span class="k">this</span><span class="o">.</span><span class="na">consumeMessageService</span> <span class="o">=</span>
-        <span class="k">new</span> <span class="nf">ConsumeMessageOrderlyService</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="o">(</span><span class="nc">MessageListenerOrderly</span><span class="o">)</span> <span class="k">this</span><span class="o">.</span><span class="na">getMessageListenerInner</span><span class="o">());</span>
-<span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getMessageListenerInner</span><span class="o">()</span> <span class="k">instanceof</span> <span class="nc">MessageListenerConcurrently</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">new</span> <span class="nf">ConsumeMessageOrderlyService</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="o">(</span><span class="n">MessageListenerOrderly</span><span class="o">)</span> <span class="k">this</span><span class="o">.</span><span class="na">getMessageListenerInner</span><span class="o">());</span>
+<span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getMessageListenerInner</span><span class="o">()</span> <span class="k">instanceof</span> <span class="n">MessageListenerConcurrently</span><span class="o">)</span> <span class="o">{</span>
     <span class="c1">//无序消费</span>
     <span class="k">this</span><span class="o">.</span><span class="na">consumeOrderly</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
     <span class="k">this</span><span class="o">.</span><span class="na">consumeMessageService</span> <span class="o">=</span>
-        <span class="k">new</span> <span class="nf">ConsumeMessageConcurrentlyService</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="o">(</span><span class="nc">MessageListenerConcurrently</span><span class="o">)</span> <span class="k">this</span><span class="o">.</span><span class="na">getMessageListenerInner</span><span class="o">());</span>
+        <span class="k">new</span> <span class="nf">ConsumeMessageConcurrentlyService</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="o">(</span><span class="n">MessageListenerConcurrently</span><span class="o">)</span> <span class="k">this</span><span class="o">.</span><span class="na">getMessageListenerInner</span><span class="o">());</span>
 <span class="o">}</span>
 
 <span class="c1">//消费服务开启</span>
@@ -234,10 +234,10 @@
 
 <span class="kt">boolean</span> <span class="n">registerOK</span> <span class="o">=</span> <span class="n">mQClientFactory</span><span class="o">.</span><span class="na">registerConsumer</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">defaultMQPushConsumer</span><span class="o">.</span><span class="na">getConsumerGroup</span><span class="o">(),</span> <span class="k">this</span><span class="o">);</span>
 <span class="k">if</span> <span class="o">(!</span><span class="n">registerOK</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">serviceState</span> <span class="o">=</span> <span class="nc">ServiceState</span><span class="o">.</span><span class="na">CREATE_JUST</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">serviceState</span> <span class="o">=</span> <span class="n">ServiceState</span><span class="o">.</span><span class="na">CREATE_JUST</span><span class="o">;</span>
     <span class="k">this</span><span class="o">.</span><span class="na">consumeMessageService</span><span class="o">.</span><span class="na">shutdown</span><span class="o">();</span>
     <span class="k">throw</span> <span class="k">new</span> <span class="nf">MQClientException</span><span class="o">(</span><span class="s">"The consumer group["</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">defaultMQPushConsumer</span><span class="o">.</span><span class="na">getConsumerGroup</span><span class="o">()</span>
-                                <span class="o">+</span> <span class="s">"] has been created before, specify another name please."</span> <span class="o">+</span> <span class="nc">FAQUrl</span><span class="o">.</span><span class="na">suggestTodo</span><span class="o">(</span><span class="nc">FAQUrl</span><span class="o">.</span><span class="na">GROUP_NAME_DUPLICATE_URL</span><span class="o">),</span>
+                                <span class="o">+</span> <span class="s">"] has been created before, specify another name please."</span> <span class="o">+</span> <span class="n">FAQUrl</span><span class="o">.</span><span class="na">suggestTodo</span><span class="o">(</span><span class="n">FAQUrl</span><span class="o">.</span><span class="na">GROUP_NAME_DUPLICATE_URL</span><span class="o">),</span>
                                 <span class="kc">null</span><span class="o">);</span>
 <span class="o">}</span>
 
@@ -328,7 +328,7 @@
                     <div class="tags">
         				
                             
-                				<a href="/tags/#杂记" title="杂记" rel="8">
+                				<a href="/tags/#杂记" title="杂记" rel="7">
                                     杂记
                                 </a>
                             

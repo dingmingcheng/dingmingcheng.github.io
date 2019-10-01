@@ -12,7 +12,7 @@
 
     <title>rocketmq源码阅读(1)——生产者初始化与消息的发送 - New Boy</title>
 
-    <link rel="canonical" href="http://0.0.0.0:4000/2019/01/05/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(1)-%E7%94%9F%E4%BA%A7%E8%80%85%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E6%B6%88%E6%81%AF%E7%9A%84%E5%8F%91%E9%80%81/">
+    <link rel="canonical" href="http://localhost:4000/2019/01/05/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(1)-%E7%94%9F%E4%BA%A7%E8%80%85%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8E%E6%B6%88%E6%81%AF%E7%9A%84%E5%8F%91%E9%80%81/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -172,18 +172,18 @@
 
 <p>先放个最简单的producer的demo吧，其实org.apache.rocketmq.client.producer.DefaultMQProducerTest中的测试类就很全，不过要稍微复杂一点:</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">producer</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">Exception</span><span class="o">{</span>
-    <span class="nc">String</span> <span class="n">producerGroup</span> <span class="o">=</span> <span class="s">"testGroup"</span><span class="o">;</span>
-    <span class="nc">DefaultMQProducer</span> <span class="n">producer</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DefaultMQProducer</span><span class="o">(</span><span class="n">producerGroup</span><span class="o">);</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">producer</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">{</span>
+    <span class="n">String</span> <span class="n">producerGroup</span> <span class="o">=</span> <span class="s">"testGroup"</span><span class="o">;</span>
+    <span class="n">DefaultMQProducer</span> <span class="n">producer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DefaultMQProducer</span><span class="o">(</span><span class="n">producerGroup</span><span class="o">);</span>
     <span class="n">producer</span><span class="o">.</span><span class="na">setNamesrvAddr</span><span class="o">(</span><span class="s">"127.0.0.1:9876"</span><span class="o">);</span>
     <span class="n">producer</span><span class="o">.</span><span class="na">setInstanceName</span><span class="o">(</span><span class="s">"dasdas"</span><span class="o">);</span>
 
     <span class="n">producer</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
 
-    <span class="nc">String</span> <span class="n">topic</span> <span class="o">=</span> <span class="s">"TBW"</span><span class="o">;</span>
-    <span class="nc">String</span> <span class="n">tags</span> <span class="o">=</span> <span class="s">""</span><span class="o">;</span>
+    <span class="n">String</span> <span class="n">topic</span> <span class="o">=</span> <span class="s">"TBW"</span><span class="o">;</span>
+    <span class="n">String</span> <span class="n">tags</span> <span class="o">=</span> <span class="s">""</span><span class="o">;</span>
     <span class="kt">byte</span><span class="o">[]</span> <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">100</span><span class="o">];</span>
-    <span class="nc">Message</span> <span class="n">message</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Message</span><span class="o">(</span><span class="n">topic</span><span class="o">,</span> <span class="n">tags</span><span class="o">,</span> <span class="n">data</span><span class="o">);</span>
+    <span class="n">Message</span> <span class="n">message</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Message</span><span class="o">(</span><span class="n">topic</span><span class="o">,</span> <span class="n">tags</span><span class="o">,</span> <span class="n">data</span><span class="o">);</span>
     <span class="n">message</span><span class="o">.</span><span class="na">setKeys</span><span class="o">(</span><span class="s">"keys"</span><span class="o">);</span>
     <span class="n">producer</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">message</span><span class="o">);</span>
 <span class="o">}</span>
@@ -196,7 +196,7 @@
 <p>一层层追溯进去，这是第一步</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//org.apache.rocketmq.client.impl.producer.DefaultMQProducerImpl.java</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">start</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">MQClientException</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">start</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">MQClientException</span> <span class="o">{</span>
     <span class="k">this</span><span class="o">.</span><span class="na">start</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
 <span class="o">}</span>
 </code></pre></div></div>
@@ -206,28 +206,28 @@
 <p>接着就是具体的启动过程:</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//org.apache.rocketmq.client.impl.producer.DefaultMQProducerImpl.java</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">start</span><span class="o">(</span><span class="kd">final</span> <span class="kt">boolean</span> <span class="n">startFactory</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">MQClientException</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">start</span><span class="o">(</span><span class="kd">final</span> <span class="kt">boolean</span> <span class="n">startFactory</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">MQClientException</span> <span class="o">{</span>
     <span class="k">switch</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">serviceState</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">case</span> <span class="nl">CREATE_JUST:</span>
-            <span class="k">this</span><span class="o">.</span><span class="na">serviceState</span> <span class="o">=</span> <span class="nc">ServiceState</span><span class="o">.</span><span class="na">START_FAILED</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">serviceState</span> <span class="o">=</span> <span class="n">ServiceState</span><span class="o">.</span><span class="na">START_FAILED</span><span class="o">;</span>
 
             <span class="k">this</span><span class="o">.</span><span class="na">checkConfig</span><span class="o">();</span>
 
-            <span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">.</span><span class="na">getProducerGroup</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="nc">MixAll</span><span class="o">.</span><span class="na">CLIENT_INNER_PRODUCER_GROUP</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">.</span><span class="na">getProducerGroup</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">MixAll</span><span class="o">.</span><span class="na">CLIENT_INNER_PRODUCER_GROUP</span><span class="o">))</span> <span class="o">{</span>
                 <span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">.</span><span class="na">changeInstanceNameToPID</span><span class="o">();</span>
             <span class="o">}</span>
 
-            <span class="k">this</span><span class="o">.</span><span class="na">mQClientFactory</span> <span class="o">=</span> <span class="nc">MQClientManager</span><span class="o">.</span><span class="na">getInstance</span><span class="o">().</span><span class="na">getAndCreateMQClientInstance</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">,</span> <span class="n">rpcHook</span><span class="o">);</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">mQClientFactory</span> <span class="o">=</span> <span class="n">MQClientManager</span><span class="o">.</span><span class="na">getInstance</span><span class="o">().</span><span class="na">getAndCreateMQClientInstance</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">,</span> <span class="n">rpcHook</span><span class="o">);</span>
 
             <span class="kt">boolean</span> <span class="n">registerOK</span> <span class="o">=</span> <span class="n">mQClientFactory</span><span class="o">.</span><span class="na">registerProducer</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">.</span><span class="na">getProducerGroup</span><span class="o">(),</span> <span class="k">this</span><span class="o">);</span>
             <span class="k">if</span> <span class="o">(!</span><span class="n">registerOK</span><span class="o">)</span> <span class="o">{</span>
-                <span class="k">this</span><span class="o">.</span><span class="na">serviceState</span> <span class="o">=</span> <span class="nc">ServiceState</span><span class="o">.</span><span class="na">CREATE_JUST</span><span class="o">;</span>
+                <span class="k">this</span><span class="o">.</span><span class="na">serviceState</span> <span class="o">=</span> <span class="n">ServiceState</span><span class="o">.</span><span class="na">CREATE_JUST</span><span class="o">;</span>
                 <span class="k">throw</span> <span class="k">new</span> <span class="nf">MQClientException</span><span class="o">(</span><span class="s">"The producer group["</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">.</span><span class="na">getProducerGroup</span><span class="o">()</span>
-                                            <span class="o">+</span> <span class="s">"] has been created before, specify another name please."</span> <span class="o">+</span> <span class="nc">FAQUrl</span><span class="o">.</span><span class="na">suggestTodo</span><span class="o">(</span><span class="nc">FAQUrl</span><span class="o">.</span><span class="na">GROUP_NAME_DUPLICATE_URL</span><span class="o">),</span>
+                                            <span class="o">+</span> <span class="s">"] has been created before, specify another name please."</span> <span class="o">+</span> <span class="n">FAQUrl</span><span class="o">.</span><span class="na">suggestTodo</span><span class="o">(</span><span class="n">FAQUrl</span><span class="o">.</span><span class="na">GROUP_NAME_DUPLICATE_URL</span><span class="o">),</span>
                                             <span class="kc">null</span><span class="o">);</span>
             <span class="o">}</span>
 
-            <span class="k">this</span><span class="o">.</span><span class="na">topicPublishInfoTable</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">.</span><span class="na">getCreateTopicKey</span><span class="o">(),</span> <span class="k">new</span> <span class="nc">TopicPublishInfo</span><span class="o">());</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">topicPublishInfoTable</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">.</span><span class="na">getCreateTopicKey</span><span class="o">(),</span> <span class="k">new</span> <span class="n">TopicPublishInfo</span><span class="o">());</span>
 
             <span class="k">if</span> <span class="o">(</span><span class="n">startFactory</span><span class="o">)</span> <span class="o">{</span>
                 <span class="n">mQClientFactory</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
@@ -235,14 +235,14 @@
 
             <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"the producer [{}] start OK. sendMessageWithVIPChannel={}"</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">.</span><span class="na">getProducerGroup</span><span class="o">(),</span>
                      <span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">.</span><span class="na">isSendMessageWithVIPChannel</span><span class="o">());</span>
-            <span class="k">this</span><span class="o">.</span><span class="na">serviceState</span> <span class="o">=</span> <span class="nc">ServiceState</span><span class="o">.</span><span class="na">RUNNING</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">serviceState</span> <span class="o">=</span> <span class="n">ServiceState</span><span class="o">.</span><span class="na">RUNNING</span><span class="o">;</span>
             <span class="k">break</span><span class="o">;</span>
         <span class="k">case</span> <span class="nl">RUNNING:</span>
         <span class="k">case</span> <span class="nl">START_FAILED:</span>
         <span class="k">case</span> <span class="nl">SHUTDOWN_ALREADY:</span>
             <span class="k">throw</span> <span class="k">new</span> <span class="nf">MQClientException</span><span class="o">(</span><span class="s">"The producer service state not OK, maybe started once, "</span>
                                         <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">serviceState</span>
-                                        <span class="o">+</span> <span class="nc">FAQUrl</span><span class="o">.</span><span class="na">suggestTodo</span><span class="o">(</span><span class="nc">FAQUrl</span><span class="o">.</span><span class="na">CLIENT_SERVICE_NOT_OK</span><span class="o">),</span>
+                                        <span class="o">+</span> <span class="n">FAQUrl</span><span class="o">.</span><span class="na">suggestTodo</span><span class="o">(</span><span class="n">FAQUrl</span><span class="o">.</span><span class="na">CLIENT_SERVICE_NOT_OK</span><span class="o">),</span>
                                         <span class="kc">null</span><span class="o">);</span>
         <span class="k">default</span><span class="o">:</span>
             <span class="k">break</span><span class="o">;</span>
@@ -258,7 +258,7 @@
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">this</span><span class="o">.</span><span class="na">checkConfig</span><span class="o">();</span>
 
-<span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">.</span><span class="na">getProducerGroup</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="nc">MixAll</span><span class="o">.</span><span class="na">CLIENT_INNER_PRODUCER_GROUP</span><span class="o">))</span> <span class="o">{</span>
+<span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">.</span><span class="na">getProducerGroup</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">MixAll</span><span class="o">.</span><span class="na">CLIENT_INNER_PRODUCER_GROUP</span><span class="o">))</span> <span class="o">{</span>
     <span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">.</span><span class="na">changeInstanceNameToPID</span><span class="o">();</span>
 <span class="o">}</span>
 </code></pre></div></div>
@@ -269,9 +269,9 @@
 
 <h4 id="2mqclientinstance的创建与注册与启动">2.MQClientInstance的创建与注册与启动</h4>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">this</span><span class="o">.</span><span class="na">mQClientFactory</span> <span class="o">=</span> <span class="nc">MQClientManager</span><span class="o">.</span><span class="na">getInstance</span><span class="o">().</span><span class="na">getAndCreateMQClientInstance</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">,</span> <span class="n">rpcHook</span><span class="o">);</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">this</span><span class="o">.</span><span class="na">mQClientFactory</span> <span class="o">=</span> <span class="n">MQClientManager</span><span class="o">.</span><span class="na">getInstance</span><span class="o">().</span><span class="na">getAndCreateMQClientInstance</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">,</span> <span class="n">rpcHook</span><span class="o">);</span>
 <span class="kt">boolean</span> <span class="n">registerOK</span> <span class="o">=</span> <span class="n">mQClientFactory</span><span class="o">.</span><span class="na">registerProducer</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">.</span><span class="na">getProducerGroup</span><span class="o">(),</span> <span class="k">this</span><span class="o">);</span>
-<span class="k">this</span><span class="o">.</span><span class="na">topicPublishInfoTable</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">.</span><span class="na">getCreateTopicKey</span><span class="o">(),</span> <span class="k">new</span> <span class="nc">TopicPublishInfo</span><span class="o">());</span>
+<span class="k">this</span><span class="o">.</span><span class="na">topicPublishInfoTable</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">.</span><span class="na">getCreateTopicKey</span><span class="o">(),</span> <span class="k">new</span> <span class="n">TopicPublishInfo</span><span class="o">());</span>
 <span class="k">if</span> <span class="o">(</span><span class="n">startFactory</span><span class="o">)</span> <span class="o">{</span>
     <span class="n">mQClientFactory</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
 <span class="o">}</span>
@@ -282,30 +282,30 @@
 <p><em>MQClientManager.getInstance().getAndCreateMQClientInstance(this.defaultMQProducer, rpcHook)</em> 这一句就相当于获取MQClientInstance对象。</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//org/apache/rocketmq/client/impl/MQClientManager</span>
-<span class="kd">private</span> <span class="kd">static</span> <span class="nc">MQClientManager</span> <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MQClientManager</span><span class="o">();</span>
-<span class="kd">private</span> <span class="nc">AtomicInteger</span> <span class="n">factoryIndexGenerator</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AtomicInteger</span><span class="o">();</span>
-<span class="kd">private</span> <span class="nc">ConcurrentMap</span><span class="o">&lt;</span><span class="nc">String</span><span class="cm">/* clientId */</span><span class="o">,</span> <span class="nc">MQClientInstance</span><span class="o">&gt;</span> <span class="n">factoryTable</span> <span class="o">=</span>
-    <span class="k">new</span> <span class="nc">ConcurrentHashMap</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">MQClientInstance</span><span class="o">&gt;();</span>
+<span class="kd">private</span> <span class="kd">static</span> <span class="n">MQClientManager</span> <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MQClientManager</span><span class="o">();</span>
+<span class="kd">private</span> <span class="n">AtomicInteger</span> <span class="n">factoryIndexGenerator</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AtomicInteger</span><span class="o">();</span>
+<span class="kd">private</span> <span class="n">ConcurrentMap</span><span class="o">&lt;</span><span class="n">String</span><span class="cm">/* clientId */</span><span class="o">,</span> <span class="n">MQClientInstance</span><span class="o">&gt;</span> <span class="n">factoryTable</span> <span class="o">=</span>
+    <span class="k">new</span> <span class="n">ConcurrentHashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">MQClientInstance</span><span class="o">&gt;();</span>
 
 <span class="kd">private</span> <span class="nf">MQClientManager</span><span class="o">()</span> <span class="o">{</span>
 
 <span class="o">}</span>
 
-<span class="kd">public</span> <span class="kd">static</span> <span class="nc">MQClientManager</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="n">MQClientManager</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
     <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
 <span class="o">}</span>
 </code></pre></div></div>
 
 <p>其实可以看到，MQClientManager是用了单例模式饿汉式的写法。里面维护了一个自增Id和MQClientInstance的map</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="nc">MQClientInstance</span> <span class="nf">getAndCreateMQClientInstance</span><span class="o">(</span><span class="kd">final</span> <span class="nc">ClientConfig</span> <span class="n">clientConfig</span><span class="o">,</span> <span class="nc">RPCHook</span> <span class="n">rpcHook</span><span class="o">)</span> <span class="o">{</span>
-    <span class="nc">String</span> <span class="n">clientId</span> <span class="o">=</span> <span class="n">clientConfig</span><span class="o">.</span><span class="na">buildMQClientId</span><span class="o">();</span>
-    <span class="nc">MQClientInstance</span> <span class="n">instance</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">factoryTable</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">clientId</span><span class="o">);</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="n">MQClientInstance</span> <span class="nf">getAndCreateMQClientInstance</span><span class="o">(</span><span class="kd">final</span> <span class="n">ClientConfig</span> <span class="n">clientConfig</span><span class="o">,</span> <span class="n">RPCHook</span> <span class="n">rpcHook</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">String</span> <span class="n">clientId</span> <span class="o">=</span> <span class="n">clientConfig</span><span class="o">.</span><span class="na">buildMQClientId</span><span class="o">();</span>
+    <span class="n">MQClientInstance</span> <span class="n">instance</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">factoryTable</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">clientId</span><span class="o">);</span>
     <span class="k">if</span> <span class="o">(</span><span class="kc">null</span> <span class="o">==</span> <span class="n">instance</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">instance</span> <span class="o">=</span>
             <span class="k">new</span> <span class="nf">MQClientInstance</span><span class="o">(</span><span class="n">clientConfig</span><span class="o">.</span><span class="na">cloneClientConfig</span><span class="o">(),</span>
                                  <span class="k">this</span><span class="o">.</span><span class="na">factoryIndexGenerator</span><span class="o">.</span><span class="na">getAndIncrement</span><span class="o">(),</span> <span class="n">clientId</span><span class="o">,</span> <span class="n">rpcHook</span><span class="o">);</span>
-        <span class="nc">MQClientInstance</span> <span class="n">prev</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">factoryTable</span><span class="o">.</span><span class="na">putIfAbsent</span><span class="o">(</span><span class="n">clientId</span><span class="o">,</span> <span class="n">instance</span><span class="o">);</span>
+        <span class="n">MQClientInstance</span> <span class="n">prev</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">factoryTable</span><span class="o">.</span><span class="na">putIfAbsent</span><span class="o">(</span><span class="n">clientId</span><span class="o">,</span> <span class="n">instance</span><span class="o">);</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">prev</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
             <span class="n">instance</span> <span class="o">=</span> <span class="n">prev</span><span class="o">;</span>
             <span class="n">log</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">"Returned Previous MQClientInstance for clientId:[{}]"</span><span class="o">,</span> <span class="n">clientId</span><span class="o">);</span>
@@ -323,8 +323,8 @@
 <p>接下来就是<strong>mQClientFactory.registerProducer(this.defaultMQProducer.getProducerGroup(), this);</strong> 顾名思义，将生产者注册到MQClientInstance中，跟进去其实也就是一行代码</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//org/apache/rocketmq/client/impl/factory/MQClientInstance.java中producerTable的定义</span>
-<span class="kd">private</span> <span class="kd">final</span> <span class="nc">ConcurrentMap</span><span class="o">&lt;</span><span class="nc">String</span><span class="cm">/* group */</span><span class="o">,</span> <span class="nc">MQProducerInner</span><span class="o">&gt;</span> <span class="n">producerTable</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ConcurrentHashMap</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">MQProducerInner</span><span class="o">&gt;();</span>
-<span class="nc">MQProducerInner</span> <span class="n">prev</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">producerTable</span><span class="o">.</span><span class="na">putIfAbsent</span><span class="o">(</span><span class="n">group</span><span class="o">,</span> <span class="n">producer</span><span class="o">);</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="n">ConcurrentMap</span><span class="o">&lt;</span><span class="n">String</span><span class="cm">/* group */</span><span class="o">,</span> <span class="n">MQProducerInner</span><span class="o">&gt;</span> <span class="n">producerTable</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConcurrentHashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">MQProducerInner</span><span class="o">&gt;();</span>
+<span class="n">MQProducerInner</span> <span class="n">prev</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">producerTable</span><span class="o">.</span><span class="na">putIfAbsent</span><span class="o">(</span><span class="n">group</span><span class="o">,</span> <span class="n">producer</span><span class="o">);</span>
 </code></pre></div></div>
 
 <p>接着是<strong>this.topicPublishInfoTable.put(this.defaultMQProducer.getCreateTopicKey(), new TopicPublishInfo());</strong>，topicPublishInfoTable中存了所有我们会投递消息的topic信息。而这里getCreateTopicKey()是默认自动创建的topic=”TBW102”，源码给的注释是“Just for testing or demo program”，而且线上一般都会禁止topic自动创建</p>
@@ -341,40 +341,40 @@
 <p>顺着send(Message message)，很快就找到了相关的逻辑，在<strong>DefaultMQProducerImpl</strong>的<strong>sendDefaultImpl</strong>方法。因为代码太长，不方便阅读，故部分小细节就直接在代码中写了。部分涉及到延迟容错模块会在下文细写</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//org/apache/rocketmq/client/impl/producer/DefaultMQProducerImpl.java</span>
-<span class="kd">private</span> <span class="nc">SendResult</span> <span class="nf">sendDefaultImpl</span><span class="o">(</span>
-        <span class="nc">Message</span> <span class="n">msg</span><span class="o">,</span>
-        <span class="kd">final</span> <span class="nc">CommunicationMode</span> <span class="n">communicationMode</span><span class="o">,</span>
-        <span class="kd">final</span> <span class="nc">SendCallback</span> <span class="n">sendCallback</span><span class="o">,</span>
+<span class="kd">private</span> <span class="n">SendResult</span> <span class="nf">sendDefaultImpl</span><span class="o">(</span>
+        <span class="n">Message</span> <span class="n">msg</span><span class="o">,</span>
+        <span class="kd">final</span> <span class="n">CommunicationMode</span> <span class="n">communicationMode</span><span class="o">,</span>
+        <span class="kd">final</span> <span class="n">SendCallback</span> <span class="n">sendCallback</span><span class="o">,</span>
         <span class="kd">final</span> <span class="kt">long</span> <span class="n">timeout</span>
-    <span class="o">)</span> <span class="kd">throws</span> <span class="nc">MQClientException</span><span class="o">,</span> <span class="nc">RemotingException</span><span class="o">,</span> <span class="nc">MQBrokerException</span><span class="o">,</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+    <span class="o">)</span> <span class="kd">throws</span> <span class="n">MQClientException</span><span class="o">,</span> <span class="n">RemotingException</span><span class="o">,</span> <span class="n">MQBrokerException</span><span class="o">,</span> <span class="n">InterruptedException</span> <span class="o">{</span>
     <span class="k">this</span><span class="o">.</span><span class="na">makeSureStateOK</span><span class="o">();</span>
-    <span class="nc">Validators</span><span class="o">.</span><span class="na">checkMessage</span><span class="o">(</span><span class="n">msg</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">);</span>
+    <span class="n">Validators</span><span class="o">.</span><span class="na">checkMessage</span><span class="o">(</span><span class="n">msg</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">);</span>
 
     <span class="kd">final</span> <span class="kt">long</span> <span class="n">invokeID</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="na">nextLong</span><span class="o">();</span>
-    <span class="kt">long</span> <span class="n">beginTimestampFirst</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+    <span class="kt">long</span> <span class="n">beginTimestampFirst</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
     <span class="kt">long</span> <span class="n">beginTimestampPrev</span> <span class="o">=</span> <span class="n">beginTimestampFirst</span><span class="o">;</span>
     <span class="kt">long</span> <span class="n">endTimestamp</span> <span class="o">=</span> <span class="n">beginTimestampFirst</span><span class="o">;</span>
     <span class="c1">//根据topic名称获取该topic相关的信息，包括所有的queue，本次消息投递的queue</span>
-    <span class="nc">TopicPublishInfo</span> <span class="n">topicPublishInfo</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">tryToFindTopicPublishInfo</span><span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getTopic</span><span class="o">());</span>
+    <span class="n">TopicPublishInfo</span> <span class="n">topicPublishInfo</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">tryToFindTopicPublishInfo</span><span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getTopic</span><span class="o">());</span>
     <span class="k">if</span> <span class="o">(</span><span class="n">topicPublishInfo</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">topicPublishInfo</span><span class="o">.</span><span class="na">ok</span><span class="o">())</span> <span class="o">{</span>
         <span class="kt">boolean</span> <span class="n">callTimeout</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
-        <span class="nc">MessageQueue</span> <span class="n">mq</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-        <span class="nc">Exception</span> <span class="n">exception</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-        <span class="nc">SendResult</span> <span class="n">sendResult</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="n">MessageQueue</span> <span class="n">mq</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="n">Exception</span> <span class="n">exception</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="n">SendResult</span> <span class="n">sendResult</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
         <span class="c1">//同步方式默认发送3次，有三种方式，async，sync，oneway。除了sync，其余的方式都只尝试一次</span>
-        <span class="kt">int</span> <span class="n">timesTotal</span> <span class="o">=</span> <span class="n">communicationMode</span> <span class="o">==</span> <span class="nc">CommunicationMode</span><span class="o">.</span><span class="na">SYNC</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">.</span><span class="na">getRetryTimesWhenSendFailed</span><span class="o">()</span> <span class="o">:</span> <span class="mi">1</span><span class="o">;</span>
+        <span class="kt">int</span> <span class="n">timesTotal</span> <span class="o">=</span> <span class="n">communicationMode</span> <span class="o">==</span> <span class="n">CommunicationMode</span><span class="o">.</span><span class="na">SYNC</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">.</span><span class="na">getRetryTimesWhenSendFailed</span><span class="o">()</span> <span class="o">:</span> <span class="mi">1</span><span class="o">;</span>
         <span class="kt">int</span> <span class="n">times</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-        <span class="nc">String</span><span class="o">[]</span> <span class="n">brokersSent</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">String</span><span class="o">[</span><span class="n">timesTotal</span><span class="o">];</span>
+        <span class="n">String</span><span class="o">[]</span> <span class="n">brokersSent</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">[</span><span class="n">timesTotal</span><span class="o">];</span>
         <span class="k">for</span> <span class="o">(;</span> <span class="n">times</span> <span class="o">&lt;</span> <span class="n">timesTotal</span><span class="o">;</span> <span class="n">times</span><span class="o">++)</span> <span class="o">{</span>
             <span class="c1">//获取上一次发送的broker</span>
-            <span class="nc">String</span> <span class="n">lastBrokerName</span> <span class="o">=</span> <span class="kc">null</span> <span class="o">==</span> <span class="n">mq</span> <span class="o">?</span> <span class="kc">null</span> <span class="o">:</span> <span class="n">mq</span><span class="o">.</span><span class="na">getBrokerName</span><span class="o">();</span>
+            <span class="n">String</span> <span class="n">lastBrokerName</span> <span class="o">=</span> <span class="kc">null</span> <span class="o">==</span> <span class="n">mq</span> <span class="o">?</span> <span class="kc">null</span> <span class="o">:</span> <span class="n">mq</span><span class="o">.</span><span class="na">getBrokerName</span><span class="o">();</span>
             <span class="c1">//选择发送的queue，这里涉及到了选择发送队列的算法策略，会细看</span>
-            <span class="nc">MessageQueue</span> <span class="n">mqSelected</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">selectOneMessageQueue</span><span class="o">(</span><span class="n">topicPublishInfo</span><span class="o">,</span> <span class="n">lastBrokerName</span><span class="o">);</span>
+            <span class="n">MessageQueue</span> <span class="n">mqSelected</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">selectOneMessageQueue</span><span class="o">(</span><span class="n">topicPublishInfo</span><span class="o">,</span> <span class="n">lastBrokerName</span><span class="o">);</span>
             <span class="k">if</span> <span class="o">(</span><span class="n">mqSelected</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
                 <span class="n">mq</span> <span class="o">=</span> <span class="n">mqSelected</span><span class="o">;</span>
                 <span class="n">brokersSent</span><span class="o">[</span><span class="n">times</span><span class="o">]</span> <span class="o">=</span> <span class="n">mq</span><span class="o">.</span><span class="na">getBrokerName</span><span class="o">();</span>
                 <span class="k">try</span> <span class="o">{</span>
-                    <span class="n">beginTimestampPrev</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+                    <span class="n">beginTimestampPrev</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
                     <span class="kt">long</span> <span class="n">costTime</span> <span class="o">=</span> <span class="n">beginTimestampPrev</span> <span class="o">-</span> <span class="n">beginTimestampFirst</span><span class="o">;</span>
                     <span class="k">if</span> <span class="o">(</span><span class="n">timeout</span> <span class="o">&lt;</span> <span class="n">costTime</span><span class="o">)</span> <span class="o">{</span>
                         <span class="c1">//处理超时，中断发送请求</span>
@@ -384,7 +384,7 @@
 
                     <span class="c1">//发送消息，涉及相关rpc调用</span>
                     <span class="n">sendResult</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">sendKernelImpl</span><span class="o">(</span><span class="n">msg</span><span class="o">,</span> <span class="n">mq</span><span class="o">,</span> <span class="n">communicationMode</span><span class="o">,</span> <span class="n">sendCallback</span><span class="o">,</span> <span class="n">topicPublishInfo</span><span class="o">,</span> <span class="n">timeout</span> <span class="o">-</span> <span class="n">costTime</span><span class="o">);</span>
-                    <span class="n">endTimestamp</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+                    <span class="n">endTimestamp</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
                     <span class="c1">//更新broker的延迟</span>
                     <span class="k">this</span><span class="o">.</span><span class="na">updateFaultItem</span><span class="o">(</span><span class="n">mq</span><span class="o">.</span><span class="na">getBrokerName</span><span class="o">(),</span> <span class="n">endTimestamp</span> <span class="o">-</span> <span class="n">beginTimestampPrev</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
                     <span class="k">switch</span> <span class="o">(</span><span class="n">communicationMode</span><span class="o">)</span> <span class="o">{</span>
@@ -393,7 +393,7 @@
                         <span class="k">case</span> <span class="nl">ONEWAY:</span>
                             <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
                         <span class="k">case</span> <span class="nl">SYNC:</span>
-                            <span class="k">if</span> <span class="o">(</span><span class="n">sendResult</span><span class="o">.</span><span class="na">getSendStatus</span><span class="o">()</span> <span class="o">!=</span> <span class="nc">SendStatus</span><span class="o">.</span><span class="na">SEND_OK</span><span class="o">)</span> <span class="o">{</span>
+                            <span class="k">if</span> <span class="o">(</span><span class="n">sendResult</span><span class="o">.</span><span class="na">getSendStatus</span><span class="o">()</span> <span class="o">!=</span> <span class="n">SendStatus</span><span class="o">.</span><span class="na">SEND_OK</span><span class="o">)</span> <span class="o">{</span>
                                 <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">.</span><span class="na">isRetryAnotherBrokerWhenNotStoreOK</span><span class="o">())</span> <span class="o">{</span>
                                     <span class="k">continue</span><span class="o">;</span>
                                 <span class="o">}</span>
@@ -403,14 +403,14 @@
                         <span class="k">default</span><span class="o">:</span>
                             <span class="k">break</span><span class="o">;</span>
                     <span class="o">}</span>
-                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">RemotingException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">RemotingException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
                     <span class="c1">//涉及到延迟容错相关内容</span>
                     <span class="k">continue</span><span class="o">;</span>
-                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">MQClientException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">MQClientException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
                     <span class="k">continue</span><span class="o">;</span>
-                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">MQBrokerException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">MQBrokerException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
                     <span class="k">continue</span><span class="o">;</span>
-                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
                     <span class="k">throw</span> <span class="n">e</span><span class="o">;</span>
                 <span class="o">}</span>
             <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
@@ -430,10 +430,10 @@
 <p>消息发送主要看一下下面几行</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//根据topic名称获取该topic相关的信息，包括所有的queue，本次消息投递的queue</span>
-<span class="nc">TopicPublishInfo</span> <span class="n">topicPublishInfo</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">tryToFindTopicPublishInfo</span><span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getTopic</span><span class="o">());</span>
+<span class="n">TopicPublishInfo</span> <span class="n">topicPublishInfo</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">tryToFindTopicPublishInfo</span><span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getTopic</span><span class="o">());</span>
 
 <span class="c1">//选择发送的queue，这里涉及到了选择发送队列的算法</span>
-<span class="nc">MessageQueue</span> <span class="n">mqSelected</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">selectOneMessageQueue</span><span class="o">(</span><span class="n">topicPublishInfo</span><span class="o">,</span> <span class="n">lastBrokerName</span><span class="o">);</span>
+<span class="n">MessageQueue</span> <span class="n">mqSelected</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">selectOneMessageQueue</span><span class="o">(</span><span class="n">topicPublishInfo</span><span class="o">,</span> <span class="n">lastBrokerName</span><span class="o">);</span>
 
 <span class="c1">//发送消息，涉及相关rpc调用</span>
 <span class="n">sendResult</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">sendKernelImpl</span><span class="o">(</span><span class="n">msg</span><span class="o">,</span> <span class="n">mq</span><span class="o">,</span> <span class="n">communicationMode</span><span class="o">,</span> <span class="n">sendCallback</span><span class="o">,</span> <span class="n">topicPublishInfo</span><span class="o">,</span> <span class="n">timeout</span> <span class="o">-</span> <span class="n">costTime</span><span class="o">);</span>
@@ -444,11 +444,11 @@
 <p>查看tryToFindTopicPublishInfo()方法</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//org/apache/rocketmq/client/impl/producer/DefaultMQProducerImpl.java</span>
-<span class="kd">private</span> <span class="nc">TopicPublishInfo</span> <span class="nf">tryToFindTopicPublishInfo</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span> <span class="n">topic</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">private</span> <span class="n">TopicPublishInfo</span> <span class="nf">tryToFindTopicPublishInfo</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">topic</span><span class="o">)</span> <span class="o">{</span>
     <span class="c1">//从本地缓存中获取该topic的信息</span>
-    <span class="nc">TopicPublishInfo</span> <span class="n">topicPublishInfo</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">topicPublishInfoTable</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">topic</span><span class="o">);</span>
+    <span class="n">TopicPublishInfo</span> <span class="n">topicPublishInfo</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">topicPublishInfoTable</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">topic</span><span class="o">);</span>
     <span class="k">if</span> <span class="o">(</span><span class="kc">null</span> <span class="o">==</span> <span class="n">topicPublishInfo</span> <span class="o">||</span> <span class="o">!</span><span class="n">topicPublishInfo</span><span class="o">.</span><span class="na">ok</span><span class="o">())</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">topicPublishInfoTable</span><span class="o">.</span><span class="na">putIfAbsent</span><span class="o">(</span><span class="n">topic</span><span class="o">,</span> <span class="k">new</span> <span class="nc">TopicPublishInfo</span><span class="o">());</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">topicPublishInfoTable</span><span class="o">.</span><span class="na">putIfAbsent</span><span class="o">(</span><span class="n">topic</span><span class="o">,</span> <span class="k">new</span> <span class="n">TopicPublishInfo</span><span class="o">());</span>
         <span class="c1">//从nameSrv获取该topic信息，并更新本地缓存</span>
         <span class="k">this</span><span class="o">.</span><span class="na">mQClientFactory</span><span class="o">.</span><span class="na">updateTopicRouteInfoFromNameServer</span><span class="o">(</span><span class="n">topic</span><span class="o">);</span>
         <span class="n">topicPublishInfo</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">topicPublishInfoTable</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">topic</span><span class="o">);</span>
@@ -468,18 +468,18 @@
 <p>主要还是<strong>updateTopicRouteInfoFromNameServer()</strong>方法，接着看</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//org/apache/rocketmq/client/impl/factory/MQClientInstance.java</span>
-<span class="kd">private</span> <span class="kd">final</span> <span class="nc">Lock</span> <span class="n">lockNamesrv</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ReentrantLock</span><span class="o">();</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="n">Lock</span> <span class="n">lockNamesrv</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ReentrantLock</span><span class="o">();</span>
 <span class="c1">//加锁,同一个mqClientInstance</span>
-<span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">lockNamesrv</span><span class="o">.</span><span class="na">tryLock</span><span class="o">(</span><span class="no">LOCK_TIMEOUT_MILLIS</span><span class="o">,</span> <span class="nc">TimeUnit</span><span class="o">.</span><span class="na">MILLISECONDS</span><span class="o">))</span> <span class="o">{</span>
+<span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">lockNamesrv</span><span class="o">.</span><span class="na">tryLock</span><span class="o">(</span><span class="n">LOCK_TIMEOUT_MILLIS</span><span class="o">,</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">MILLISECONDS</span><span class="o">))</span> <span class="o">{</span>
     <span class="k">try</span> <span class="o">{</span>
-        <span class="nc">TopicRouteData</span> <span class="n">topicRouteData</span><span class="o">;</span>
+        <span class="n">TopicRouteData</span> <span class="n">topicRouteData</span><span class="o">;</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">isDefault</span> <span class="o">&amp;&amp;</span> <span class="n">defaultMQProducer</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
             <span class="c1">//更新默认topic--TBW102的相关信息</span>
             <span class="n">topicRouteData</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">mQClientAPIImpl</span><span class="o">.</span><span class="na">getDefaultTopicRouteInfoFromNameServer</span><span class="o">(</span><span class="n">defaultMQProducer</span><span class="o">.</span><span class="na">getCreateTopicKey</span><span class="o">(),</span>
                 <span class="mi">1000</span> <span class="o">*</span> <span class="mi">3</span><span class="o">);</span>
             <span class="k">if</span> <span class="o">(</span><span class="n">topicRouteData</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-                <span class="k">for</span> <span class="o">(</span><span class="nc">QueueData</span> <span class="n">data</span> <span class="o">:</span> <span class="n">topicRouteData</span><span class="o">.</span><span class="na">getQueueDatas</span><span class="o">())</span> <span class="o">{</span>
-                    <span class="kt">int</span> <span class="n">queueNums</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">defaultMQProducer</span><span class="o">.</span><span class="na">getDefaultTopicQueueNums</span><span class="o">(),</span> <span class="n">data</span><span class="o">.</span><span class="na">getReadQueueNums</span><span class="o">());</span>
+                <span class="k">for</span> <span class="o">(</span><span class="n">QueueData</span> <span class="n">data</span> <span class="o">:</span> <span class="n">topicRouteData</span><span class="o">.</span><span class="na">getQueueDatas</span><span class="o">())</span> <span class="o">{</span>
+                    <span class="kt">int</span> <span class="n">queueNums</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">defaultMQProducer</span><span class="o">.</span><span class="na">getDefaultTopicQueueNums</span><span class="o">(),</span> <span class="n">data</span><span class="o">.</span><span class="na">getReadQueueNums</span><span class="o">());</span>
                     <span class="n">data</span><span class="o">.</span><span class="na">setReadQueueNums</span><span class="o">(</span><span class="n">queueNums</span><span class="o">);</span>
                     <span class="n">data</span><span class="o">.</span><span class="na">setWriteQueueNums</span><span class="o">(</span><span class="n">queueNums</span><span class="o">);</span>
                 <span class="o">}</span>
@@ -489,7 +489,7 @@
             <span class="n">topicRouteData</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">mQClientAPIImpl</span><span class="o">.</span><span class="na">getTopicRouteInfoFromNameServer</span><span class="o">(</span><span class="n">topic</span><span class="o">,</span> <span class="mi">1000</span> <span class="o">*</span> <span class="mi">3</span><span class="o">);</span>
         <span class="o">}</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">topicRouteData</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-            <span class="nc">TopicRouteData</span> <span class="n">old</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">topicRouteTable</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">topic</span><span class="o">);</span>
+            <span class="n">TopicRouteData</span> <span class="n">old</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">topicRouteTable</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">topic</span><span class="o">);</span>
             <span class="c1">//判断topic相关的queue和broker是否有变更</span>
             <span class="kt">boolean</span> <span class="n">changed</span> <span class="o">=</span> <span class="n">topicRouteDataIsChange</span><span class="o">(</span><span class="n">old</span><span class="o">,</span> <span class="n">topicRouteData</span><span class="o">);</span>
             <span class="k">if</span> <span class="o">(!</span><span class="n">changed</span><span class="o">)</span> <span class="o">{</span>
@@ -500,21 +500,21 @@
             <span class="o">}</span>
 
             <span class="k">if</span> <span class="o">(</span><span class="n">changed</span><span class="o">)</span> <span class="o">{</span>
-                <span class="nc">TopicRouteData</span> <span class="n">cloneTopicRouteData</span> <span class="o">=</span> <span class="n">topicRouteData</span><span class="o">.</span><span class="na">cloneTopicRouteData</span><span class="o">();</span>
+                <span class="n">TopicRouteData</span> <span class="n">cloneTopicRouteData</span> <span class="o">=</span> <span class="n">topicRouteData</span><span class="o">.</span><span class="na">cloneTopicRouteData</span><span class="o">();</span>
 
-                <span class="k">for</span> <span class="o">(</span><span class="nc">BrokerData</span> <span class="n">bd</span> <span class="o">:</span> <span class="n">topicRouteData</span><span class="o">.</span><span class="na">getBrokerDatas</span><span class="o">())</span> <span class="o">{</span>
+                <span class="k">for</span> <span class="o">(</span><span class="n">BrokerData</span> <span class="n">bd</span> <span class="o">:</span> <span class="n">topicRouteData</span><span class="o">.</span><span class="na">getBrokerDatas</span><span class="o">())</span> <span class="o">{</span>
                     <span class="k">this</span><span class="o">.</span><span class="na">brokerAddrTable</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">bd</span><span class="o">.</span><span class="na">getBrokerName</span><span class="o">(),</span> <span class="n">bd</span><span class="o">.</span><span class="na">getBrokerAddrs</span><span class="o">());</span>
                 <span class="o">}</span>
 
                 <span class="c1">//遍历更新producer中的topic信息</span>
                 <span class="c1">// Update Pub info</span>
                 <span class="o">{</span>
-                    <span class="nc">TopicPublishInfo</span> <span class="n">publishInfo</span> <span class="o">=</span> <span class="n">topicRouteData2TopicPublishInfo</span><span class="o">(</span><span class="n">topic</span><span class="o">,</span> <span class="n">topicRouteData</span><span class="o">);</span>
+                    <span class="n">TopicPublishInfo</span> <span class="n">publishInfo</span> <span class="o">=</span> <span class="n">topicRouteData2TopicPublishInfo</span><span class="o">(</span><span class="n">topic</span><span class="o">,</span> <span class="n">topicRouteData</span><span class="o">);</span>
                     <span class="n">publishInfo</span><span class="o">.</span><span class="na">setHaveTopicRouterInfo</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-                    <span class="nc">Iterator</span><span class="o">&lt;</span><span class="nc">Entry</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">MQProducerInner</span><span class="o">&gt;&gt;</span> <span class="n">it</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">producerTable</span><span class="o">.</span><span class="na">entrySet</span><span class="o">().</span><span class="na">iterator</span><span class="o">();</span>
+                    <span class="n">Iterator</span><span class="o">&lt;</span><span class="n">Entry</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">MQProducerInner</span><span class="o">&gt;&gt;</span> <span class="n">it</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">producerTable</span><span class="o">.</span><span class="na">entrySet</span><span class="o">().</span><span class="na">iterator</span><span class="o">();</span>
                     <span class="k">while</span> <span class="o">(</span><span class="n">it</span><span class="o">.</span><span class="na">hasNext</span><span class="o">())</span> <span class="o">{</span>
-                        <span class="nc">Entry</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">MQProducerInner</span><span class="o">&gt;</span> <span class="n">entry</span> <span class="o">=</span> <span class="n">it</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
-                        <span class="nc">MQProducerInner</span> <span class="n">impl</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="na">getValue</span><span class="o">();</span>
+                        <span class="n">Entry</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">MQProducerInner</span><span class="o">&gt;</span> <span class="n">entry</span> <span class="o">=</span> <span class="n">it</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+                        <span class="n">MQProducerInner</span> <span class="n">impl</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="na">getValue</span><span class="o">();</span>
                         <span class="k">if</span> <span class="o">(</span><span class="n">impl</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
                             <span class="n">impl</span><span class="o">.</span><span class="na">updateTopicPublishInfo</span><span class="o">(</span><span class="n">topic</span><span class="o">,</span> <span class="n">publishInfo</span><span class="o">);</span>
                         <span class="o">}</span>
@@ -524,11 +524,11 @@
                 <span class="c1">// Update sub info</span>
                 <span class="c1">//更新消费者相关topic信息，和上面更新生产者类似</span>
                 <span class="o">{</span>
-                    <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">MessageQueue</span><span class="o">&gt;</span> <span class="n">subscribeInfo</span> <span class="o">=</span> <span class="n">topicRouteData2TopicSubscribeInfo</span><span class="o">(</span><span class="n">topic</span><span class="o">,</span> <span class="n">topicRouteData</span><span class="o">);</span>
-                    <span class="nc">Iterator</span><span class="o">&lt;</span><span class="nc">Entry</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">MQConsumerInner</span><span class="o">&gt;&gt;</span> <span class="n">it</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">consumerTable</span><span class="o">.</span><span class="na">entrySet</span><span class="o">().</span><span class="na">iterator</span><span class="o">();</span>
+                    <span class="n">Set</span><span class="o">&lt;</span><span class="n">MessageQueue</span><span class="o">&gt;</span> <span class="n">subscribeInfo</span> <span class="o">=</span> <span class="n">topicRouteData2TopicSubscribeInfo</span><span class="o">(</span><span class="n">topic</span><span class="o">,</span> <span class="n">topicRouteData</span><span class="o">);</span>
+                    <span class="n">Iterator</span><span class="o">&lt;</span><span class="n">Entry</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">MQConsumerInner</span><span class="o">&gt;&gt;</span> <span class="n">it</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">consumerTable</span><span class="o">.</span><span class="na">entrySet</span><span class="o">().</span><span class="na">iterator</span><span class="o">();</span>
                     <span class="k">while</span> <span class="o">(</span><span class="n">it</span><span class="o">.</span><span class="na">hasNext</span><span class="o">())</span> <span class="o">{</span>
-                        <span class="nc">Entry</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">MQConsumerInner</span><span class="o">&gt;</span> <span class="n">entry</span> <span class="o">=</span> <span class="n">it</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
-                        <span class="nc">MQConsumerInner</span> <span class="n">impl</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="na">getValue</span><span class="o">();</span>
+                        <span class="n">Entry</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">MQConsumerInner</span><span class="o">&gt;</span> <span class="n">entry</span> <span class="o">=</span> <span class="n">it</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+                        <span class="n">MQConsumerInner</span> <span class="n">impl</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="na">getValue</span><span class="o">();</span>
                         <span class="k">if</span> <span class="o">(</span><span class="n">impl</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
                             <span class="n">impl</span><span class="o">.</span><span class="na">updateTopicSubscribeInfo</span><span class="o">(</span><span class="n">topic</span><span class="o">,</span> <span class="n">subscribeInfo</span><span class="o">);</span>
                         <span class="o">}</span>
@@ -542,8 +542,8 @@
         <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
             <span class="n">log</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">"updateTopicRouteInfoFromNameServer, getTopicRouteInfoFromNameServer return null, Topic: {}"</span><span class="o">,</span> <span class="n">topic</span><span class="o">);</span>
         <span class="o">}</span>
-    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">if</span> <span class="o">(!</span><span class="n">topic</span><span class="o">.</span><span class="na">startsWith</span><span class="o">(</span><span class="nc">MixAll</span><span class="o">.</span><span class="na">RETRY_GROUP_TOPIC_PREFIX</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">topic</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="nc">MixAll</span><span class="o">.</span><span class="na">AUTO_CREATE_TOPIC_KEY_TOPIC</span><span class="o">))</span> <span class="o">{</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">topic</span><span class="o">.</span><span class="na">startsWith</span><span class="o">(</span><span class="n">MixAll</span><span class="o">.</span><span class="na">RETRY_GROUP_TOPIC_PREFIX</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">topic</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">MixAll</span><span class="o">.</span><span class="na">AUTO_CREATE_TOPIC_KEY_TOPIC</span><span class="o">))</span> <span class="o">{</span>
             <span class="n">log</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">"updateTopicRouteInfoFromNameServer Exception"</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
         <span class="o">}</span>
     <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
@@ -567,17 +567,17 @@
 <p>如果没考虑延迟容错，<strong>MessageQueue mqSelected = this.selectOneMessageQueue(topicPublishInfo, lastBrokerName);</strong>   跟踪这段代码，可以看到</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//org/apache/rocketmq/client/impl/producer/TopicPublishInfo.java</span>
-<span class="kd">public</span> <span class="nc">MessageQueue</span> <span class="nf">selectOneMessageQueue</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span> <span class="n">lastBrokerName</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="n">MessageQueue</span> <span class="nf">selectOneMessageQueue</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">lastBrokerName</span><span class="o">)</span> <span class="o">{</span>
     <span class="k">if</span> <span class="o">(</span><span class="n">lastBrokerName</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">return</span> <span class="nf">selectOneMessageQueue</span><span class="o">();</span>
     <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
         <span class="c1">//可以理解为index++，index为ThreadLocal变量</span>
         <span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">sendWhichQueue</span><span class="o">.</span><span class="na">getAndIncrement</span><span class="o">();</span>
         <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="k">this</span><span class="o">.</span><span class="na">messageQueueList</span><span class="o">.</span><span class="na">size</span><span class="o">();</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-            <span class="kt">int</span> <span class="n">pos</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="n">index</span><span class="o">++)</span> <span class="o">%</span> <span class="k">this</span><span class="o">.</span><span class="na">messageQueueList</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
+            <span class="kt">int</span> <span class="n">pos</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="n">index</span><span class="o">++)</span> <span class="o">%</span> <span class="k">this</span><span class="o">.</span><span class="na">messageQueueList</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
             <span class="k">if</span> <span class="o">(</span><span class="n">pos</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span>
                 <span class="n">pos</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-            <span class="nc">MessageQueue</span> <span class="n">mq</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">messageQueueList</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">pos</span><span class="o">);</span>
+            <span class="n">MessageQueue</span> <span class="n">mq</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">messageQueueList</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">pos</span><span class="o">);</span>
             <span class="c1">//如果不是上一个broker，则返回该queue。保证失败后不往同一个broker中投递消息</span>
             <span class="k">if</span> <span class="o">(!</span><span class="n">mq</span><span class="o">.</span><span class="na">getBrokerName</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">lastBrokerName</span><span class="o">))</span> <span class="o">{</span>
                 <span class="k">return</span> <span class="n">mq</span><span class="o">;</span>
@@ -587,9 +587,9 @@
     <span class="o">}</span>
 <span class="o">}</span>
 
-<span class="kd">public</span> <span class="nc">MessageQueue</span> <span class="nf">selectOneMessageQueue</span><span class="o">()</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="n">MessageQueue</span> <span class="nf">selectOneMessageQueue</span><span class="o">()</span> <span class="o">{</span>
     <span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">sendWhichQueue</span><span class="o">.</span><span class="na">getAndIncrement</span><span class="o">();</span>
-    <span class="kt">int</span> <span class="n">pos</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="n">index</span><span class="o">)</span> <span class="o">%</span> <span class="k">this</span><span class="o">.</span><span class="na">messageQueueList</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
+    <span class="kt">int</span> <span class="n">pos</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="n">index</span><span class="o">)</span> <span class="o">%</span> <span class="k">this</span><span class="o">.</span><span class="na">messageQueueList</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
     <span class="k">if</span> <span class="o">(</span><span class="n">pos</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span>
         <span class="n">pos</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
     <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">messageQueueList</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">pos</span><span class="o">);</span>
@@ -606,27 +606,27 @@
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//org/apache/rocketmq/client/impl/producer/DefaultMQProducerImpl.java</span>
 <span class="c1">//for MessageBatch,ID has been set in the generating process</span>
-<span class="k">if</span> <span class="o">(!(</span><span class="n">msg</span> <span class="k">instanceof</span> <span class="nc">MessageBatch</span><span class="o">))</span> <span class="o">{</span>
-    <span class="nc">MessageClientIDSetter</span><span class="o">.</span><span class="na">setUniqID</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+<span class="k">if</span> <span class="o">(!(</span><span class="n">msg</span> <span class="k">instanceof</span> <span class="n">MessageBatch</span><span class="o">))</span> <span class="o">{</span>
+    <span class="n">MessageClientIDSetter</span><span class="o">.</span><span class="na">setUniqID</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
 <span class="o">}</span>
 
 <span class="kt">int</span> <span class="n">sysFlag</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
 <span class="kt">boolean</span> <span class="n">msgBodyCompressed</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
 <span class="c1">//消息内容大于4k，会进行压缩，加上标记</span>
 <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">tryToCompressMessage</span><span class="o">(</span><span class="n">msg</span><span class="o">))</span> <span class="o">{</span>
-    <span class="n">sysFlag</span> <span class="o">|=</span> <span class="nc">MessageSysFlag</span><span class="o">.</span><span class="na">COMPRESSED_FLAG</span><span class="o">;</span>
+    <span class="n">sysFlag</span> <span class="o">|=</span> <span class="n">MessageSysFlag</span><span class="o">.</span><span class="na">COMPRESSED_FLAG</span><span class="o">;</span>
     <span class="n">msgBodyCompressed</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
 <span class="o">}</span>
 
 <span class="c1">//如果为事务消息，加上标记</span>
-<span class="kd">final</span> <span class="nc">String</span> <span class="n">tranMsg</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="nc">MessageConst</span><span class="o">.</span><span class="na">PROPERTY_TRANSACTION_PREPARED</span><span class="o">);</span>
-<span class="k">if</span> <span class="o">(</span><span class="n">tranMsg</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="nc">Boolean</span><span class="o">.</span><span class="na">parseBoolean</span><span class="o">(</span><span class="n">tranMsg</span><span class="o">))</span> <span class="o">{</span>
-    <span class="n">sysFlag</span> <span class="o">|=</span> <span class="nc">MessageSysFlag</span><span class="o">.</span><span class="na">TRANSACTION_PREPARED_TYPE</span><span class="o">;</span>
+<span class="kd">final</span> <span class="n">String</span> <span class="n">tranMsg</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="n">MessageConst</span><span class="o">.</span><span class="na">PROPERTY_TRANSACTION_PREPARED</span><span class="o">);</span>
+<span class="k">if</span> <span class="o">(</span><span class="n">tranMsg</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">Boolean</span><span class="o">.</span><span class="na">parseBoolean</span><span class="o">(</span><span class="n">tranMsg</span><span class="o">))</span> <span class="o">{</span>
+    <span class="n">sysFlag</span> <span class="o">|=</span> <span class="n">MessageSysFlag</span><span class="o">.</span><span class="na">TRANSACTION_PREPARED_TYPE</span><span class="o">;</span>
 <span class="o">}</span>
 
 <span class="c1">//说实话没用过，也是一个钩子接口，可以在初始化生产者的时候注册进去</span>
 <span class="k">if</span> <span class="o">(</span><span class="n">hasCheckForbiddenHook</span><span class="o">())</span> <span class="o">{</span>
-    <span class="nc">CheckForbiddenContext</span> <span class="n">checkForbiddenContext</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">CheckForbiddenContext</span><span class="o">();</span>
+    <span class="n">CheckForbiddenContext</span> <span class="n">checkForbiddenContext</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CheckForbiddenContext</span><span class="o">();</span>
     <span class="n">checkForbiddenContext</span><span class="o">.</span><span class="na">setNameSrvAddr</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">.</span><span class="na">getNamesrvAddr</span><span class="o">());</span>
     <span class="n">checkForbiddenContext</span><span class="o">.</span><span class="na">setGroup</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">.</span><span class="na">getProducerGroup</span><span class="o">());</span>
     <span class="n">checkForbiddenContext</span><span class="o">.</span><span class="na">setCommunicationMode</span><span class="o">(</span><span class="n">communicationMode</span><span class="o">);</span>
@@ -638,7 +638,7 @@
 <span class="o">}</span>
 <span class="c1">//消息发送钩子</span>
 <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">hasSendMessageHook</span><span class="o">())</span> <span class="o">{</span>
-    <span class="n">context</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">SendMessageContext</span><span class="o">();</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SendMessageContext</span><span class="o">();</span>
     <span class="n">context</span><span class="o">.</span><span class="na">setProducer</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
     <span class="n">context</span><span class="o">.</span><span class="na">setProducerGroup</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">.</span><span class="na">getProducerGroup</span><span class="o">());</span>
     <span class="n">context</span><span class="o">.</span><span class="na">setCommunicationMode</span><span class="o">(</span><span class="n">communicationMode</span><span class="o">);</span>
@@ -646,57 +646,57 @@
     <span class="n">context</span><span class="o">.</span><span class="na">setBrokerAddr</span><span class="o">(</span><span class="n">brokerAddr</span><span class="o">);</span>
     <span class="n">context</span><span class="o">.</span><span class="na">setMessage</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
     <span class="n">context</span><span class="o">.</span><span class="na">setMq</span><span class="o">(</span><span class="n">mq</span><span class="o">);</span>
-    <span class="nc">String</span> <span class="n">isTrans</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="nc">MessageConst</span><span class="o">.</span><span class="na">PROPERTY_TRANSACTION_PREPARED</span><span class="o">);</span>
+    <span class="n">String</span> <span class="n">isTrans</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="n">MessageConst</span><span class="o">.</span><span class="na">PROPERTY_TRANSACTION_PREPARED</span><span class="o">);</span>
     <span class="k">if</span> <span class="o">(</span><span class="n">isTrans</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">isTrans</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">"true"</span><span class="o">))</span> <span class="o">{</span>
-        <span class="n">context</span><span class="o">.</span><span class="na">setMsgType</span><span class="o">(</span><span class="nc">MessageType</span><span class="o">.</span><span class="na">Trans_Msg_Half</span><span class="o">);</span>
+        <span class="n">context</span><span class="o">.</span><span class="na">setMsgType</span><span class="o">(</span><span class="n">MessageType</span><span class="o">.</span><span class="na">Trans_Msg_Half</span><span class="o">);</span>
     <span class="o">}</span>
 
-    <span class="k">if</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">"__STARTDELIVERTIME"</span><span class="o">)</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">msg</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="nc">MessageConst</span><span class="o">.</span><span class="na">PROPERTY_DELAY_TIME_LEVEL</span><span class="o">)</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">context</span><span class="o">.</span><span class="na">setMsgType</span><span class="o">(</span><span class="nc">MessageType</span><span class="o">.</span><span class="na">Delay_Msg</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">"__STARTDELIVERTIME"</span><span class="o">)</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">msg</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="n">MessageConst</span><span class="o">.</span><span class="na">PROPERTY_DELAY_TIME_LEVEL</span><span class="o">)</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">context</span><span class="o">.</span><span class="na">setMsgType</span><span class="o">(</span><span class="n">MessageType</span><span class="o">.</span><span class="na">Delay_Msg</span><span class="o">);</span>
     <span class="o">}</span>
     <span class="k">this</span><span class="o">.</span><span class="na">executeSendMessageHookBefore</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
 <span class="o">}</span>
 
 <span class="c1">//构建请求，用于rpc交互</span>
-<span class="nc">SendMessageRequestHeader</span> <span class="n">requestHeader</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">SendMessageRequestHeader</span><span class="o">();</span>
+<span class="n">SendMessageRequestHeader</span> <span class="n">requestHeader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SendMessageRequestHeader</span><span class="o">();</span>
 <span class="n">requestHeader</span><span class="o">.</span><span class="na">setProducerGroup</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">.</span><span class="na">getProducerGroup</span><span class="o">());</span>
 <span class="n">requestHeader</span><span class="o">.</span><span class="na">setTopic</span><span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getTopic</span><span class="o">());</span>
 <span class="n">requestHeader</span><span class="o">.</span><span class="na">setDefaultTopic</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">.</span><span class="na">getCreateTopicKey</span><span class="o">());</span>
 <span class="n">requestHeader</span><span class="o">.</span><span class="na">setDefaultTopicQueueNums</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">.</span><span class="na">getDefaultTopicQueueNums</span><span class="o">());</span>
 <span class="n">requestHeader</span><span class="o">.</span><span class="na">setQueueId</span><span class="o">(</span><span class="n">mq</span><span class="o">.</span><span class="na">getQueueId</span><span class="o">());</span>
 <span class="n">requestHeader</span><span class="o">.</span><span class="na">setSysFlag</span><span class="o">(</span><span class="n">sysFlag</span><span class="o">);</span>
-<span class="n">requestHeader</span><span class="o">.</span><span class="na">setBornTimestamp</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">());</span>
+<span class="n">requestHeader</span><span class="o">.</span><span class="na">setBornTimestamp</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">());</span>
 <span class="n">requestHeader</span><span class="o">.</span><span class="na">setFlag</span><span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getFlag</span><span class="o">());</span>
-<span class="n">requestHeader</span><span class="o">.</span><span class="na">setProperties</span><span class="o">(</span><span class="nc">MessageDecoder</span><span class="o">.</span><span class="na">messageProperties2String</span><span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getProperties</span><span class="o">()));</span>
+<span class="n">requestHeader</span><span class="o">.</span><span class="na">setProperties</span><span class="o">(</span><span class="n">MessageDecoder</span><span class="o">.</span><span class="na">messageProperties2String</span><span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getProperties</span><span class="o">()));</span>
 <span class="n">requestHeader</span><span class="o">.</span><span class="na">setReconsumeTimes</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
 <span class="n">requestHeader</span><span class="o">.</span><span class="na">setUnitMode</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">isUnitMode</span><span class="o">());</span>
-<span class="n">requestHeader</span><span class="o">.</span><span class="na">setBatch</span><span class="o">(</span><span class="n">msg</span> <span class="k">instanceof</span> <span class="nc">MessageBatch</span><span class="o">);</span>
-<span class="k">if</span> <span class="o">(</span><span class="n">requestHeader</span><span class="o">.</span><span class="na">getTopic</span><span class="o">().</span><span class="na">startsWith</span><span class="o">(</span><span class="nc">MixAll</span><span class="o">.</span><span class="na">RETRY_GROUP_TOPIC_PREFIX</span><span class="o">))</span> <span class="o">{</span>
-    <span class="nc">String</span> <span class="n">reconsumeTimes</span> <span class="o">=</span> <span class="nc">MessageAccessor</span><span class="o">.</span><span class="na">getReconsumeTime</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+<span class="n">requestHeader</span><span class="o">.</span><span class="na">setBatch</span><span class="o">(</span><span class="n">msg</span> <span class="k">instanceof</span> <span class="n">MessageBatch</span><span class="o">);</span>
+<span class="k">if</span> <span class="o">(</span><span class="n">requestHeader</span><span class="o">.</span><span class="na">getTopic</span><span class="o">().</span><span class="na">startsWith</span><span class="o">(</span><span class="n">MixAll</span><span class="o">.</span><span class="na">RETRY_GROUP_TOPIC_PREFIX</span><span class="o">))</span> <span class="o">{</span>
+    <span class="n">String</span> <span class="n">reconsumeTimes</span> <span class="o">=</span> <span class="n">MessageAccessor</span><span class="o">.</span><span class="na">getReconsumeTime</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
     <span class="k">if</span> <span class="o">(</span><span class="n">reconsumeTimes</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">requestHeader</span><span class="o">.</span><span class="na">setReconsumeTimes</span><span class="o">(</span><span class="nc">Integer</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">reconsumeTimes</span><span class="o">));</span>
-        <span class="nc">MessageAccessor</span><span class="o">.</span><span class="na">clearProperty</span><span class="o">(</span><span class="n">msg</span><span class="o">,</span> <span class="nc">MessageConst</span><span class="o">.</span><span class="na">PROPERTY_RECONSUME_TIME</span><span class="o">);</span>
+        <span class="n">requestHeader</span><span class="o">.</span><span class="na">setReconsumeTimes</span><span class="o">(</span><span class="n">Integer</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">reconsumeTimes</span><span class="o">));</span>
+        <span class="n">MessageAccessor</span><span class="o">.</span><span class="na">clearProperty</span><span class="o">(</span><span class="n">msg</span><span class="o">,</span> <span class="n">MessageConst</span><span class="o">.</span><span class="na">PROPERTY_RECONSUME_TIME</span><span class="o">);</span>
     <span class="o">}</span>
 
-    <span class="nc">String</span> <span class="n">maxReconsumeTimes</span> <span class="o">=</span> <span class="nc">MessageAccessor</span><span class="o">.</span><span class="na">getMaxReconsumeTimes</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+    <span class="n">String</span> <span class="n">maxReconsumeTimes</span> <span class="o">=</span> <span class="n">MessageAccessor</span><span class="o">.</span><span class="na">getMaxReconsumeTimes</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
     <span class="k">if</span> <span class="o">(</span><span class="n">maxReconsumeTimes</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">requestHeader</span><span class="o">.</span><span class="na">setMaxReconsumeTimes</span><span class="o">(</span><span class="nc">Integer</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">maxReconsumeTimes</span><span class="o">));</span>
-        <span class="nc">MessageAccessor</span><span class="o">.</span><span class="na">clearProperty</span><span class="o">(</span><span class="n">msg</span><span class="o">,</span> <span class="nc">MessageConst</span><span class="o">.</span><span class="na">PROPERTY_MAX_RECONSUME_TIMES</span><span class="o">);</span>
+        <span class="n">requestHeader</span><span class="o">.</span><span class="na">setMaxReconsumeTimes</span><span class="o">(</span><span class="n">Integer</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">maxReconsumeTimes</span><span class="o">));</span>
+        <span class="n">MessageAccessor</span><span class="o">.</span><span class="na">clearProperty</span><span class="o">(</span><span class="n">msg</span><span class="o">,</span> <span class="n">MessageConst</span><span class="o">.</span><span class="na">PROPERTY_MAX_RECONSUME_TIMES</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span>
 
-<span class="nc">SendResult</span> <span class="n">sendResult</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+<span class="n">SendResult</span> <span class="n">sendResult</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
 <span class="k">switch</span> <span class="o">(</span><span class="n">communicationMode</span><span class="o">)</span> <span class="o">{</span>
     <span class="k">case</span> <span class="nl">ASYNC:</span>
-        <span class="nc">Message</span> <span class="n">tmpMessage</span> <span class="o">=</span> <span class="n">msg</span><span class="o">;</span>
+        <span class="n">Message</span> <span class="n">tmpMessage</span> <span class="o">=</span> <span class="n">msg</span><span class="o">;</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">msgBodyCompressed</span><span class="o">)</span> <span class="o">{</span>
             <span class="c1">//If msg body was compressed, msgbody should be reset using prevBody.</span>
             <span class="c1">//Clone new message using commpressed message body and recover origin massage.</span>
             <span class="c1">//Fix bug:https://github.com/apache/rocketmq-externals/issues/66</span>
-            <span class="n">tmpMessage</span> <span class="o">=</span> <span class="nc">MessageAccessor</span><span class="o">.</span><span class="na">cloneMessage</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+            <span class="n">tmpMessage</span> <span class="o">=</span> <span class="n">MessageAccessor</span><span class="o">.</span><span class="na">cloneMessage</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
             <span class="n">msg</span><span class="o">.</span><span class="na">setBody</span><span class="o">(</span><span class="n">prevBody</span><span class="o">);</span>
         <span class="o">}</span>
-        <span class="kt">long</span> <span class="n">costTimeAsync</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">beginStartTime</span><span class="o">;</span>
+        <span class="kt">long</span> <span class="n">costTimeAsync</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">beginStartTime</span><span class="o">;</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">timeout</span> <span class="o">&lt;</span> <span class="n">costTimeAsync</span><span class="o">)</span> <span class="o">{</span>
             <span class="k">throw</span> <span class="k">new</span> <span class="nf">RemotingTooMuchRequestException</span><span class="o">(</span><span class="s">"sendKernelImpl call timeout"</span><span class="o">);</span>
         <span class="o">}</span>
@@ -716,7 +716,7 @@
         <span class="k">break</span><span class="o">;</span>
     <span class="k">case</span> <span class="nl">ONEWAY:</span>
     <span class="k">case</span> <span class="nl">SYNC:</span>
-        <span class="kt">long</span> <span class="n">costTimeSync</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">beginStartTime</span><span class="o">;</span>
+        <span class="kt">long</span> <span class="n">costTimeSync</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">beginStartTime</span><span class="o">;</span>
         <span class="c1">//发送超时</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">timeout</span> <span class="o">&lt;</span> <span class="n">costTimeSync</span><span class="o">)</span> <span class="o">{</span>
             <span class="k">throw</span> <span class="k">new</span> <span class="nf">RemotingTooMuchRequestException</span><span class="o">(</span><span class="s">"sendKernelImpl call timeout"</span><span class="o">);</span>
@@ -752,10 +752,10 @@
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//org/apache/rocketmq/remoting/RPCHook</span>
 <span class="kd">public</span> <span class="kd">interface</span> <span class="nc">RPCHook</span> <span class="o">{</span>
-    <span class="kt">void</span> <span class="nf">doBeforeRequest</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span> <span class="n">remoteAddr</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">RemotingCommand</span> <span class="n">request</span><span class="o">);</span>
+    <span class="kt">void</span> <span class="nf">doBeforeRequest</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">remoteAddr</span><span class="o">,</span> <span class="kd">final</span> <span class="n">RemotingCommand</span> <span class="n">request</span><span class="o">);</span>
 
-    <span class="kt">void</span> <span class="nf">doAfterResponse</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span> <span class="n">remoteAddr</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">RemotingCommand</span> <span class="n">request</span><span class="o">,</span>
-        <span class="kd">final</span> <span class="nc">RemotingCommand</span> <span class="n">response</span><span class="o">);</span>
+    <span class="kt">void</span> <span class="nf">doAfterResponse</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">remoteAddr</span><span class="o">,</span> <span class="kd">final</span> <span class="n">RemotingCommand</span> <span class="n">request</span><span class="o">,</span>
+        <span class="kd">final</span> <span class="n">RemotingCommand</span> <span class="n">response</span><span class="o">);</span>
 <span class="o">}</span>
 </code></pre></div></div>
 
@@ -763,13 +763,13 @@
 <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">rpcHook</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
     <span class="k">this</span><span class="o">.</span><span class="na">rpcHook</span><span class="o">.</span><span class="na">doBeforeRequest</span><span class="o">(</span><span class="n">addr</span><span class="o">,</span> <span class="n">request</span><span class="o">);</span>
 <span class="o">}</span>
-<span class="kt">long</span> <span class="n">costTime</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">beginStartTime</span><span class="o">;</span>
+<span class="kt">long</span> <span class="n">costTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">beginStartTime</span><span class="o">;</span>
 <span class="k">if</span> <span class="o">(</span><span class="n">timeoutMillis</span> <span class="o">&lt;</span> <span class="n">costTime</span><span class="o">)</span> <span class="o">{</span>
     <span class="k">throw</span> <span class="k">new</span> <span class="nf">RemotingTimeoutException</span><span class="o">(</span><span class="s">"invokeSync call timeout"</span><span class="o">);</span>
 <span class="o">}</span>
-<span class="nc">RemotingCommand</span> <span class="n">response</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">invokeSyncImpl</span><span class="o">(</span><span class="n">channel</span><span class="o">,</span> <span class="n">request</span><span class="o">,</span> <span class="n">timeoutMillis</span> <span class="o">-</span> <span class="n">costTime</span><span class="o">);</span>
+<span class="n">RemotingCommand</span> <span class="n">response</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">invokeSyncImpl</span><span class="o">(</span><span class="n">channel</span><span class="o">,</span> <span class="n">request</span><span class="o">,</span> <span class="n">timeoutMillis</span> <span class="o">-</span> <span class="n">costTime</span><span class="o">);</span>
 <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">rpcHook</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">rpcHook</span><span class="o">.</span><span class="na">doAfterResponse</span><span class="o">(</span><span class="nc">RemotingHelper</span><span class="o">.</span><span class="na">parseChannelRemoteAddr</span><span class="o">(</span><span class="n">channel</span><span class="o">),</span> <span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">rpcHook</span><span class="o">.</span><span class="na">doAfterResponse</span><span class="o">(</span><span class="n">RemotingHelper</span><span class="o">.</span><span class="na">parseChannelRemoteAddr</span><span class="o">(</span><span class="n">channel</span><span class="o">),</span> <span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
 <span class="o">}</span>
 </code></pre></div></div>
 
@@ -779,18 +779,18 @@
 
 <p>如果producer开启了setSendLatencyFaultEnable，则启用了延迟容错的功能。其核心主要在<strong>org.apache.rocketmq.client.latency</strong>包下，其中<strong>LatencyFaultToleranceImpl</strong>类中维护了一个faultItemTable，FaultItem类是这样的</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">FaultItem</span> <span class="kd">implements</span> <span class="nc">Comparable</span><span class="o">&lt;</span><span class="nc">FaultItem</span><span class="o">&gt;</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">FaultItem</span> <span class="kd">implements</span> <span class="n">Comparable</span><span class="o">&lt;</span><span class="n">FaultItem</span><span class="o">&gt;</span> <span class="o">{</span>
     	<span class="c1">//name指broker名称</span>
-        <span class="kd">private</span> <span class="kd">final</span> <span class="nc">String</span> <span class="n">name</span><span class="o">;</span>
+        <span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
     	<span class="c1">//该broker当前的延迟</span>
         <span class="kd">private</span> <span class="kd">volatile</span> <span class="kt">long</span> <span class="n">currentLatency</span><span class="o">;</span>
     	<span class="c1">//该broker可以调用的时间。其实可以结合下面的isAvailable()来看，如果当前时间大于startTimestamp，则该broker"可用"，其实这里的可用并非真正的可用，而是比如过了10分钟，我可以去试试这个broker现在是不是可用</span>
         <span class="kd">private</span> <span class="kd">volatile</span> <span class="kt">long</span> <span class="n">startTimestamp</span><span class="o">;</span>
     	<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isAvailable</span><span class="o">()</span> <span class="o">{</span>
-            <span class="k">return</span> <span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">startTimestamp</span><span class="o">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="o">;</span>
+            <span class="k">return</span> <span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">startTimestamp</span><span class="o">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="o">;</span>
         <span class="o">}</span>
         <span class="nd">@Override</span>
-        <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compareTo</span><span class="o">(</span><span class="kd">final</span> <span class="nc">FaultItem</span> <span class="n">other</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compareTo</span><span class="o">(</span><span class="kd">final</span> <span class="n">FaultItem</span> <span class="n">other</span><span class="o">)</span> <span class="o">{</span>
             <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">isAvailable</span><span class="o">()</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="na">isAvailable</span><span class="o">())</span> <span class="o">{</span>
                 <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">isAvailable</span><span class="o">())</span>
                     <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
@@ -828,7 +828,7 @@
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//org/apache/rocketmq/client/latency/MQFaultStrategy.java</span>
 <span class="kd">private</span> <span class="kt">long</span><span class="o">[]</span> <span class="n">latencyMax</span> <span class="o">=</span> <span class="o">{</span><span class="mi">50L</span><span class="o">,</span> <span class="mi">100L</span><span class="o">,</span> <span class="mi">550L</span><span class="o">,</span> <span class="mi">1000L</span><span class="o">,</span> <span class="mi">2000L</span><span class="o">,</span> <span class="mi">3000L</span><span class="o">,</span> <span class="mi">15000L</span><span class="o">};</span>
 <span class="kd">private</span> <span class="kt">long</span><span class="o">[]</span> <span class="n">notAvailableDuration</span> <span class="o">=</span> <span class="o">{</span><span class="mi">0L</span><span class="o">,</span> <span class="mi">0L</span><span class="o">,</span> <span class="mi">30000L</span><span class="o">,</span> <span class="mi">60000L</span><span class="o">,</span> <span class="mi">120000L</span><span class="o">,</span> <span class="mi">180000L</span><span class="o">,</span> <span class="mi">600000L</span><span class="o">};</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">updateFaultItem</span><span class="o">(</span><span class="kd">final</span> <span class="nc">String</span> <span class="n">brokerName</span><span class="o">,</span> <span class="kd">final</span> <span class="kt">long</span> <span class="n">currentLatency</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">isolation</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">updateFaultItem</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">brokerName</span><span class="o">,</span> <span class="kd">final</span> <span class="kt">long</span> <span class="n">currentLatency</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">isolation</span><span class="o">)</span> <span class="o">{</span>
     <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">sendLatencyFaultEnable</span><span class="o">)</span> <span class="o">{</span>
         <span class="c1">//currentLatency 15S以上-600000L......</span>
         <span class="kt">long</span> <span class="n">duration</span> <span class="o">=</span> <span class="n">computeNotAvailableDuration</span><span class="o">(</span><span class="n">isolation</span> <span class="o">?</span> <span class="mi">30000</span> <span class="o">:</span> <span class="n">currentLatency</span><span class="o">);</span>
@@ -851,17 +851,17 @@
 
 <p>现在在回过头来看sendDefaultImpl中的selectOneMessageQueue，其实就好理解了</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="nc">MessageQueue</span> <span class="nf">selectOneMessageQueue</span><span class="o">(</span><span class="kd">final</span> <span class="nc">TopicPublishInfo</span> <span class="n">tpInfo</span><span class="o">,</span> <span class="kd">final</span> <span class="nc">String</span> <span class="n">lastBrokerName</span><span class="o">)</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="n">MessageQueue</span> <span class="nf">selectOneMessageQueue</span><span class="o">(</span><span class="kd">final</span> <span class="n">TopicPublishInfo</span> <span class="n">tpInfo</span><span class="o">,</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">lastBrokerName</span><span class="o">)</span> <span class="o">{</span>
     <span class="c1">//延迟容错</span>
     <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">sendLatencyFaultEnable</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">try</span> <span class="o">{</span>
             <span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="n">tpInfo</span><span class="o">.</span><span class="na">getSendWhichQueue</span><span class="o">().</span><span class="na">getAndIncrement</span><span class="o">();</span>
             <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">tpInfo</span><span class="o">.</span><span class="na">getMessageQueueList</span><span class="o">().</span><span class="na">size</span><span class="o">();</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-                <span class="kt">int</span> <span class="n">pos</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="n">index</span><span class="o">++)</span> <span class="o">%</span> <span class="n">tpInfo</span><span class="o">.</span><span class="na">getMessageQueueList</span><span class="o">().</span><span class="na">size</span><span class="o">();</span>
+                <span class="kt">int</span> <span class="n">pos</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="n">index</span><span class="o">++)</span> <span class="o">%</span> <span class="n">tpInfo</span><span class="o">.</span><span class="na">getMessageQueueList</span><span class="o">().</span><span class="na">size</span><span class="o">();</span>
                 <span class="k">if</span> <span class="o">(</span><span class="n">pos</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span>
                     <span class="n">pos</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
 
-                <span class="nc">MessageQueue</span> <span class="n">mq</span> <span class="o">=</span> <span class="n">tpInfo</span><span class="o">.</span><span class="na">getMessageQueueList</span><span class="o">().</span><span class="na">get</span><span class="o">(</span><span class="n">pos</span><span class="o">);</span>
+                <span class="n">MessageQueue</span> <span class="n">mq</span> <span class="o">=</span> <span class="n">tpInfo</span><span class="o">.</span><span class="na">getMessageQueueList</span><span class="o">().</span><span class="na">get</span><span class="o">(</span><span class="n">pos</span><span class="o">);</span>
                 <span class="c1">//判断该队列是否可用</span>
                 <span class="k">if</span> <span class="o">(</span><span class="n">latencyFaultTolerance</span><span class="o">.</span><span class="na">isAvailable</span><span class="o">(</span><span class="n">mq</span><span class="o">.</span><span class="na">getBrokerName</span><span class="o">()))</span> <span class="o">{</span>
                     <span class="k">if</span> <span class="o">(</span><span class="kc">null</span> <span class="o">==</span> <span class="n">lastBrokerName</span> <span class="o">||</span> <span class="n">mq</span><span class="o">.</span><span class="na">getBrokerName</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">lastBrokerName</span><span class="o">))</span>
@@ -869,11 +869,11 @@
                 <span class="o">}</span>
             <span class="o">}</span>
 
-            <span class="kd">final</span> <span class="nc">String</span> <span class="n">notBestBroker</span> <span class="o">=</span> <span class="n">latencyFaultTolerance</span><span class="o">.</span><span class="na">pickOneAtLeast</span><span class="o">();</span>
+            <span class="kd">final</span> <span class="n">String</span> <span class="n">notBestBroker</span> <span class="o">=</span> <span class="n">latencyFaultTolerance</span><span class="o">.</span><span class="na">pickOneAtLeast</span><span class="o">();</span>
             <span class="c1">//获取该broker的写队列数量</span>
             <span class="kt">int</span> <span class="n">writeQueueNums</span> <span class="o">=</span> <span class="n">tpInfo</span><span class="o">.</span><span class="na">getQueueIdByBroker</span><span class="o">(</span><span class="n">notBestBroker</span><span class="o">);</span>
             <span class="k">if</span> <span class="o">(</span><span class="n">writeQueueNums</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
-                <span class="kd">final</span> <span class="nc">MessageQueue</span> <span class="n">mq</span> <span class="o">=</span> <span class="n">tpInfo</span><span class="o">.</span><span class="na">selectOneMessageQueue</span><span class="o">();</span>
+                <span class="kd">final</span> <span class="n">MessageQueue</span> <span class="n">mq</span> <span class="o">=</span> <span class="n">tpInfo</span><span class="o">.</span><span class="na">selectOneMessageQueue</span><span class="o">();</span>
                 <span class="k">if</span> <span class="o">(</span><span class="n">notBestBroker</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
                     <span class="n">mq</span><span class="o">.</span><span class="na">setBrokerName</span><span class="o">(</span><span class="n">notBestBroker</span><span class="o">);</span>
                     <span class="n">mq</span><span class="o">.</span><span class="na">setQueueId</span><span class="o">(</span><span class="n">tpInfo</span><span class="o">.</span><span class="na">getSendWhichQueue</span><span class="o">().</span><span class="na">getAndIncrement</span><span class="o">()</span> <span class="o">%</span> <span class="n">writeQueueNums</span><span class="o">);</span>
@@ -882,7 +882,7 @@
             <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
                 <span class="n">latencyFaultTolerance</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">notBestBroker</span><span class="o">);</span>
             <span class="o">}</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
             <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"Error occurred when selecting message queue"</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
         <span class="o">}</span>
 
@@ -899,20 +899,20 @@
 <p>如果开启了延迟容错，如果broker被认为“不可用”，则会<strong>latencyFaultTolerance.pickOneAtLeast();</strong>这其中的算法也贴出来好了。</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Override</span>
-<span class="kd">public</span> <span class="nc">String</span> <span class="nf">pickOneAtLeast</span><span class="o">()</span> <span class="o">{</span>
-    <span class="kd">final</span> <span class="nc">Enumeration</span><span class="o">&lt;</span><span class="nc">FaultItem</span><span class="o">&gt;</span> <span class="n">elements</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">faultItemTable</span><span class="o">.</span><span class="na">elements</span><span class="o">();</span>
-    <span class="nc">List</span><span class="o">&lt;</span><span class="nc">FaultItem</span><span class="o">&gt;</span> <span class="n">tmpList</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LinkedList</span><span class="o">&lt;</span><span class="nc">FaultItem</span><span class="o">&gt;();</span>
+<span class="kd">public</span> <span class="n">String</span> <span class="nf">pickOneAtLeast</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">final</span> <span class="n">Enumeration</span><span class="o">&lt;</span><span class="n">FaultItem</span><span class="o">&gt;</span> <span class="n">elements</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">faultItemTable</span><span class="o">.</span><span class="na">elements</span><span class="o">();</span>
+    <span class="n">List</span><span class="o">&lt;</span><span class="n">FaultItem</span><span class="o">&gt;</span> <span class="n">tmpList</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LinkedList</span><span class="o">&lt;</span><span class="n">FaultItem</span><span class="o">&gt;();</span>
     <span class="k">while</span> <span class="o">(</span><span class="n">elements</span><span class="o">.</span><span class="na">hasMoreElements</span><span class="o">())</span> <span class="o">{</span>
-        <span class="kd">final</span> <span class="nc">FaultItem</span> <span class="n">faultItem</span> <span class="o">=</span> <span class="n">elements</span><span class="o">.</span><span class="na">nextElement</span><span class="o">();</span>
+        <span class="kd">final</span> <span class="n">FaultItem</span> <span class="n">faultItem</span> <span class="o">=</span> <span class="n">elements</span><span class="o">.</span><span class="na">nextElement</span><span class="o">();</span>
         <span class="n">tmpList</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">faultItem</span><span class="o">);</span>
     <span class="o">}</span>
 
     <span class="k">if</span> <span class="o">(!</span><span class="n">tmpList</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
         <span class="c1">//洗牌</span>
-        <span class="nc">Collections</span><span class="o">.</span><span class="na">shuffle</span><span class="o">(</span><span class="n">tmpList</span><span class="o">);</span>
+        <span class="n">Collections</span><span class="o">.</span><span class="na">shuffle</span><span class="o">(</span><span class="n">tmpList</span><span class="o">);</span>
 
         <span class="c1">//排序</span>
-        <span class="nc">Collections</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">tmpList</span><span class="o">);</span>
+        <span class="n">Collections</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">tmpList</span><span class="o">);</span>
 
         <span class="kd">final</span> <span class="kt">int</span> <span class="n">half</span> <span class="o">=</span> <span class="n">tmpList</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">/</span> <span class="mi">2</span><span class="o">;</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">half</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
@@ -979,7 +979,7 @@
                     <div class="tags">
         				
                             
-                				<a href="/tags/#杂记" title="杂记" rel="8">
+                				<a href="/tags/#杂记" title="杂记" rel="7">
                                     杂记
                                 </a>
                             

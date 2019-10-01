@@ -12,7 +12,7 @@
 
     <title>fastjson学习 - New Boy</title>
 
-    <link rel="canonical" href="http://0.0.0.0:4000/2018/06/09/fastjson%E5%AD%A6%E4%B9%A0/">
+    <link rel="canonical" href="http://localhost:4000/2018/06/09/fastjson%E5%AD%A6%E4%B9%A0/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -187,53 +187,53 @@
 <p>先放上简单json的测试数据：</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//javabean,省略构造方法，set，get等</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Simple</span> <span class="kd">implements</span> <span class="nc">Serializable</span> <span class="o">{</span>
-    <span class="kd">private</span> <span class="nc">String</span> <span class="n">name</span><span class="o">;</span>
-    <span class="kd">private</span> <span class="nc">String</span> <span class="n">sex</span><span class="o">;</span>
-    <span class="kd">private</span> <span class="nc">Integer</span> <span class="n">age</span><span class="o">;</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Simple</span> <span class="kd">implements</span> <span class="n">Serializable</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">sex</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">Integer</span> <span class="n">age</span><span class="o">;</span>
 <span class="o">}</span>
 <span class="kd">static</span> <span class="o">{</span>
-    <span class="n">simpleBean</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Simple</span><span class="o">();</span>
+    <span class="n">simpleBean</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Simple</span><span class="o">();</span>
     <span class="n">simpleBean</span><span class="o">.</span><span class="na">setAge</span><span class="o">(</span><span class="mi">15</span><span class="o">);</span>
     <span class="n">simpleBean</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">"fff"</span><span class="o">);</span>
     <span class="n">simpleBean</span><span class="o">.</span><span class="na">setSex</span><span class="o">(</span><span class="s">"male"</span><span class="o">);</span>
 <span class="o">}</span>
 <span class="c1">//json串</span>
-<span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="n">simpleJson</span> <span class="o">=</span> <span class="s">"{\"name\": \"ttt\",\"age\": 12,\"sex\": \"male\"}"</span><span class="o">;</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span> <span class="n">simpleJson</span> <span class="o">=</span> <span class="s">"{\"name\": \"ttt\",\"age\": 12,\"sex\": \"male\"}"</span><span class="o">;</span>
 </code></pre></div></div>
 
 <p>JSON &lt;==&gt; json串</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//JSON=&gt;json</span>
-<span class="nc">JSONObject</span> <span class="n">jsonObject</span> <span class="o">=</span> <span class="nc">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">simpleJson</span><span class="o">);</span>
-<span class="nc">String</span> <span class="n">json</span> <span class="o">=</span> <span class="n">jsonObject</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">();</span>
-<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">json</span><span class="o">);</span><span class="c1">//{"sex":"male","name":"ttt","age":12}</span>
+<span class="n">JSONObject</span> <span class="n">jsonObject</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">simpleJson</span><span class="o">);</span>
+<span class="n">String</span> <span class="n">json</span> <span class="o">=</span> <span class="n">jsonObject</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">();</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">json</span><span class="o">);</span><span class="c1">//{"sex":"male","name":"ttt","age":12}</span>
 <span class="c1">//JSON&lt;=json</span>
-<span class="nc">JSONObject</span> <span class="n">jsonObject</span> <span class="o">=</span> <span class="nc">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">simpleJson</span><span class="o">);</span>
-<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">jsonObject</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"sex"</span><span class="o">));</span><span class="c1">//male</span>
+<span class="n">JSONObject</span> <span class="n">jsonObject</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">simpleJson</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">jsonObject</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"sex"</span><span class="o">));</span><span class="c1">//male</span>
 </code></pre></div></div>
 
 <p>JSON &lt;==&gt; javabean</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//JSON=&gt;javabean</span>
-<span class="nc">JSONObject</span> <span class="n">jsonObject2</span> <span class="o">=</span> <span class="nc">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">complexJson</span><span class="o">);</span>
-<span class="nc">Simple</span> <span class="n">simple1</span> <span class="o">=</span> <span class="nc">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">jsonObject1</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(),</span> <span class="k">new</span> <span class="nc">TypeReference</span><span class="o">&lt;</span><span class="nc">Simple</span><span class="o">&gt;()</span> <span class="o">{});</span>
-<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">simple1</span><span class="o">);</span><span class="c1">//Simple{name='ttt', sex='male', age=12}</span>
+<span class="n">JSONObject</span> <span class="n">jsonObject2</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">complexJson</span><span class="o">);</span>
+<span class="n">Simple</span> <span class="n">simple1</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">jsonObject1</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(),</span> <span class="k">new</span> <span class="n">TypeReference</span><span class="o">&lt;</span><span class="n">Simple</span><span class="o">&gt;()</span> <span class="o">{});</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">simple1</span><span class="o">);</span><span class="c1">//Simple{name='ttt', sex='male', age=12}</span>
 <span class="c1">//JSON&lt;=javabean</span>
-<span class="nc">JSONObject</span> <span class="n">jsonObject</span> <span class="o">=</span> <span class="nc">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="nc">JSONObject</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(</span><span class="n">simpleBean</span><span class="o">));</span>
-<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">jsonObject</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"name"</span><span class="o">));</span>
+<span class="n">JSONObject</span> <span class="n">jsonObject</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">JSONObject</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(</span><span class="n">simpleBean</span><span class="o">));</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">jsonObject</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"name"</span><span class="o">));</span>
 </code></pre></div></div>
 
 <p>Json串 &lt;==&gt; javabean</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//json串=&gt;javabean</span>
-<span class="nc">Simple</span> <span class="n">simple</span> <span class="o">=</span> <span class="nc">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">simpleJson</span><span class="o">,</span> <span class="nc">Simple</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">simple</span><span class="o">);</span><span class="c1">//Simple{name='ttt', sex='male', age=12}</span>
-<span class="nc">Simple</span> <span class="n">simple1</span> <span class="o">=</span> <span class="nc">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">simpleJson</span><span class="o">,</span> <span class="k">new</span> <span class="nc">TypeReference</span><span class="o">&lt;</span><span class="nc">Simple</span><span class="o">&gt;()</span> <span class="o">{});</span>
-<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">simple1</span><span class="o">);</span><span class="c1">//Simple{name='ttt', sex='male', age=12}</span>
+<span class="n">Simple</span> <span class="n">simple</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">simpleJson</span><span class="o">,</span> <span class="n">Simple</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">simple</span><span class="o">);</span><span class="c1">//Simple{name='ttt', sex='male', age=12}</span>
+<span class="n">Simple</span> <span class="n">simple1</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">simpleJson</span><span class="o">,</span> <span class="k">new</span> <span class="n">TypeReference</span><span class="o">&lt;</span><span class="n">Simple</span><span class="o">&gt;()</span> <span class="o">{});</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">simple1</span><span class="o">);</span><span class="c1">//Simple{name='ttt', sex='male', age=12}</span>
 <span class="c1">//json串&lt;=javabean</span>
-<span class="nc">String</span> <span class="n">jsonString</span> <span class="o">=</span> <span class="no">JSON</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(</span><span class="n">simpleBean</span><span class="o">);</span>
-<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">jsonString</span><span class="o">);</span><span class="c1">//{"age":15,"name":"fff","sex":"male"}</span>
+<span class="n">String</span> <span class="n">jsonString</span> <span class="o">=</span> <span class="n">JSON</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(</span><span class="n">simpleBean</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">jsonString</span><span class="o">);</span><span class="c1">//{"age":15,"name":"fff","sex":"male"}</span>
 </code></pre></div></div>
 
 <h3 id="复杂json">复杂json</h3>
@@ -242,63 +242,63 @@
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//javabean</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Complex</span> <span class="o">{</span>
-    <span class="kd">private</span> <span class="nc">Integer</span> <span class="n">index</span><span class="o">;</span>
-    <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Simple</span><span class="o">&gt;</span> <span class="n">simples</span><span class="o">;</span>
-    <span class="kd">private</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">grades</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">Integer</span> <span class="n">index</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Simple</span><span class="o">&gt;</span> <span class="n">simples</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">grades</span><span class="o">;</span>
 <span class="o">}</span>
 <span class="kd">static</span> <span class="o">{</span>
-    <span class="n">complexBean</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Complex</span><span class="o">();</span>
-    <span class="n">complexBean</span><span class="o">.</span><span class="na">setGrades</span><span class="o">(</span><span class="nc">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">6</span><span class="o">));</span>
+    <span class="n">complexBean</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Complex</span><span class="o">();</span>
+    <span class="n">complexBean</span><span class="o">.</span><span class="na">setGrades</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">6</span><span class="o">));</span>
     <span class="n">complexBean</span><span class="o">.</span><span class="na">setIndex</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
-    <span class="n">complexBean</span><span class="o">.</span><span class="na">setSimples</span><span class="o">(</span><span class="nc">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="k">new</span> <span class="nc">Simple</span><span class="o">(</span><span class="s">"ggg"</span><span class="o">,</span> <span class="s">"male"</span><span class="o">,</span> <span class="mi">17</span><span class="o">)</span>
-                                         <span class="o">,</span> <span class="k">new</span> <span class="nc">Simple</span><span class="o">(</span><span class="s">"ttt"</span><span class="o">,</span> <span class="s">"male"</span><span class="o">,</span> <span class="mi">18</span><span class="o">)</span>
-                                         <span class="o">,</span> <span class="k">new</span> <span class="nc">Simple</span><span class="o">(</span><span class="s">"yyy"</span><span class="o">,</span> <span class="s">"male"</span><span class="o">,</span> <span class="mi">19</span><span class="o">)</span>
+    <span class="n">complexBean</span><span class="o">.</span><span class="na">setSimples</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="k">new</span> <span class="n">Simple</span><span class="o">(</span><span class="s">"ggg"</span><span class="o">,</span> <span class="s">"male"</span><span class="o">,</span> <span class="mi">17</span><span class="o">)</span>
+                                         <span class="o">,</span> <span class="k">new</span> <span class="n">Simple</span><span class="o">(</span><span class="s">"ttt"</span><span class="o">,</span> <span class="s">"male"</span><span class="o">,</span> <span class="mi">18</span><span class="o">)</span>
+                                         <span class="o">,</span> <span class="k">new</span> <span class="n">Simple</span><span class="o">(</span><span class="s">"yyy"</span><span class="o">,</span> <span class="s">"male"</span><span class="o">,</span> <span class="mi">19</span><span class="o">)</span>
                                         <span class="o">));</span>
 <span class="o">}</span>
 <span class="c1">//json串</span>
-<span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="n">complexJson</span> <span class="o">=</span> <span class="s">"{\"simples\":[{\"name\": \"ttt\",\"age\": 12,\"sex\": \"male\"},{\"name\": \"fff\",\"age\": 13,\"sex\": \"female\"}],\"index\":5,\"grades\":[12,32,43,51]}"</span><span class="o">;</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span> <span class="n">complexJson</span> <span class="o">=</span> <span class="s">"{\"simples\":[{\"name\": \"ttt\",\"age\": 12,\"sex\": \"male\"},{\"name\": \"fff\",\"age\": 13,\"sex\": \"female\"}],\"index\":5,\"grades\":[12,32,43,51]}"</span><span class="o">;</span>
 
 </code></pre></div></div>
 
 <p>JSON &lt;==&gt; json串</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//JSON=&gt;json</span>
-<span class="nc">JSONObject</span> <span class="n">jsonObject</span> <span class="o">=</span> <span class="nc">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">complexJson</span><span class="o">);</span>
-<span class="nc">String</span> <span class="n">json</span> <span class="o">=</span> <span class="n">jsonObject</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">();</span>
-<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">json</span><span class="o">);</span>
+<span class="n">JSONObject</span> <span class="n">jsonObject</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">complexJson</span><span class="o">);</span>
+<span class="n">String</span> <span class="n">json</span> <span class="o">=</span> <span class="n">jsonObject</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">();</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">json</span><span class="o">);</span>
 <span class="c1">//JSON&lt;=json</span>
-<span class="nc">JSONObject</span> <span class="n">jsonObject</span> <span class="o">=</span> <span class="nc">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">complexJson</span><span class="o">);</span>
-<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">jsonObject</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"grades"</span><span class="o">));</span><span class="c1">//[12,32,43,51]</span>
-<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">jsonObject</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span><span class="c1">//{"index":5,"grades":[12,32,43,51],"simples":[{"sex":"male","name":"ttt","age":12},{"sex":"female","name":"fff","age":13}]}</span>
+<span class="n">JSONObject</span> <span class="n">jsonObject</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">complexJson</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">jsonObject</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"grades"</span><span class="o">));</span><span class="c1">//[12,32,43,51]</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">jsonObject</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span><span class="c1">//{"index":5,"grades":[12,32,43,51],"simples":[{"sex":"male","name":"ttt","age":12},{"sex":"female","name":"fff","age":13}]}</span>
 
 <span class="k">if</span> <span class="o">(</span><span class="n">jsonObject</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"simples"</span><span class="o">)</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-  <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="nc">JSONArray</span><span class="o">.</span><span class="na">parseArray</span><span class="o">(</span><span class="n">jsonObject</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"simples"</span><span class="o">).</span><span class="na">toString</span><span class="o">()).</span><span class="na">get</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">toString</span><span class="o">()).</span><span class="na">get</span><span class="o">(</span><span class="s">"sex"</span><span class="o">));</span><span class="c1">//female</span>
+  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">JSONArray</span><span class="o">.</span><span class="na">parseArray</span><span class="o">(</span><span class="n">jsonObject</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"simples"</span><span class="o">).</span><span class="na">toString</span><span class="o">()).</span><span class="na">get</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">toString</span><span class="o">()).</span><span class="na">get</span><span class="o">(</span><span class="s">"sex"</span><span class="o">));</span><span class="c1">//female</span>
 <span class="o">}</span>
 </code></pre></div></div>
 
 <p>JSON &lt;==&gt; javabean</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//JSON=&gt;javabean</span>
-<span class="nc">JSONObject</span> <span class="n">jsonObject2</span> <span class="o">=</span> <span class="nc">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">complexJson</span><span class="o">);</span>
-<span class="nc">Complex</span> <span class="n">complex1</span> <span class="o">=</span> <span class="nc">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">jsonObject2</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(),</span> <span class="k">new</span> <span class="nc">TypeReference</span><span class="o">&lt;</span><span class="nc">Complex</span><span class="o">&gt;()</span> <span class="o">{});</span>
-<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">complex1</span><span class="o">);</span><span class="c1">//Complex{index=5, simples=[Simple{name='ttt', sex='male', age=12}, Simple{name='fff', sex='female', age=13}], grades=[12, 32, 43, 51]}</span>
+<span class="n">JSONObject</span> <span class="n">jsonObject2</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">complexJson</span><span class="o">);</span>
+<span class="n">Complex</span> <span class="n">complex1</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">jsonObject2</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(),</span> <span class="k">new</span> <span class="n">TypeReference</span><span class="o">&lt;</span><span class="n">Complex</span><span class="o">&gt;()</span> <span class="o">{});</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">complex1</span><span class="o">);</span><span class="c1">//Complex{index=5, simples=[Simple{name='ttt', sex='male', age=12}, Simple{name='fff', sex='female', age=13}], grades=[12, 32, 43, 51]}</span>
 <span class="c1">//JSON&lt;=javabean</span>
-<span class="nc">JSONObject</span> <span class="n">jsonObject</span> <span class="o">=</span> <span class="nc">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="nc">JSONObject</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(</span><span class="n">complexBean</span><span class="o">));</span>
-<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">jsonObject</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"grades"</span><span class="o">));</span><span class="c1">//[1,2,4,5,6]</span>
-<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">jsonObject</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"simples"</span><span class="o">));</span><span class="c1">//[{"sex":"male","name":"ggg","age":17},{"sex":"male","name":"ttt","age":18},{"sex":"male","name":"yyy","age":19}]</span>
+<span class="n">JSONObject</span> <span class="n">jsonObject</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">JSONObject</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(</span><span class="n">complexBean</span><span class="o">));</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">jsonObject</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"grades"</span><span class="o">));</span><span class="c1">//[1,2,4,5,6]</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">jsonObject</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"simples"</span><span class="o">));</span><span class="c1">//[{"sex":"male","name":"ggg","age":17},{"sex":"male","name":"ttt","age":18},{"sex":"male","name":"yyy","age":19}]</span>
 </code></pre></div></div>
 
 <p>Json串 &lt;==&gt; javabean</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//json串=&gt;javabean，有两种方式</span>
-<span class="nc">Complex</span> <span class="n">complex</span> <span class="o">=</span> <span class="nc">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">complexJson</span><span class="o">,</span> <span class="nc">Complex</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">complex</span><span class="o">);</span><span class="c1">//Complex{index=5, simples=[Simple{name='ttt', sex='male', age=12}, Simple{name='fff', sex='female', age=13}], grades=[12, 32, 43, 51]}</span>
-<span class="nc">Complex</span> <span class="n">complex1</span> <span class="o">=</span> <span class="nc">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">complexJson</span><span class="o">,</span> <span class="k">new</span> <span class="nc">TypeReference</span><span class="o">&lt;</span><span class="nc">Complex</span><span class="o">&gt;()</span> <span class="o">{</span>
+<span class="n">Complex</span> <span class="n">complex</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">complexJson</span><span class="o">,</span> <span class="n">Complex</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">complex</span><span class="o">);</span><span class="c1">//Complex{index=5, simples=[Simple{name='ttt', sex='male', age=12}, Simple{name='fff', sex='female', age=13}], grades=[12, 32, 43, 51]}</span>
+<span class="n">Complex</span> <span class="n">complex1</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">parseObject</span><span class="o">(</span><span class="n">complexJson</span><span class="o">,</span> <span class="k">new</span> <span class="n">TypeReference</span><span class="o">&lt;</span><span class="n">Complex</span><span class="o">&gt;()</span> <span class="o">{</span>
 <span class="o">});</span>
-<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">complex1</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">complex1</span><span class="o">);</span>
 <span class="c1">//json串&lt;=javabean</span>
-<span class="nc">String</span> <span class="n">jsonString1</span> <span class="o">=</span> <span class="nc">JSONObject</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(</span><span class="n">complexBean</span><span class="o">);</span>
-<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">jsonString1</span><span class="o">);</span><span class="c1">//{"grades":[1,2,4,5,6],"index":1,"simples":[{"age":17,"name":"ggg","sex":"male"},{"age":18,"name":"ttt","sex":"male"},{"age":19,"name":"yyy","sex":"male"}]}</span>
+<span class="n">String</span> <span class="n">jsonString1</span> <span class="o">=</span> <span class="n">JSONObject</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(</span><span class="n">complexBean</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">jsonString1</span><span class="o">);</span><span class="c1">//{"grades":[1,2,4,5,6],"index":1,"simples":[{"age":17,"name":"ggg","sex":"male"},{"age":18,"name":"ttt","sex":"male"},{"age":19,"name":"yyy","sex":"male"}]}</span>
 </code></pre></div></div>
 
 <h3 id="json数组">json数组</h3>
@@ -307,11 +307,11 @@
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//javabean</span>
 <span class="kd">static</span> <span class="o">{</span>
-    <span class="nc">Simple</span> <span class="n">simple0</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Simple</span><span class="o">();</span>
+    <span class="n">Simple</span> <span class="n">simple0</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Simple</span><span class="o">();</span>
     <span class="n">simple0</span><span class="o">.</span><span class="na">setAge</span><span class="o">(</span><span class="mi">15</span><span class="o">);</span>
     <span class="n">simple0</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">"fff"</span><span class="o">);</span>
     <span class="n">simple0</span><span class="o">.</span><span class="na">setSex</span><span class="o">(</span><span class="s">"male"</span><span class="o">);</span>
-    <span class="nc">Simple</span> <span class="n">simple1</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Simple</span><span class="o">();</span>
+    <span class="n">Simple</span> <span class="n">simple1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Simple</span><span class="o">();</span>
     <span class="n">simple1</span><span class="o">.</span><span class="na">setSex</span><span class="o">(</span><span class="s">"female"</span><span class="o">);</span>
     <span class="n">simple1</span><span class="o">.</span><span class="na">setAge</span><span class="o">(</span><span class="mi">123</span><span class="o">);</span>
     <span class="n">simple1</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">"asdas"</span><span class="o">);</span>
@@ -319,51 +319,51 @@
     <span class="n">arrayBean</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">simple1</span><span class="o">);</span>
 <span class="o">}</span>
 <span class="c1">//json串</span>
-<span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="n">arrayJson</span> <span class="o">=</span> <span class="s">"[{\"name\": \"ttt\",\"age\": 12,\"sex\": \"male\"},{\"name\": \"fff\",\"age\": 13,\"sex\": \"female\"}]"</span><span class="o">;</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span> <span class="n">arrayJson</span> <span class="o">=</span> <span class="s">"[{\"name\": \"ttt\",\"age\": 12,\"sex\": \"male\"},{\"name\": \"fff\",\"age\": 13,\"sex\": \"female\"}]"</span><span class="o">;</span>
 
 </code></pre></div></div>
 
 <p>JSON &lt;==&gt; json串</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//json==&gt;JSON</span>
-<span class="nc">JSONArray</span> <span class="n">array</span> <span class="o">=</span> <span class="nc">JSONArray</span><span class="o">.</span><span class="na">parseArray</span><span class="o">(</span><span class="n">arrayJson</span><span class="o">);</span>
-<span class="nc">JSONObject</span> <span class="n">object</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
-<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">object</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"sex"</span><span class="o">));</span><span class="c1">//female</span>
+<span class="n">JSONArray</span> <span class="n">array</span> <span class="o">=</span> <span class="n">JSONArray</span><span class="o">.</span><span class="na">parseArray</span><span class="o">(</span><span class="n">arrayJson</span><span class="o">);</span>
+<span class="n">JSONObject</span> <span class="n">object</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">object</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"sex"</span><span class="o">));</span><span class="c1">//female</span>
 <span class="c1">//json&lt;==JSON</span>
-<span class="nc">String</span> <span class="n">json</span> <span class="o">=</span> <span class="nc">JSONArray</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(</span><span class="n">array</span><span class="o">);</span>
-<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">json</span><span class="o">);</span><span class="c1">//[{"sex":"male","name":"ttt","age":12},{"sex":"female","name":"fff","age":13}]</span>
+<span class="n">String</span> <span class="n">json</span> <span class="o">=</span> <span class="n">JSONArray</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(</span><span class="n">array</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">json</span><span class="o">);</span><span class="c1">//[{"sex":"male","name":"ttt","age":12},{"sex":"female","name":"fff","age":13}]</span>
 </code></pre></div></div>
 
 <p>JSON &lt;==&gt; javabean</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//JSON==&gt;javabean</span>
-<span class="nc">JSONArray</span> <span class="n">array</span> <span class="o">=</span> <span class="nc">JSONArray</span><span class="o">.</span><span class="na">parseArray</span><span class="o">(</span><span class="n">arrayJson</span><span class="o">);</span>
-<span class="nc">List</span><span class="o">&lt;</span><span class="nc">Simple</span><span class="o">&gt;</span> <span class="n">simples</span> <span class="o">=</span> <span class="nc">JSONArray</span><span class="o">.</span><span class="na">parseArray</span><span class="o">(</span><span class="n">array</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(),</span> <span class="nc">Simple</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">simples</span><span class="o">);</span><span class="c1">//[Simple{name='ttt', sex='male', age=12}, Simple{name='fff', sex='female', age=13}]</span>
+<span class="n">JSONArray</span> <span class="n">array</span> <span class="o">=</span> <span class="n">JSONArray</span><span class="o">.</span><span class="na">parseArray</span><span class="o">(</span><span class="n">arrayJson</span><span class="o">);</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">Simple</span><span class="o">&gt;</span> <span class="n">simples</span> <span class="o">=</span> <span class="n">JSONArray</span><span class="o">.</span><span class="na">parseArray</span><span class="o">(</span><span class="n">array</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(),</span> <span class="n">Simple</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">simples</span><span class="o">);</span><span class="c1">//[Simple{name='ttt', sex='male', age=12}, Simple{name='fff', sex='female', age=13}]</span>
 <span class="c1">//JSON&lt;==javabean</span>
-<span class="nc">JSONArray</span> <span class="n">array1</span> <span class="o">=</span> <span class="nc">JSONArray</span><span class="o">.</span><span class="na">parseArray</span><span class="o">(</span><span class="nc">JSONArray</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(</span><span class="n">arrayBean</span><span class="o">));</span>
-<span class="nc">JSONObject</span> <span class="n">object</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
-<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">object</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"sex"</span><span class="o">));</span><span class="c1">//female</span>
+<span class="n">JSONArray</span> <span class="n">array1</span> <span class="o">=</span> <span class="n">JSONArray</span><span class="o">.</span><span class="na">parseArray</span><span class="o">(</span><span class="n">JSONArray</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(</span><span class="n">arrayBean</span><span class="o">));</span>
+<span class="n">JSONObject</span> <span class="n">object</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="na">getJSONObject</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">object</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"sex"</span><span class="o">));</span><span class="c1">//female</span>
 </code></pre></div></div>
 
 <p>Json串 &lt;==&gt; javabean</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//json=&gt;javabean</span>
 <span class="c1">//第一种方式</span>
-<span class="nc">List</span><span class="o">&lt;</span><span class="nc">Simple</span><span class="o">&gt;</span> <span class="n">simples</span> <span class="o">=</span> <span class="nc">JSONArray</span><span class="o">.</span><span class="na">parseArray</span><span class="o">(</span><span class="n">arrayJson</span><span class="o">,</span> <span class="nc">Simple</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">simples</span><span class="o">);</span><span class="c1">//[Simple{name='ttt', sex='male', age=12}, Simple{name='fff', sex='female', age=13}]</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">Simple</span><span class="o">&gt;</span> <span class="n">simples</span> <span class="o">=</span> <span class="n">JSONArray</span><span class="o">.</span><span class="na">parseArray</span><span class="o">(</span><span class="n">arrayJson</span><span class="o">,</span> <span class="n">Simple</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">simples</span><span class="o">);</span><span class="c1">//[Simple{name='ttt', sex='male', age=12}, Simple{name='fff', sex='female', age=13}]</span>
 <span class="c1">//第二种方式</span>
-<span class="nc">JSONArray</span> <span class="n">array</span> <span class="o">=</span> <span class="nc">JSONArray</span><span class="o">.</span><span class="na">parseArray</span><span class="o">(</span><span class="n">arrayJson</span><span class="o">);</span>
-<span class="nc">Type</span><span class="o">[]</span> <span class="n">types</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Type</span><span class="o">[</span><span class="n">array</span><span class="o">.</span><span class="na">size</span><span class="o">()];</span>
-<span class="nc">Arrays</span><span class="o">.</span><span class="na">fill</span><span class="o">(</span><span class="n">types</span><span class="o">,</span> <span class="nc">Map</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-<span class="nc">List</span><span class="o">&lt;</span><span class="nc">Object</span><span class="o">&gt;</span> <span class="n">simples1</span> <span class="o">=</span> <span class="nc">JSONArray</span><span class="o">.</span><span class="na">parseArray</span><span class="o">(</span><span class="n">arrayJson</span><span class="o">,</span> <span class="n">types</span><span class="o">);</span>
+<span class="n">JSONArray</span> <span class="n">array</span> <span class="o">=</span> <span class="n">JSONArray</span><span class="o">.</span><span class="na">parseArray</span><span class="o">(</span><span class="n">arrayJson</span><span class="o">);</span>
+<span class="n">Type</span><span class="o">[]</span> <span class="n">types</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Type</span><span class="o">[</span><span class="n">array</span><span class="o">.</span><span class="na">size</span><span class="o">()];</span>
+<span class="n">Arrays</span><span class="o">.</span><span class="na">fill</span><span class="o">(</span><span class="n">types</span><span class="o">,</span> <span class="n">Map</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">simples1</span> <span class="o">=</span> <span class="n">JSONArray</span><span class="o">.</span><span class="na">parseArray</span><span class="o">(</span><span class="n">arrayJson</span><span class="o">,</span> <span class="n">types</span><span class="o">);</span>
 <span class="n">simples1</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">simples2</span> <span class="o">-&gt;</span> <span class="o">{</span>
-    <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">asd</span> <span class="o">=</span> <span class="o">(</span><span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;)</span> <span class="n">simples2</span><span class="o">;</span>
-    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">asd</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"name"</span><span class="o">));</span>
+    <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">asd</span> <span class="o">=</span> <span class="o">(</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;)</span> <span class="n">simples2</span><span class="o">;</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">asd</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"name"</span><span class="o">));</span>
 <span class="o">});</span><span class="c1">//ttt fff</span>
 <span class="c1">//json&lt;=javabean</span>
-<span class="nc">String</span> <span class="n">str</span> <span class="o">=</span> <span class="no">JSON</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(</span><span class="n">arrayBean</span><span class="o">);</span>
-<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">str</span><span class="o">);</span><span class="c1">//[{"age":15,"name":"fff","sex":"male"},{"age":123,"name":"asdas","sex":"female"}]</span>
+<span class="n">String</span> <span class="n">str</span> <span class="o">=</span> <span class="n">JSON</span><span class="o">.</span><span class="na">toJSONString</span><span class="o">(</span><span class="n">arrayBean</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">str</span><span class="o">);</span><span class="c1">//[{"age":15,"name":"fff","sex":"male"},{"age":123,"name":"asdas","sex":"female"}]</span>
 </code></pre></div></div>
 
 <h2 id="总结">总结</h2>
@@ -410,7 +410,7 @@
                     <div class="tags">
         				
                             
-                				<a href="/tags/#杂记" title="杂记" rel="8">
+                				<a href="/tags/#杂记" title="杂记" rel="7">
                                     杂记
                                 </a>
                             

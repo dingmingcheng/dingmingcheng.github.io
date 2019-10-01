@@ -12,7 +12,7 @@
 
     <title>[转]深入理解Java Stream流水线 - New Boy</title>
 
-    <link rel="canonical" href="http://0.0.0.0:4000/2018/07/11/%E8%BD%AC-%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java-Stream%E6%B5%81%E6%B0%B4%E7%BA%BF/">
+    <link rel="canonical" href="http://localhost:4000/2018/07/11/%E8%BD%AC-%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Java-Stream%E6%B5%81%E6%B0%B4%E7%BA%BF/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -177,7 +177,7 @@
 <p>首先回顾一下容器执行Lambda表达式的方式，以<code class="highlighter-rouge">ArrayList.forEach()</code>方法为例，具体代码如下：</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// ArrayList.forEach()</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">forEach</span><span class="o">(</span><span class="nc">Consumer</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="no">E</span><span class="o">&gt;</span> <span class="n">action</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">forEach</span><span class="o">(</span><span class="n">Consumer</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="n">E</span><span class="o">&gt;</span> <span class="n">action</span><span class="o">)</span> <span class="o">{</span>
     <span class="o">...</span>
     <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">modCount</span> <span class="o">==</span> <span class="n">expectedModCount</span> <span class="o">&amp;&amp;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">size</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
         <span class="n">action</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="n">elementData</span><span class="o">[</span><span class="n">i</span><span class="o">]);</span><span class="c1">// 回调方法</span>
@@ -249,10 +249,10 @@
 <p>这些弊端使得效率底下，根本无法接受。如果不使用Stream API我们都知道上述代码该如何在一次迭代中完成，大致是如下形式：</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">longest</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-<span class="k">for</span><span class="o">(</span><span class="nc">String</span> <span class="n">str</span> <span class="o">:</span> <span class="n">strings</span><span class="o">){</span>
+<span class="k">for</span><span class="o">(</span><span class="n">String</span> <span class="n">str</span> <span class="o">:</span> <span class="n">strings</span><span class="o">){</span>
     <span class="k">if</span><span class="o">(</span><span class="n">str</span><span class="o">.</span><span class="na">startsWith</span><span class="o">(</span><span class="s">"A"</span><span class="o">)){</span><span class="c1">// 1. filter(), 保留以A开头的字符串</span>
         <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">str</span><span class="o">.</span><span class="na">length</span><span class="o">();</span><span class="c1">// 2. mapToInt(), 转换成长度</span>
-        <span class="n">longest</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">max</span><span class="o">(</span><span class="n">len</span><span class="o">,</span> <span class="n">longest</span><span class="o">);</span><span class="c1">// 3. max(), 保留最长的长度</span>
+        <span class="n">longest</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">max</span><span class="o">(</span><span class="n">len</span><span class="o">,</span> <span class="n">longest</span><span class="o">);</span><span class="c1">// 3. max(), 保留最长的长度</span>
     <span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div></div>
@@ -321,25 +321,25 @@
 
 <p>有了Sink对操作的包装，Stage之间的调用问题就解决了，执行时只需要从流水线的head开始对数据源依次调用每个Stage对应的Sink.{begin(), accept(), cancellationRequested(), end()}方法就可以了。一种可能的Sink.accept()方法流程是这样的：</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">accept</span><span class="o">(</span><span class="no">U</span> <span class="n">u</span><span class="o">){</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">accept</span><span class="o">(</span><span class="n">U</span> <span class="n">u</span><span class="o">){</span>
     <span class="mi">1</span><span class="o">.</span> <span class="err">使用当前</span><span class="n">Sink</span><span class="err">包装的回调函数处理</span><span class="n">u</span>
-    <span class="mi">2</span><span class="o">.</span> <span class="err">将处理结果传递给流水线下游的</span><span class="nc">Sink</span>
+    <span class="mi">2</span><span class="o">.</span> <span class="err">将处理结果传递给流水线下游的</span><span class="n">Sink</span>
 <span class="o">}</span>
 </code></pre></div></div>
 
 <p>Sink接口的其他几个方法也是按照这种[处理-&gt;转发]的模型实现。下面我们结合具体例子看看Stream的中间操作是如何将自身的操作包装成Sink以及Sink是如何将处理结果转发给下一个Sink的。先看Stream.map()方法：</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Stream.map()，调用该方法将产生一个新的Stream</span>
-<span class="kd">public</span> <span class="kd">final</span> <span class="o">&lt;</span><span class="no">R</span><span class="o">&gt;</span> <span class="nc">Stream</span><span class="o">&lt;</span><span class="no">R</span><span class="o">&gt;</span> <span class="nf">map</span><span class="o">(</span><span class="nc">Function</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="no">P_OUT</span><span class="o">,</span> <span class="o">?</span> <span class="kd">extends</span> <span class="no">R</span><span class="o">&gt;</span> <span class="n">mapper</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">final</span> <span class="o">&lt;</span><span class="n">R</span><span class="o">&gt;</span> <span class="n">Stream</span><span class="o">&lt;</span><span class="n">R</span><span class="o">&gt;</span> <span class="nf">map</span><span class="o">(</span><span class="n">Function</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="n">P_OUT</span><span class="o">,</span> <span class="o">?</span> <span class="kd">extends</span> <span class="n">R</span><span class="o">&gt;</span> <span class="n">mapper</span><span class="o">)</span> <span class="o">{</span>
     <span class="o">...</span>
-    <span class="k">return</span> <span class="k">new</span> <span class="nc">StatelessOp</span><span class="o">&lt;</span><span class="no">P_OUT</span><span class="o">,</span> <span class="no">R</span><span class="o">&gt;(</span><span class="k">this</span><span class="o">,</span> <span class="nc">StreamShape</span><span class="o">.</span><span class="na">REFERENCE</span><span class="o">,</span>
-                                 <span class="nc">StreamOpFlag</span><span class="o">.</span><span class="na">NOT_SORTED</span> <span class="o">|</span> <span class="nc">StreamOpFlag</span><span class="o">.</span><span class="na">NOT_DISTINCT</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="n">StatelessOp</span><span class="o">&lt;</span><span class="n">P_OUT</span><span class="o">,</span> <span class="n">R</span><span class="o">&gt;(</span><span class="k">this</span><span class="o">,</span> <span class="n">StreamShape</span><span class="o">.</span><span class="na">REFERENCE</span><span class="o">,</span>
+                                 <span class="n">StreamOpFlag</span><span class="o">.</span><span class="na">NOT_SORTED</span> <span class="o">|</span> <span class="n">StreamOpFlag</span><span class="o">.</span><span class="na">NOT_DISTINCT</span><span class="o">)</span> <span class="o">{</span>
         <span class="nd">@Override</span> <span class="cm">/*opWripSink()方法返回由回调函数包装而成Sink*/</span>
-        <span class="nc">Sink</span><span class="o">&lt;</span><span class="no">P_OUT</span><span class="o">&gt;</span> <span class="nf">opWrapSink</span><span class="o">(</span><span class="kt">int</span> <span class="n">flags</span><span class="o">,</span> <span class="nc">Sink</span><span class="o">&lt;</span><span class="no">R</span><span class="o">&gt;</span> <span class="n">downstream</span><span class="o">)</span> <span class="o">{</span>
-            <span class="k">return</span> <span class="k">new</span> <span class="nc">Sink</span><span class="o">.</span><span class="na">ChainedReference</span><span class="o">&lt;</span><span class="no">P_OUT</span><span class="o">,</span> <span class="no">R</span><span class="o">&gt;(</span><span class="n">downstream</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">Sink</span><span class="o">&lt;</span><span class="n">P_OUT</span><span class="o">&gt;</span> <span class="nf">opWrapSink</span><span class="o">(</span><span class="kt">int</span> <span class="n">flags</span><span class="o">,</span> <span class="n">Sink</span><span class="o">&lt;</span><span class="n">R</span><span class="o">&gt;</span> <span class="n">downstream</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="n">Sink</span><span class="o">.</span><span class="na">ChainedReference</span><span class="o">&lt;</span><span class="n">P_OUT</span><span class="o">,</span> <span class="n">R</span><span class="o">&gt;(</span><span class="n">downstream</span><span class="o">)</span> <span class="o">{</span>
                 <span class="nd">@Override</span>
-                <span class="kd">public</span> <span class="kt">void</span> <span class="nf">accept</span><span class="o">(</span><span class="no">P_OUT</span> <span class="n">u</span><span class="o">)</span> <span class="o">{</span>
-                    <span class="no">R</span> <span class="n">r</span> <span class="o">=</span> <span class="n">mapper</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="n">u</span><span class="o">);</span><span class="c1">// 1. 使用当前Sink包装的回调函数mapper处理u</span>
+                <span class="kd">public</span> <span class="kt">void</span> <span class="nf">accept</span><span class="o">(</span><span class="n">P_OUT</span> <span class="n">u</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">R</span> <span class="n">r</span> <span class="o">=</span> <span class="n">mapper</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="n">u</span><span class="o">);</span><span class="c1">// 1. 使用当前Sink包装的回调函数mapper处理u</span>
                     <span class="n">downstream</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="n">r</span><span class="o">);</span><span class="c1">// 2. 将处理结果传递给流水线下游的Sink</span>
                 <span class="o">}</span>
             <span class="o">};</span>
@@ -353,16 +353,16 @@
 <p>再来看一个复杂一点的例子。Stream.sorted()方法将对Stream中的元素进行排序，显然这是一个有状态的中间操作，因为读取所有元素之前是没法得到最终顺序的。抛开模板代码直接进入问题本质，sorted()方法是如何将操作封装成Sink的呢？sorted()一种可能封装的Sink代码如下：</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Stream.sort()方法用到的Sink实现</span>
-<span class="kd">class</span> <span class="nc">RefSortingSink</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="kd">extends</span> <span class="nc">AbstractRefSortingSink</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="o">{</span>
-    <span class="kd">private</span> <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">list</span><span class="o">;</span><span class="c1">// 存放用于排序的元素</span>
-    <span class="nc">RefSortingSink</span><span class="o">(</span><span class="nc">Sink</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="no">T</span><span class="o">&gt;</span> <span class="n">downstream</span><span class="o">,</span> <span class="nc">Comparator</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="no">T</span><span class="o">&gt;</span> <span class="n">comparator</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">class</span> <span class="nc">RefSortingSink</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kd">extends</span> <span class="n">AbstractRefSortingSink</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">list</span><span class="o">;</span><span class="c1">// 存放用于排序的元素</span>
+    <span class="n">RefSortingSink</span><span class="o">(</span><span class="n">Sink</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="n">T</span><span class="o">&gt;</span> <span class="n">downstream</span><span class="o">,</span> <span class="n">Comparator</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="n">T</span><span class="o">&gt;</span> <span class="n">comparator</span><span class="o">)</span> <span class="o">{</span>
         <span class="kd">super</span><span class="o">(</span><span class="n">downstream</span><span class="o">,</span> <span class="n">comparator</span><span class="o">);</span>
     <span class="o">}</span>
     <span class="nd">@Override</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">begin</span><span class="o">(</span><span class="kt">long</span> <span class="n">size</span><span class="o">)</span> <span class="o">{</span>
         <span class="o">...</span>
         <span class="c1">// 创建一个存放排序元素的列表</span>
-        <span class="n">list</span> <span class="o">=</span> <span class="o">(</span><span class="n">size</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">?</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;((</span><span class="kt">int</span><span class="o">)</span> <span class="n">size</span><span class="o">)</span> <span class="o">:</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;();</span>
+        <span class="n">list</span> <span class="o">=</span> <span class="o">(</span><span class="n">size</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">?</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;((</span><span class="kt">int</span><span class="o">)</span> <span class="n">size</span><span class="o">)</span> <span class="o">:</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;();</span>
     <span class="o">}</span>
     <span class="nd">@Override</span>
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">end</span><span class="o">()</span> <span class="o">{</span>
@@ -372,7 +372,7 @@
             <span class="n">list</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="nl">downstream:</span><span class="o">:</span><span class="n">accept</span><span class="o">);</span><span class="c1">// 2. 将处理结果传递给流水线下游的Sink</span>
         <span class="o">}</span>
         <span class="k">else</span> <span class="o">{</span><span class="c1">// 下游Sink包含短路操作</span>
-            <span class="k">for</span> <span class="o">(</span><span class="no">T</span> <span class="n">t</span> <span class="o">:</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span><span class="c1">// 每次都调用cancellationRequested()询问是否可以结束处理。</span>
+            <span class="k">for</span> <span class="o">(</span><span class="n">T</span> <span class="n">t</span> <span class="o">:</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span><span class="c1">// 每次都调用cancellationRequested()询问是否可以结束处理。</span>
                 <span class="k">if</span> <span class="o">(</span><span class="n">downstream</span><span class="o">.</span><span class="na">cancellationRequested</span><span class="o">())</span> <span class="k">break</span><span class="o">;</span>
                 <span class="n">downstream</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="n">t</span><span class="o">);</span><span class="c1">// 2. 将处理结果传递给流水线下游的Sink</span>
             <span class="o">}</span>
@@ -381,7 +381,7 @@
         <span class="n">list</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
     <span class="o">}</span>
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">accept</span><span class="o">(</span><span class="no">T</span> <span class="n">t</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">accept</span><span class="o">(</span><span class="n">T</span> <span class="n">t</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">t</span><span class="o">);</span><span class="c1">// 1. 使用当前Sink包装动作处理t，只是简单的将元素添加到中间列表当中</span>
     <span class="o">}</span>
 <span class="o">}</span>
@@ -409,21 +409,21 @@
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// AbstractPipeline.wrapSink()</span>
 <span class="c1">// 从下游向上游不断包装Sink。如果最初传入的sink代表结束操作，</span>
 <span class="c1">// 函数返回时就可以得到一个代表了流水线上所有操作的Sink。</span>
-<span class="kd">final</span> <span class="o">&lt;</span><span class="no">P_IN</span><span class="o">&gt;</span> <span class="nc">Sink</span><span class="o">&lt;</span><span class="no">P_IN</span><span class="o">&gt;</span> <span class="nf">wrapSink</span><span class="o">(</span><span class="nc">Sink</span><span class="o">&lt;</span><span class="no">E_OUT</span><span class="o">&gt;</span> <span class="n">sink</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">final</span> <span class="o">&lt;</span><span class="n">P_IN</span><span class="o">&gt;</span> <span class="n">Sink</span><span class="o">&lt;</span><span class="n">P_IN</span><span class="o">&gt;</span> <span class="nf">wrapSink</span><span class="o">(</span><span class="n">Sink</span><span class="o">&lt;</span><span class="n">E_OUT</span><span class="o">&gt;</span> <span class="n">sink</span><span class="o">)</span> <span class="o">{</span>
     <span class="o">...</span>
-    <span class="k">for</span> <span class="o">(</span><span class="nc">AbstractPipeline</span> <span class="n">p</span><span class="o">=</span><span class="nc">AbstractPipeline</span><span class="o">.</span><span class="na">this</span><span class="o">;</span> <span class="n">p</span><span class="o">.</span><span class="na">depth</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">;</span> <span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="na">previousStage</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">for</span> <span class="o">(</span><span class="n">AbstractPipeline</span> <span class="n">p</span><span class="o">=</span><span class="n">AbstractPipeline</span><span class="o">.</span><span class="na">this</span><span class="o">;</span> <span class="n">p</span><span class="o">.</span><span class="na">depth</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">;</span> <span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="na">previousStage</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">sink</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="na">opWrapSink</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">previousStage</span><span class="o">.</span><span class="na">combinedFlags</span><span class="o">,</span> <span class="n">sink</span><span class="o">);</span>
     <span class="o">}</span>
-    <span class="k">return</span> <span class="o">(</span><span class="nc">Sink</span><span class="o">&lt;</span><span class="no">P_IN</span><span class="o">&gt;)</span> <span class="n">sink</span><span class="o">;</span>
+    <span class="k">return</span> <span class="o">(</span><span class="n">Sink</span><span class="o">&lt;</span><span class="n">P_IN</span><span class="o">&gt;)</span> <span class="n">sink</span><span class="o">;</span>
 <span class="o">}</span>
 </code></pre></div></div>
 
 <p>现在流水线上从开始到结束的所有的操作都被包装到了一个Sink里，执行这个Sink就相当于执行整个流水线，执行Sink的代码如下：</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// AbstractPipeline.copyInto(), 对spliterator代表的数据执行wrappedSink代表的操作。</span>
-<span class="kd">final</span> <span class="o">&lt;</span><span class="no">P_IN</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="nf">copyInto</span><span class="o">(</span><span class="nc">Sink</span><span class="o">&lt;</span><span class="no">P_IN</span><span class="o">&gt;</span> <span class="n">wrappedSink</span><span class="o">,</span> <span class="nc">Spliterator</span><span class="o">&lt;</span><span class="no">P_IN</span><span class="o">&gt;</span> <span class="n">spliterator</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">final</span> <span class="o">&lt;</span><span class="n">P_IN</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="nf">copyInto</span><span class="o">(</span><span class="n">Sink</span><span class="o">&lt;</span><span class="n">P_IN</span><span class="o">&gt;</span> <span class="n">wrappedSink</span><span class="o">,</span> <span class="n">Spliterator</span><span class="o">&lt;</span><span class="n">P_IN</span><span class="o">&gt;</span> <span class="n">spliterator</span><span class="o">)</span> <span class="o">{</span>
     <span class="o">...</span>
-    <span class="k">if</span> <span class="o">(!</span><span class="nc">StreamOpFlag</span><span class="o">.</span><span class="na">SHORT_CIRCUIT</span><span class="o">.</span><span class="na">isKnown</span><span class="o">(</span><span class="n">getStreamAndOpFlags</span><span class="o">()))</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(!</span><span class="n">StreamOpFlag</span><span class="o">.</span><span class="na">SHORT_CIRCUIT</span><span class="o">.</span><span class="na">isKnown</span><span class="o">(</span><span class="n">getStreamAndOpFlags</span><span class="o">()))</span> <span class="o">{</span>
         <span class="n">wrappedSink</span><span class="o">.</span><span class="na">begin</span><span class="o">(</span><span class="n">spliterator</span><span class="o">.</span><span class="na">getExactSizeIfKnown</span><span class="o">());</span><span class="c1">// 通知开始遍历</span>
         <span class="n">spliterator</span><span class="o">.</span><span class="na">forEachRemaining</span><span class="o">(</span><span class="n">wrappedSink</span><span class="o">);</span><span class="c1">// 迭代</span>
         <span class="n">wrappedSink</span><span class="o">.</span><span class="na">end</span><span class="o">();</span><span class="c1">// 通知遍历结束</span>
@@ -443,13 +443,13 @@
 </blockquote>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 错误的收集方式</span>
-<span class="nc">ArrayList</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">results</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+<span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">results</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
 <span class="n">stream</span><span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">s</span> <span class="o">-&gt;</span> <span class="n">pattern</span><span class="o">.</span><span class="na">matcher</span><span class="o">(</span><span class="n">s</span><span class="o">).</span><span class="na">matches</span><span class="o">())</span>
       <span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">s</span> <span class="o">-&gt;</span> <span class="n">results</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">s</span><span class="o">));</span>  <span class="c1">// Unnecessary use of side-effects!</span>
 <span class="c1">// 正确的收集方式</span>
-<span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span><span class="n">results</span> <span class="o">=</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="n">results</span> <span class="o">=</span>
      <span class="n">stream</span><span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">s</span> <span class="o">-&gt;</span> <span class="n">pattern</span><span class="o">.</span><span class="na">matcher</span><span class="o">(</span><span class="n">s</span><span class="o">).</span><span class="na">matches</span><span class="o">())</span>
-             <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="nc">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">());</span>  <span class="c1">// No side-effects!</span>
+             <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="n">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">());</span>  <span class="c1">// No side-effects!</span>
 </code></pre></div></div>
 
 <p>回到流水线执行结果的问题上来，需要返回结果的流水线结果存在哪里呢？这要分不同的情况讨论，下表给出了各种有返回结果的Stream结束操作。</p>
@@ -533,7 +533,7 @@
                     <div class="tags">
         				
                             
-                				<a href="/tags/#杂记" title="杂记" rel="8">
+                				<a href="/tags/#杂记" title="杂记" rel="7">
                                     杂记
                                 </a>
                             

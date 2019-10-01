@@ -12,7 +12,7 @@
 
     <title>[转]Java Stream API入门篇 - New Boy</title>
 
-    <link rel="canonical" href="http://0.0.0.0:4000/2018/07/11/%E8%BD%AC-Java-Stream-API%E5%85%A5%E9%97%A8%E7%AF%87/">
+    <link rel="canonical" href="http://localhost:4000/2018/07/11/%E8%BD%AC-Java-Stream-API%E5%85%A5%E9%97%A8%E7%AF%87/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -247,8 +247,8 @@
 <p>我们对<code class="highlighter-rouge">forEach()</code>方法并不陌生，在<code class="highlighter-rouge">Collection</code>中我们已经见过。方法签名为<code class="highlighter-rouge">void forEach(Consumer&lt;? super E&gt; action)</code>，作用是对容器中的每个元素执行<code class="highlighter-rouge">action</code>指定的动作，也就是对元素进行遍历。</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 使用Stream.forEach()迭代</span>
-<span class="nc">Stream</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">stream</span> <span class="o">=</span> <span class="nc">Stream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"I"</span><span class="o">,</span> <span class="s">"love"</span><span class="o">,</span> <span class="s">"you"</span><span class="o">,</span> <span class="s">"too"</span><span class="o">);</span>
-<span class="n">stream</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">str</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">str</span><span class="o">));</span>
+<span class="n">Stream</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">stream</span> <span class="o">=</span> <span class="n">Stream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"I"</span><span class="o">,</span> <span class="s">"love"</span><span class="o">,</span> <span class="s">"you"</span><span class="o">,</span> <span class="s">"too"</span><span class="o">);</span>
+<span class="n">stream</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">str</span> <span class="o">-&gt;</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">str</span><span class="o">));</span>
 </code></pre></div></div>
 
 <p>由于<code class="highlighter-rouge">forEach()</code>是结束方法，上述代码会立即执行，输出所有字符串。</p>
@@ -260,9 +260,9 @@
 <p>函数原型为<code class="highlighter-rouge">Stream&lt;T&gt; filter(Predicate&lt;? super T&gt; predicate)</code>，作用是返回一个只包含满足<code class="highlighter-rouge">predicate</code>条件元素的<code class="highlighter-rouge">Stream</code>。</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 保留长度等于3的字符串</span>
-<span class="nc">Stream</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">stream</span><span class="o">=</span> <span class="nc">Stream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"I"</span><span class="o">,</span> <span class="s">"love"</span><span class="o">,</span> <span class="s">"you"</span><span class="o">,</span> <span class="s">"too"</span><span class="o">);</span>
+<span class="n">Stream</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">stream</span><span class="o">=</span> <span class="n">Stream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"I"</span><span class="o">,</span> <span class="s">"love"</span><span class="o">,</span> <span class="s">"you"</span><span class="o">,</span> <span class="s">"too"</span><span class="o">);</span>
 <span class="n">stream</span><span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">str</span> <span class="o">-&gt;</span> <span class="n">str</span><span class="o">.</span><span class="na">length</span><span class="o">()==</span><span class="mi">3</span><span class="o">)</span>
-    <span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">str</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">str</span><span class="o">));</span>
+    <span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">str</span> <span class="o">-&gt;</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">str</span><span class="o">));</span>
 </code></pre></div></div>
 
 <p>上述代码将输出为长度等于3的字符串<code class="highlighter-rouge">you</code>和<code class="highlighter-rouge">too</code>。注意，由于<code class="highlighter-rouge">filter()</code>是个中间操作，如果只调用<code class="highlighter-rouge">filter()</code>不会有实际计算，因此也不会输出任何信息。</p>
@@ -273,9 +273,9 @@
 
 <p>函数原型为<code class="highlighter-rouge">Stream&lt;T&gt; distinct()</code>，作用是返回一个去除重复元素之后的<code class="highlighter-rouge">Stream</code>。</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Stream</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">stream</span><span class="o">=</span> <span class="nc">Stream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"I"</span><span class="o">,</span> <span class="s">"love"</span><span class="o">,</span> <span class="s">"you"</span><span class="o">,</span> <span class="s">"too"</span><span class="o">,</span> <span class="s">"too"</span><span class="o">);</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Stream</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">stream</span><span class="o">=</span> <span class="n">Stream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"I"</span><span class="o">,</span> <span class="s">"love"</span><span class="o">,</span> <span class="s">"you"</span><span class="o">,</span> <span class="s">"too"</span><span class="o">,</span> <span class="s">"too"</span><span class="o">);</span>
 <span class="n">stream</span><span class="o">.</span><span class="na">distinct</span><span class="o">()</span>
-    <span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">str</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">str</span><span class="o">));</span>
+    <span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">str</span> <span class="o">-&gt;</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">str</span><span class="o">));</span>
 </code></pre></div></div>
 
 <p>上述代码会输出去掉一个<code class="highlighter-rouge">too</code>之后的其余字符串。</p>
@@ -284,9 +284,9 @@
 
 <p>排序函数有两个，一个是用自然顺序排序，一个是使用自定义比较器排序，函数原型分别为<code class="highlighter-rouge">Stream&lt;T&gt;　sorted()</code>和<code class="highlighter-rouge">Stream&lt;T&gt;　sorted(Comparator&lt;? super T&gt; comparator)</code>。</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Stream</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">stream</span><span class="o">=</span> <span class="nc">Stream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"I"</span><span class="o">,</span> <span class="s">"love"</span><span class="o">,</span> <span class="s">"you"</span><span class="o">,</span> <span class="s">"too"</span><span class="o">);</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Stream</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">stream</span><span class="o">=</span> <span class="n">Stream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"I"</span><span class="o">,</span> <span class="s">"love"</span><span class="o">,</span> <span class="s">"you"</span><span class="o">,</span> <span class="s">"too"</span><span class="o">);</span>
 <span class="n">stream</span><span class="o">.</span><span class="na">sorted</span><span class="o">((</span><span class="n">str1</span><span class="o">,</span> <span class="n">str2</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">str1</span><span class="o">.</span><span class="na">length</span><span class="o">()-</span><span class="n">str2</span><span class="o">.</span><span class="na">length</span><span class="o">())</span>
-    <span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">str</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">str</span><span class="o">));</span>
+    <span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">str</span> <span class="o">-&gt;</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">str</span><span class="o">));</span>
 </code></pre></div></div>
 
 <p>上述代码将输出按照长度升序排序后的字符串，结果完全在预料之中。</p>
@@ -297,9 +297,9 @@
 
 <p>函数原型为<code class="highlighter-rouge">&lt;R&gt; Stream&lt;R&gt; map(Function&lt;? super T,? extends R&gt; mapper)</code>，作用是返回一个对当前所有元素执行执行<code class="highlighter-rouge">mapper</code>之后的结果组成的<code class="highlighter-rouge">Stream</code>。直观的说，就是对每个元素按照某种操作进行转换，转换前后<code class="highlighter-rouge">Stream</code>中元素的个数不会改变，但元素的类型取决于转换之后的类型。</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Stream</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">stream</span><span class="err">　</span><span class="o">=</span> <span class="nc">Stream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"I"</span><span class="o">,</span> <span class="s">"love"</span><span class="o">,</span> <span class="s">"you"</span><span class="o">,</span> <span class="s">"too"</span><span class="o">);</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Stream</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">stream</span><span class="err">　</span><span class="o">=</span> <span class="n">Stream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"I"</span><span class="o">,</span> <span class="s">"love"</span><span class="o">,</span> <span class="s">"you"</span><span class="o">,</span> <span class="s">"too"</span><span class="o">);</span>
 <span class="n">stream</span><span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">str</span> <span class="o">-&gt;</span> <span class="n">str</span><span class="o">.</span><span class="na">toUpperCase</span><span class="o">())</span>
-    <span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">str</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">str</span><span class="o">));</span>
+    <span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">str</span> <span class="o">-&gt;</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">str</span><span class="o">));</span>
 </code></pre></div></div>
 
 <p>上述代码将输出原字符串的大写形式。</p>
@@ -310,9 +310,9 @@
 
 <p>函数原型为<code class="highlighter-rouge">&lt;R&gt; Stream&lt;R&gt; flatMap(Function&lt;? super T,? extends Stream&lt;? extends R&gt;&gt; mapper)</code>，作用是对每个元素执行<code class="highlighter-rouge">mapper</code>指定的操作，并用所有<code class="highlighter-rouge">mapper</code>返回的<code class="highlighter-rouge">Stream</code>中的元素组成一个新的<code class="highlighter-rouge">Stream</code>作为最终返回结果。说起来太拗口，通俗的讲<code class="highlighter-rouge">flatMap()</code>的作用就相当于把原<em>stream</em>中的所有元素都”摊平”之后组成的<code class="highlighter-rouge">Stream</code>，转换前后元素的个数和类型都可能会改变。</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Stream</span><span class="o">&lt;</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;&gt;</span> <span class="n">stream</span> <span class="o">=</span> <span class="nc">Stream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="nc">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="mi">2</span><span class="o">),</span> <span class="nc">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">5</span><span class="o">));</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Stream</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;&gt;</span> <span class="n">stream</span> <span class="o">=</span> <span class="n">Stream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="mi">2</span><span class="o">),</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">5</span><span class="o">));</span>
 <span class="n">stream</span><span class="o">.</span><span class="na">flatMap</span><span class="o">(</span><span class="n">list</span> <span class="o">-&gt;</span> <span class="n">list</span><span class="o">.</span><span class="na">stream</span><span class="o">())</span>
-    <span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">i</span> <span class="o">-&gt;</span> <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">i</span><span class="o">));</span>
+    <span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">i</span> <span class="o">-&gt;</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">i</span><span class="o">));</span>
 </code></pre></div></div>
 
 <p>上述代码中，原来的<code class="highlighter-rouge">stream</code>中有两个元素，分别是两个<code class="highlighter-rouge">List&lt;Integer&gt;</code>，执行<code class="highlighter-rouge">flatMap()</code>之后，将每个<code class="highlighter-rouge">List</code>都“摊平”成了一个个的数字，所以会新产生一个由5个数字组成的<code class="highlighter-rouge">Stream</code>。所以最终将输出1~5这5个数字。</p>
@@ -363,7 +363,7 @@
                     <div class="tags">
         				
                             
-                				<a href="/tags/#杂记" title="杂记" rel="8">
+                				<a href="/tags/#杂记" title="杂记" rel="7">
                                     杂记
                                 </a>
                             

@@ -12,7 +12,7 @@
 
     <title>redis分布式锁代码解读 - New Boy</title>
 
-    <link rel="canonical" href="http://0.0.0.0:4000/2018/02/04/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E4%BB%A3%E7%A0%81%E8%A7%A3%E8%AF%BB/">
+    <link rel="canonical" href="http://localhost:4000/2018/02/04/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E4%BB%A3%E7%A0%81%E8%A7%A3%E8%AF%BB/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -176,12 +176,12 @@
 
 <p>其实里面的东西也没有太多，相信大部分同学还是能比较快去消化，里面最主要的就是acquire函数的实现，涉及到一些容易出现问题的场景以及解决的方案。直接上代码吧。</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">protected</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">acquire</span><span class="o">(</span><span class="nc">Jedis</span> <span class="n">jedis</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">InterruptedException</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">protected</span> <span class="kd">synchronized</span> <span class="kt">boolean</span> <span class="nf">acquire</span><span class="o">(</span><span class="n">Jedis</span> <span class="n">jedis</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
     <span class="c1">//acquiryTimeoutInMillis为尝试获取锁超时时间</span>
     <span class="kt">int</span> <span class="n">timeout</span> <span class="o">=</span> <span class="n">acquiryTimeoutInMillis</span><span class="o">;</span>
     <span class="k">while</span> <span class="o">(</span><span class="n">timeout</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
         <span class="c1">//lockExpiryInMillis：锁超时时间，防止这种情况：锁被其中一台机器占用，在释放锁之前，发生宕机，则锁会被持续占用，产生死锁</span>
-        <span class="kd">final</span> <span class="nc">Lock</span> <span class="n">newLock</span> <span class="o">=</span> <span class="n">asLock</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">+</span> <span class="n">lockExpiryInMillis</span><span class="o">);</span>
+        <span class="kd">final</span> <span class="n">Lock</span> <span class="n">newLock</span> <span class="o">=</span> <span class="n">asLock</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">+</span> <span class="n">lockExpiryInMillis</span><span class="o">);</span>
         <span class="c1">//若key=localKeyPath不存在,则set一个新锁，表示锁被占用</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">jedis</span><span class="o">.</span><span class="na">setnx</span><span class="o">(</span><span class="n">lockKeyPath</span><span class="o">,</span> <span class="n">newLock</span><span class="o">.</span><span class="na">toString</span><span class="o">())</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
             <span class="k">this</span><span class="o">.</span><span class="na">lock</span> <span class="o">=</span> <span class="n">newLock</span><span class="o">;</span>
@@ -189,8 +189,8 @@
         <span class="o">}</span>
 
         <span class="c1">//判断锁超时的情况</span>
-        <span class="kd">final</span> <span class="nc">String</span> <span class="n">currentValueStr</span> <span class="o">=</span> <span class="n">jedis</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">lockKeyPath</span><span class="o">);</span>
-        <span class="kd">final</span> <span class="nc">Lock</span> <span class="n">currentLock</span> <span class="o">=</span> <span class="nc">Lock</span><span class="o">.</span><span class="na">fromString</span><span class="o">(</span><span class="n">currentValueStr</span><span class="o">);</span>
+        <span class="kd">final</span> <span class="n">String</span> <span class="n">currentValueStr</span> <span class="o">=</span> <span class="n">jedis</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">lockKeyPath</span><span class="o">);</span>
+        <span class="kd">final</span> <span class="n">Lock</span> <span class="n">currentLock</span> <span class="o">=</span> <span class="n">Lock</span><span class="o">.</span><span class="na">fromString</span><span class="o">(</span><span class="n">currentValueStr</span><span class="o">);</span>
         <span class="c1">//如果考虑不全面，很可能代码是这么写的：</span>
         <span class="c1">// if (currentLock.isExpiredOrMine(lockUUID)) {</span>
         <span class="c1">//     this.lock = newLock;</span>
@@ -204,7 +204,7 @@
         <span class="c1">// 那么通过currentValueStr和oldValueStr的比对，结果是显而易见的</span>
 
         <span class="k">if</span> <span class="o">(</span><span class="n">currentLock</span><span class="o">.</span><span class="na">isExpiredOrMine</span><span class="o">(</span><span class="n">lockUUID</span><span class="o">))</span> <span class="o">{</span>
-            <span class="nc">String</span> <span class="n">oldValueStr</span> <span class="o">=</span> <span class="n">jedis</span><span class="o">.</span><span class="na">getSet</span><span class="o">(</span><span class="n">lockKeyPath</span><span class="o">,</span> <span class="n">newLock</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+            <span class="n">String</span> <span class="n">oldValueStr</span> <span class="o">=</span> <span class="n">jedis</span><span class="o">.</span><span class="na">getSet</span><span class="o">(</span><span class="n">lockKeyPath</span><span class="o">,</span> <span class="n">newLock</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
             <span class="k">if</span> <span class="o">(</span><span class="n">oldValueStr</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">oldValueStr</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">currentValueStr</span><span class="o">))</span> <span class="o">{</span>
                 <span class="k">this</span><span class="o">.</span><span class="na">lock</span> <span class="o">=</span> <span class="n">newLock</span><span class="o">;</span>
                 <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
@@ -212,8 +212,8 @@
         <span class="o">}</span>
 
         <span class="c1">//暂停一段时间进行重试，尝试获取锁超时时间减去单次暂停时间</span>
-        <span class="n">timeout</span> <span class="o">-=</span> <span class="no">DEFAULT_ACQUIRY_RESOLUTION_MILLIS</span><span class="o">;</span>
-        <span class="nc">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="no">DEFAULT_ACQUIRY_RESOLUTION_MILLIS</span><span class="o">);</span>
+        <span class="n">timeout</span> <span class="o">-=</span> <span class="n">DEFAULT_ACQUIRY_RESOLUTION_MILLIS</span><span class="o">;</span>
+        <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="n">DEFAULT_ACQUIRY_RESOLUTION_MILLIS</span><span class="o">);</span>
     <span class="o">}</span>
 
     <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
@@ -268,7 +268,7 @@
                     <div class="tags">
         				
                             
-                				<a href="/tags/#杂记" title="杂记" rel="8">
+                				<a href="/tags/#杂记" title="杂记" rel="7">
                                     杂记
                                 </a>
                             

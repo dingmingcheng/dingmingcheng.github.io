@@ -12,7 +12,7 @@
 
     <title>三种工厂模式 - New Boy</title>
 
-    <link rel="canonical" href="http://0.0.0.0:4000/2018/03/08/%E4%B8%89%E7%A7%8D%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/">
+    <link rel="canonical" href="http://localhost:4000/2018/03/08/%E4%B8%89%E7%A7%8D%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -183,12 +183,12 @@
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">Food</span> <span class="o">{</span>
     <span class="kd">private</span> <span class="kt">int</span> <span class="n">price</span><span class="o">;</span>
     <span class="kd">private</span> <span class="kt">int</span> <span class="n">cost</span><span class="o">;</span>
-    <span class="kd">private</span> <span class="nc">String</span> <span class="n">name</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
 
     <span class="kd">public</span> <span class="nf">Food</span><span class="o">()</span> <span class="o">{</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="nf">Food</span><span class="o">(</span><span class="kt">int</span> <span class="n">price</span><span class="o">,</span> <span class="kt">int</span> <span class="n">cost</span><span class="o">,</span> <span class="nc">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">Food</span><span class="o">(</span><span class="kt">int</span> <span class="n">price</span><span class="o">,</span> <span class="kt">int</span> <span class="n">cost</span><span class="o">,</span> <span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">price</span> <span class="o">=</span> <span class="n">price</span><span class="o">;</span>
         <span class="k">this</span><span class="o">.</span><span class="na">cost</span> <span class="o">=</span> <span class="n">cost</span><span class="o">;</span>
         <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
@@ -210,16 +210,16 @@
         <span class="k">this</span><span class="o">.</span><span class="na">cost</span> <span class="o">=</span> <span class="n">cost</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">name</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="nc">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="s">"Food{"</span> <span class="o">+</span>
                 <span class="s">"price="</span> <span class="o">+</span> <span class="n">price</span> <span class="o">+</span>
                 <span class="s">", cost="</span> <span class="o">+</span> <span class="n">cost</span> <span class="o">+</span>
@@ -233,18 +233,18 @@
 
 <p>FriedRice:</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FriedRice</span> <span class="kd">extends</span> <span class="nc">Food</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FriedRice</span> <span class="kd">extends</span> <span class="n">Food</span> <span class="o">{</span>
 
     <span class="kd">public</span> <span class="nf">FriedRice</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">(</span><span class="mi">100</span><span class="o">,</span> <span class="mi">20</span><span class="o">,</span> <span class="s">"FriedRice"</span><span class="o">);</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="nf">FriedRice</span><span class="o">(</span><span class="kt">int</span> <span class="n">price</span><span class="o">,</span> <span class="kt">int</span> <span class="n">cost</span><span class="o">,</span> <span class="nc">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">FriedRice</span><span class="o">(</span><span class="kt">int</span> <span class="n">price</span><span class="o">,</span> <span class="kt">int</span> <span class="n">cost</span><span class="o">,</span> <span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
         <span class="kd">super</span><span class="o">(</span><span class="n">price</span><span class="o">,</span> <span class="n">cost</span><span class="o">,</span> <span class="n">name</span><span class="o">);</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="s">"FriedRice{"</span> <span class="o">+</span>
                 <span class="s">"price="</span> <span class="o">+</span> <span class="kd">super</span><span class="o">.</span><span class="na">getPrice</span><span class="o">()</span> <span class="o">+</span>
                 <span class="s">", cost="</span> <span class="o">+</span> <span class="kd">super</span><span class="o">.</span><span class="na">getCost</span><span class="o">()</span> <span class="o">+</span>
@@ -256,17 +256,17 @@
 
 <p>Noodles:</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Noodles</span> <span class="kd">extends</span> <span class="nc">Food</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Noodles</span> <span class="kd">extends</span> <span class="n">Food</span> <span class="o">{</span>
   
     <span class="kd">public</span> <span class="nf">Noodles</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">(</span><span class="mi">50</span><span class="o">,</span> <span class="mi">10</span><span class="o">,</span> <span class="s">"Noodles"</span><span class="o">);</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="nf">Noodles</span><span class="o">(</span><span class="kt">int</span> <span class="n">price</span><span class="o">,</span> <span class="kt">int</span> <span class="n">cost</span><span class="o">,</span> <span class="nc">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">Noodles</span><span class="o">(</span><span class="kt">int</span> <span class="n">price</span><span class="o">,</span> <span class="kt">int</span> <span class="n">cost</span><span class="o">,</span> <span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
         <span class="kd">super</span><span class="o">(</span><span class="n">price</span><span class="o">,</span> <span class="n">cost</span><span class="o">,</span> <span class="n">name</span><span class="o">);</span>
     <span class="o">}</span>
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="s">"Noodles{"</span> <span class="o">+</span>
                 <span class="s">"price="</span> <span class="o">+</span> <span class="kd">super</span><span class="o">.</span><span class="na">getPrice</span><span class="o">()</span> <span class="o">+</span>
                 <span class="s">", cost="</span> <span class="o">+</span> <span class="kd">super</span><span class="o">.</span><span class="na">getCost</span><span class="o">()</span> <span class="o">+</span>
@@ -280,18 +280,18 @@
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FoodFactory</span> <span class="o">{</span>
 
-    <span class="kd">private</span> <span class="nc">ConcurrentHashMap</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Class</span><span class="o">&gt;</span> <span class="n">classCache</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">ConcurrentHashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Class</span><span class="o">&gt;</span> <span class="n">classCache</span><span class="o">;</span>
 
-    <span class="nc">FoodFactory</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">classCache</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ConcurrentHashMap</span><span class="o">&lt;&gt;();</span>
+    <span class="n">FoodFactory</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">classCache</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConcurrentHashMap</span><span class="o">&lt;&gt;();</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="nc">Object</span> <span class="nf">getClz</span><span class="o">(</span><span class="nc">String</span> <span class="n">clzName</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
-        <span class="nc">Object</span> <span class="n">obj</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">getClz</span><span class="o">(</span><span class="n">String</span> <span class="n">clzName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+        <span class="n">Object</span> <span class="n">obj</span><span class="o">;</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">classCache</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">clzName</span><span class="o">)</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
             <span class="n">obj</span> <span class="o">=</span> <span class="n">classCache</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">clzName</span><span class="o">).</span><span class="na">newInstance</span><span class="o">();</span>
         <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-            <span class="n">obj</span> <span class="o">=</span> <span class="nc">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="n">clzName</span><span class="o">).</span><span class="na">newInstance</span><span class="o">();</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="n">clzName</span><span class="o">).</span><span class="na">newInstance</span><span class="o">();</span>
         <span class="o">}</span>
         <span class="k">return</span> <span class="n">obj</span><span class="o">;</span>
     <span class="o">}</span>
@@ -301,18 +301,18 @@
 <p>测试类：</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-        <span class="nc">FoodFactory</span> <span class="n">foodFactory</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">FoodFactory</span><span class="o">();</span>
-        <span class="nc">String</span> <span class="n">foodName</span> <span class="o">=</span> <span class="s">"com.dmc.DesignPatterns.simpleFactory.FriedRice"</span><span class="o">;</span>
-        <span class="nc">Object</span> <span class="n">food</span> <span class="o">=</span> <span class="n">chooseFood</span><span class="o">(</span><span class="n">foodName</span><span class="o">,</span> <span class="n">foodFactory</span><span class="o">);</span>
-        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">food</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">FoodFactory</span> <span class="n">foodFactory</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FoodFactory</span><span class="o">();</span>
+        <span class="n">String</span> <span class="n">foodName</span> <span class="o">=</span> <span class="s">"com.dmc.DesignPatterns.simpleFactory.FriedRice"</span><span class="o">;</span>
+        <span class="n">Object</span> <span class="n">food</span> <span class="o">=</span> <span class="n">chooseFood</span><span class="o">(</span><span class="n">foodName</span><span class="o">,</span> <span class="n">foodFactory</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">food</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">Object</span> <span class="nf">chooseFood</span><span class="o">(</span><span class="nc">String</span> <span class="n">foodName</span><span class="o">,</span> <span class="nc">FoodFactory</span> <span class="n">foodFactory</span><span class="o">)</span> <span class="o">{</span>
-        <span class="nc">Object</span> <span class="n">food</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">Object</span> <span class="nf">chooseFood</span><span class="o">(</span><span class="n">String</span> <span class="n">foodName</span><span class="o">,</span> <span class="n">FoodFactory</span> <span class="n">foodFactory</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">Object</span> <span class="n">food</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
         <span class="k">try</span> <span class="o">{</span>
             <span class="n">food</span> <span class="o">=</span> <span class="n">foodFactory</span><span class="o">.</span><span class="na">getClz</span><span class="o">(</span><span class="n">foodName</span><span class="o">);</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
             <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
         <span class="o">}</span>
         <span class="k">return</span> <span class="n">food</span><span class="o">;</span>
@@ -327,25 +327,25 @@
 <p>在简单工厂模式的基础上，抽象出“FoodFactory”的接口，每一种食物都交由相对应的工厂实现。比较好理解：</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">FoodFactory</span> <span class="o">{</span>
-    <span class="nc">Food</span> <span class="nf">createFood</span><span class="o">();</span>
+    <span class="n">Food</span> <span class="nf">createFood</span><span class="o">();</span>
 <span class="o">}</span>
 </code></pre></div></div>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//炒饭工厂</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">FriedRiceFactory</span> <span class="kd">implements</span> <span class="nc">FoodFactory</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">FriedRiceFactory</span> <span class="kd">implements</span> <span class="n">FoodFactory</span> <span class="o">{</span>
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="nc">Food</span> <span class="nf">createFood</span><span class="o">()</span> <span class="o">{</span>
-        <span class="nc">Food</span> <span class="n">food</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">FriedRice</span><span class="o">();</span>
+    <span class="kd">public</span> <span class="n">Food</span> <span class="nf">createFood</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">Food</span> <span class="n">food</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FriedRice</span><span class="o">();</span>
         <span class="k">return</span> <span class="n">food</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div></div>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//面条工厂</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">NoodlesFactory</span> <span class="kd">implements</span> <span class="nc">FoodFactory</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">NoodlesFactory</span> <span class="kd">implements</span> <span class="n">FoodFactory</span> <span class="o">{</span>
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="nc">Food</span> <span class="nf">createFood</span><span class="o">()</span> <span class="o">{</span>
-        <span class="nc">Food</span> <span class="n">food</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Noodles</span><span class="o">();</span>
+    <span class="kd">public</span> <span class="n">Food</span> <span class="nf">createFood</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">Food</span> <span class="n">food</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Noodles</span><span class="o">();</span>
         <span class="k">return</span> <span class="n">food</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span>
@@ -354,14 +354,14 @@
 <p>测试类：</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-        <span class="nc">FriedRiceFactory</span> <span class="n">friedRiceFactory</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">FriedRiceFactory</span><span class="o">();</span>
-        <span class="nc">Food</span> <span class="n">friedRice</span> <span class="o">=</span> <span class="n">friedRiceFactory</span><span class="o">.</span><span class="na">createFood</span><span class="o">();</span>
-        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">friedRice</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">FriedRiceFactory</span> <span class="n">friedRiceFactory</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FriedRiceFactory</span><span class="o">();</span>
+        <span class="n">Food</span> <span class="n">friedRice</span> <span class="o">=</span> <span class="n">friedRiceFactory</span><span class="o">.</span><span class="na">createFood</span><span class="o">();</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">friedRice</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
 
-        <span class="nc">NoodlesFactory</span> <span class="n">noodlesFactory</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">NoodlesFactory</span><span class="o">();</span>
-        <span class="nc">Food</span> <span class="n">noodles</span> <span class="o">=</span> <span class="n">noodlesFactory</span><span class="o">.</span><span class="na">createFood</span><span class="o">();</span>
-        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">noodles</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+        <span class="n">NoodlesFactory</span> <span class="n">noodlesFactory</span> <span class="o">=</span> <span class="k">new</span> <span class="n">NoodlesFactory</span><span class="o">();</span>
+        <span class="n">Food</span> <span class="n">noodles</span> <span class="o">=</span> <span class="n">noodlesFactory</span><span class="o">.</span><span class="na">createFood</span><span class="o">();</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">noodles</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
     <span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div></div>
@@ -373,39 +373,39 @@
 <p>抽象出一个”饭店接口”</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">AbstractRestaurant</span> <span class="o">{</span>
-    <span class="nc">Food</span> <span class="nf">createRice</span><span class="o">();</span>
+    <span class="n">Food</span> <span class="nf">createRice</span><span class="o">();</span>
 
-    <span class="nc">Food</span> <span class="nf">createNoodles</span><span class="o">();</span>
+    <span class="n">Food</span> <span class="nf">createNoodles</span><span class="o">();</span>
 <span class="o">}</span>
 </code></pre></div></div>
 
 <p>分别实现A饭店和B饭店</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RestaurantA</span> <span class="kd">implements</span> <span class="nc">AbstractRestaurant</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RestaurantA</span> <span class="kd">implements</span> <span class="n">AbstractRestaurant</span> <span class="o">{</span>
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="nc">Food</span> <span class="nf">createRice</span><span class="o">()</span> <span class="o">{</span>
-        <span class="nc">Food</span> <span class="n">food</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">FriedRice</span><span class="o">(</span><span class="mi">20</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="s">"FriedRiceA"</span><span class="o">);</span>
+    <span class="kd">public</span> <span class="n">Food</span> <span class="nf">createRice</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">Food</span> <span class="n">food</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FriedRice</span><span class="o">(</span><span class="mi">20</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="s">"FriedRiceA"</span><span class="o">);</span>
         <span class="k">return</span> <span class="n">food</span><span class="o">;</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="nc">Food</span> <span class="nf">createNoodles</span><span class="o">()</span> <span class="o">{</span>
-        <span class="nc">Food</span> <span class="n">food</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Noodles</span><span class="o">(</span><span class="mi">30</span><span class="o">,</span> <span class="mi">15</span><span class="o">,</span> <span class="s">"NoodlesA"</span><span class="o">);</span>
+    <span class="kd">public</span> <span class="n">Food</span> <span class="nf">createNoodles</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">Food</span> <span class="n">food</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Noodles</span><span class="o">(</span><span class="mi">30</span><span class="o">,</span> <span class="mi">15</span><span class="o">,</span> <span class="s">"NoodlesA"</span><span class="o">);</span>
         <span class="k">return</span> <span class="n">food</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div></div>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RestaurantB</span> <span class="kd">implements</span> <span class="nc">AbstractRestaurant</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RestaurantB</span> <span class="kd">implements</span> <span class="n">AbstractRestaurant</span> <span class="o">{</span>
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="nc">Food</span> <span class="nf">createRice</span><span class="o">()</span> <span class="o">{</span>
-        <span class="nc">Food</span> <span class="n">food</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">FriedRice</span><span class="o">(</span><span class="mi">59</span><span class="o">,</span> <span class="mi">14</span><span class="o">,</span> <span class="s">"FriedRiceB"</span><span class="o">);</span>
+    <span class="kd">public</span> <span class="n">Food</span> <span class="nf">createRice</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">Food</span> <span class="n">food</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FriedRice</span><span class="o">(</span><span class="mi">59</span><span class="o">,</span> <span class="mi">14</span><span class="o">,</span> <span class="s">"FriedRiceB"</span><span class="o">);</span>
         <span class="k">return</span> <span class="n">food</span><span class="o">;</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="nc">Food</span> <span class="nf">createNoodles</span><span class="o">()</span> <span class="o">{</span>
-        <span class="nc">Food</span> <span class="n">food</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Noodles</span><span class="o">(</span><span class="mi">34</span><span class="o">,</span> <span class="mi">21</span><span class="o">,</span> <span class="s">"NoodlesB"</span><span class="o">);</span>
+    <span class="kd">public</span> <span class="n">Food</span> <span class="nf">createNoodles</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">Food</span> <span class="n">food</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Noodles</span><span class="o">(</span><span class="mi">34</span><span class="o">,</span> <span class="mi">21</span><span class="o">,</span> <span class="s">"NoodlesB"</span><span class="o">);</span>
         <span class="k">return</span> <span class="n">food</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span>
@@ -414,19 +414,19 @@
 <p>测试程序：</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-        <span class="nc">RestaurantA</span> <span class="no">A</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">RestaurantA</span><span class="o">();</span>
-        <span class="nc">RestaurantB</span> <span class="no">B</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">RestaurantB</span><span class="o">();</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">RestaurantA</span> <span class="n">A</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RestaurantA</span><span class="o">();</span>
+        <span class="n">RestaurantB</span> <span class="n">B</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RestaurantB</span><span class="o">();</span>
 
-        <span class="nc">Food</span> <span class="nc">AFriedRice</span> <span class="o">=</span> <span class="no">A</span><span class="o">.</span><span class="na">createRice</span><span class="o">();</span>
-        <span class="nc">Food</span> <span class="nc">ANoodles</span> <span class="o">=</span> <span class="no">A</span><span class="o">.</span><span class="na">createNoodles</span><span class="o">();</span>
-        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">AFriedRice</span><span class="o">);</span>
-        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">ANoodles</span><span class="o">);</span>
+        <span class="n">Food</span> <span class="n">AFriedRice</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="na">createRice</span><span class="o">();</span>
+        <span class="n">Food</span> <span class="n">ANoodles</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="na">createNoodles</span><span class="o">();</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">AFriedRice</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">ANoodles</span><span class="o">);</span>
 
-        <span class="nc">Food</span> <span class="nc">BFriedRice</span> <span class="o">=</span> <span class="no">B</span><span class="o">.</span><span class="na">createRice</span><span class="o">();</span>
-        <span class="nc">Food</span> <span class="nc">BNoodles</span> <span class="o">=</span> <span class="no">B</span><span class="o">.</span><span class="na">createNoodles</span><span class="o">();</span>
-        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">BFriedRice</span><span class="o">);</span>
-        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">BNoodles</span><span class="o">);</span>
+        <span class="n">Food</span> <span class="n">BFriedRice</span> <span class="o">=</span> <span class="n">B</span><span class="o">.</span><span class="na">createRice</span><span class="o">();</span>
+        <span class="n">Food</span> <span class="n">BNoodles</span> <span class="o">=</span> <span class="n">B</span><span class="o">.</span><span class="na">createNoodles</span><span class="o">();</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">BFriedRice</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">BNoodles</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div></div>
@@ -475,7 +475,7 @@
                     <div class="tags">
         				
                             
-                				<a href="/tags/#杂记" title="杂记" rel="8">
+                				<a href="/tags/#杂记" title="杂记" rel="7">
                                     杂记
                                 </a>
                             
