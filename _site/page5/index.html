@@ -28,6 +28,8 @@
     <!-- Hux change font-awesome CDN to qiniu -->
     <link href="http://cdn.staticfile.org/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
+    <link rel="dns-prefetch" href="//cdn.bootcss.com" />
+
 
     <!-- Hux Delete, sad but pending in China
     <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
@@ -153,6 +155,35 @@
                 post-container
             ">
     			
+<div class="post-preview">
+    <a href="/2017/12/23/%E8%BD%AC-java%E5%9F%BA%E7%A1%80-%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E4%B8%8E%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA/">
+        <h2 class="post-title">
+            [转]java基础-内存泄漏与内存溢出
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+主要根据之前看的资料进行了一些修改。
+
+原文地址
+
+要点
+
+
+  内存泄露是指程序中间动态分配了内存，但在程序结束时没有释放这部分内存，从而造成那部分内存不可用的情况，重启计算机可以解决，但也有可能再次发生内存泄露，内存泄露和硬件没有关系，它是由软件设计缺陷引起的。
+  内存泄漏可以分为4类：
+
+
+1) 常发性内存泄漏。发生内存泄漏的代码会被多次执行到，每次被执行的时候都会导致一块内...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on December 23, 2017
+    </p>
+</div>
+<hr>
+
 <div class="post-preview">
     <a href="/2017/12/22/linux%E7%9B%B8%E5%85%B3%E5%91%BD%E4%BB%A4%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
         <h2 class="post-title">
@@ -393,6 +424,8 @@ git clone git@github.com:dingmingcheng/...
                         
                             
                         
+                            
+                        
                     </div>
                 </section>
                 
@@ -470,7 +503,7 @@ git clone git@github.com:dingmingcheng/...
                     
                 </ul>
                 <p class="copyright text-muted">
-                    Copyright &copy; New Boy 2019
+                    Copyright &copy; New Boy 2020
                     <br>
                     Theme by <a href="http://huangxuan.me">Hux</a> |
                     <iframe
@@ -545,6 +578,11 @@ git clone git@github.com:dingmingcheng/...
         var $nav = document.querySelector("nav");
         if($nav) FastClick.attach($nav);
     })
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
 </script>
 
 

@@ -28,6 +28,8 @@
     <!-- Hux change font-awesome CDN to qiniu -->
     <link href="http://cdn.staticfile.org/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
+    <link rel="dns-prefetch" href="//cdn.bootcss.com" />
+
 
     <!-- Hux Delete, sad but pending in China
     <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
@@ -464,6 +466,8 @@
         				
                             
         				
+                            
+        				
         			</div>
                 </section>
                 
@@ -553,7 +557,7 @@
                     
                 </ul>
                 <p class="copyright text-muted">
-                    Copyright &copy; New Boy 2019
+                    Copyright &copy; New Boy 2020
                     <br>
                     Theme by <a href="http://huangxuan.me">Hux</a> |
                     <iframe
@@ -628,6 +632,11 @@
         var $nav = document.querySelector("nav");
         if($nav) FastClick.attach($nav);
     })
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
 </script>
 
 

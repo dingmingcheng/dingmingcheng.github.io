@@ -28,6 +28,8 @@
     <!-- Hux change font-awesome CDN to qiniu -->
     <link href="http://cdn.staticfile.org/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
+    <link rel="dns-prefetch" href="//cdn.bootcss.com" />
+
 
     <!-- Hux Delete, sad but pending in China
     <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
@@ -153,6 +155,24 @@
                 post-container
             ">
     			
+<div class="post-preview">
+    <a href="/2020/02/09/st%E7%AE%97%E6%B3%95/">
+        <h2 class="post-title">
+            st算法
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+大概是去年十月份开始，开始刷起了leetcode。当时，主要是两个目的，一是加强自己的思维能力，个人觉得算法还是很有意思的，二是开始在日常工作中使用python写些脚步来处理些重复的劳动，借此去学习学习python。大学打了多年acm，所以感觉leetcode题目的难度还是有限，除去水题，数论方向上的题目基本没有，图论方向也少往往也就点到为止，搜索，动态规划相关的题目会稍多些，也比较...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on February 9, 2020
+    </p>
+</div>
+<hr>
+
 <div class="post-preview">
     <a href="/2019/11/24/%E8%AF%BB-%E7%BB%8F%E6%B5%8E%E5%AD%A6%E9%80%9A%E8%AF%86-%E8%AE%B0%E5%BD%95/">
         <h2 class="post-title">
@@ -354,24 +374,6 @@ rebalance主要包括RebalancePullImpl和RebalancePushImpl，位于org.apache.ro
 </div>
 <hr>
 
-<div class="post-preview">
-    <a href="/2019/01/13/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(3)-mq%E6%B6%88%E8%B4%B9%E8%80%85%E5%88%9D%E5%A7%8B%E5%8C%96/">
-        <h2 class="post-title">
-            rocketmq源码阅读(3)——mq消费者初始化
-        </h2>
-        
-        <div class="post-content-preview">
-            写在前面
-
-最近开始看了一些rocketmq的源码，在正式讲消费者初始化过程之前先写写自己的感受吧。虽说已经写了两篇了，但阅读以及整理的时候，还是感觉有很多问题。之前看源码更多的是去了解相关的流程。在写文章时，还是能体会到自己太弱，无法理解相关设计的精妙之处，仅仅是能看明白流程。说到精妙之处，比如说其中设计模式的应用，相关锁的使用原因，带着问题去看才会发现不懂的还有很多。另外，在整理的时候，...
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by New Boy on January 13, 2019
-    </p>
-</div>
-<hr>
-
 
 <!-- Pager -->
 
@@ -457,6 +459,8 @@ rebalance主要包括RebalancePullImpl和RebalancePushImpl，位于org.apache.ro
                         
                             
                         
+                            
+                        
                     </div>
                 </section>
                 
@@ -534,7 +538,7 @@ rebalance主要包括RebalancePullImpl和RebalancePushImpl，位于org.apache.ro
                     
                 </ul>
                 <p class="copyright text-muted">
-                    Copyright &copy; New Boy 2019
+                    Copyright &copy; New Boy 2020
                     <br>
                     Theme by <a href="http://huangxuan.me">Hux</a> |
                     <iframe
@@ -609,6 +613,11 @@ rebalance主要包括RebalancePullImpl和RebalancePushImpl，位于org.apache.ro
         var $nav = document.querySelector("nav");
         if($nav) FastClick.attach($nav);
     })
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
 </script>
 
 

@@ -28,6 +28,8 @@
     <!-- Hux change font-awesome CDN to qiniu -->
     <link href="http://cdn.staticfile.org/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
+    <link rel="dns-prefetch" href="//cdn.bootcss.com" />
+
 
     <!-- Hux Delete, sad but pending in China
     <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
@@ -153,6 +155,24 @@
                 post-container
             ">
     			
+<div class="post-preview">
+    <a href="/2019/01/13/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(3)-mq%E6%B6%88%E8%B4%B9%E8%80%85%E5%88%9D%E5%A7%8B%E5%8C%96/">
+        <h2 class="post-title">
+            rocketmq源码阅读(3)——mq消费者初始化
+        </h2>
+        
+        <div class="post-content-preview">
+            写在前面
+
+最近开始看了一些rocketmq的源码，在正式讲消费者初始化过程之前先写写自己的感受吧。虽说已经写了两篇了，但阅读以及整理的时候，还是感觉有很多问题。之前看源码更多的是去了解相关的流程。在写文章时，还是能体会到自己太弱，无法理解相关设计的精妙之处，仅仅是能看明白流程。说到精妙之处，比如说其中设计模式的应用，相关锁的使用原因，带着问题去看才会发现不懂的还有很多。另外，在整理的时候，...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on January 13, 2019
+    </p>
+</div>
+<hr>
+
 <div class="post-preview">
     <a href="/2019/01/07/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(2)-MQClientInstance%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/">
         <h2 class="post-title">
@@ -348,24 +368,6 @@
 </div>
 <hr>
 
-<div class="post-preview">
-    <a href="/2018/05/20/come-back/">
-        <h2 class="post-title">
-            come back
-        </h2>
-        
-        <div class="post-content-preview">
-            博客停了两个月，再打开时竟然感到有一丝陌生，看着最熟悉的键盘和屏幕也不知道该敲什么，脑海中竟然有想打出“int main()”的想法，呵，真是“无药可救”了。不过确实，十二年前那次数学竞赛的偶然获奖也注定了我是更爱那些数学公式的。
-
-两个月前因为总总原因结束了三个多月的实习，回到了阔别已久的学校，和同学们好好聚了聚，也不知道下次毕业后再见到你们这帮蠢逼天才是什么时候了，不过大部分在杭州问题应...
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by New Boy on May 20, 2018
-    </p>
-</div>
-<hr>
-
 
 <!-- Pager -->
 
@@ -455,6 +457,8 @@
                         
                             
                         
+                            
+                        
                     </div>
                 </section>
                 
@@ -532,7 +536,7 @@
                     
                 </ul>
                 <p class="copyright text-muted">
-                    Copyright &copy; New Boy 2019
+                    Copyright &copy; New Boy 2020
                     <br>
                     Theme by <a href="http://huangxuan.me">Hux</a> |
                     <iframe
@@ -607,6 +611,11 @@
         var $nav = document.querySelector("nav");
         if($nav) FastClick.attach($nav);
     })
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
 </script>
 
 

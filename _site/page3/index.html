@@ -28,6 +28,8 @@
     <!-- Hux change font-awesome CDN to qiniu -->
     <link href="http://cdn.staticfile.org/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
+    <link rel="dns-prefetch" href="//cdn.bootcss.com" />
+
 
     <!-- Hux Delete, sad but pending in China
     <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
@@ -153,6 +155,24 @@
                 post-container
             ">
     			
+<div class="post-preview">
+    <a href="/2018/05/20/come-back/">
+        <h2 class="post-title">
+            come back
+        </h2>
+        
+        <div class="post-content-preview">
+            博客停了两个月，再打开时竟然感到有一丝陌生，看着最熟悉的键盘和屏幕也不知道该敲什么，脑海中竟然有想打出“int main()”的想法，呵，真是“无药可救”了。不过确实，十二年前那次数学竞赛的偶然获奖也注定了我是更爱那些数学公式的。
+
+两个月前因为总总原因结束了三个多月的实习，回到了阔别已久的学校，和同学们好好聚了聚，也不知道下次毕业后再见到你们这帮蠢逼天才是什么时候了，不过大部分在杭州问题应...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on May 20, 2018
+    </p>
+</div>
+<hr>
+
 <div class="post-preview">
     <a href="/2018/03/15/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/">
         <h2 class="post-title">
@@ -364,30 +384,6 @@ volatile特性
 </div>
 <hr>
 
-<div class="post-preview">
-    <a href="/2018/02/12/%E8%BD%AC-OAuth2.0%E6%8E%88%E6%9D%83%E7%AE%A1%E7%90%86/">
-        <h2 class="post-title">
-            [转]OAuth2.0授权管理
-        </h2>
-        
-        <div class="post-content-preview">
-            
-  本文转载于OAuth2.0授权管理
-
-  注：
-
-  原文发表于2013年，所以也有一些问题，其中安全漏洞那块所引用的链接已挂，可以参考这篇文章针对近期“博全球眼球OAuth漏洞”的分析与防范建议,也是比较全面的。另外在新浪微博相关的地方，使用的也是较早的版本，建议读完此文后再去看看新浪官方授权机制，从理论到落地，必定很有收获。
-
-
-最近在做第三方接入的，初步定下使用OAuth2协议，...
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by New Boy on February 12, 2018
-    </p>
-</div>
-<hr>
-
 
 <!-- Pager -->
 
@@ -477,6 +473,8 @@ volatile特性
                         
                             
                         
+                            
+                        
                     </div>
                 </section>
                 
@@ -554,7 +552,7 @@ volatile特性
                     
                 </ul>
                 <p class="copyright text-muted">
-                    Copyright &copy; New Boy 2019
+                    Copyright &copy; New Boy 2020
                     <br>
                     Theme by <a href="http://huangxuan.me">Hux</a> |
                     <iframe
@@ -629,6 +627,11 @@ volatile特性
         var $nav = document.querySelector("nav");
         if($nav) FastClick.attach($nav);
     })
+</script>
+
+<script src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
 </script>
 
 
