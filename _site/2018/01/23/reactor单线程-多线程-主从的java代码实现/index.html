@@ -168,6 +168,8 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
+				<div id="toc"></div>
+
 				<h2 id="前言">前言</h2>
 
 <p>从最初，自己就对网络编程比较感兴趣，这段时间看了netty权威指南，收获很多。我觉得所有的知识都是要落地才能体现其价值，也为了加深自己对reactor模式的理解，自己也就敲了一遍，当然中间也遇到了很多困难，废话不多说，上代码。</p>
@@ -949,7 +951,7 @@ public class MainReactor implements Runnable, CallBack{
                             
         				
                             
-                				<a href="/tags/#java" title="java" rel="11">
+                				<a href="/tags/#java" title="java" rel="14">
                                     java
                                 </a>
                             
@@ -1103,6 +1105,7 @@ public class MainReactor implements Runnable, CallBack{
 
 <!-- Custom Theme JavaScript -->
 <script src="/js/hux-blog.min.js "></script>
+<script src="/js/toc.js "></script>
 
 
 <!-- async load function -->
@@ -1135,6 +1138,12 @@ public class MainReactor implements Runnable, CallBack{
     <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
 -->
 
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#toc').toc();
+}); </script>
 
 <!-- jquery.tagcloud.js -->
 <script>

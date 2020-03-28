@@ -168,6 +168,8 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
+				<div id="toc"></div>
+
 				<p>不知为何，明明最近事情如此多，还是突然想写点东西，也许是受我父亲的影响吧，说实话，自从上次省赛打完后就有这想法，今天不知为何，感觉有点累，也不想学习，也算是写这段文字的契机了吧。话说我语文一直不好，高考100都没上，只想借着深夜的一股冲动，抒发抒发感情，就当是把过去写给未来吧。</p>
 
 <hr />
@@ -261,7 +263,7 @@
                             
         				
                             
-                				<a href="/tags/#java" title="java" rel="11">
+                				<a href="/tags/#java" title="java" rel="14">
                                     java
                                 </a>
                             
@@ -415,6 +417,7 @@
 
 <!-- Custom Theme JavaScript -->
 <script src="/js/hux-blog.min.js "></script>
+<script src="/js/toc.js "></script>
 
 
 <!-- async load function -->
@@ -447,6 +450,12 @@
     <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
 -->
 
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#toc').toc();
+}); </script>
 
 <!-- jquery.tagcloud.js -->
 <script>

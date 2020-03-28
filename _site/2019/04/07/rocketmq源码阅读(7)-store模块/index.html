@@ -168,6 +168,8 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
+				<div id="toc"></div>
+
 				<h2 id="前言">前言</h2>
 
 <p>在rocketmq中，store模块，也就是底层存储模块，是最为核心的部分，也在很大程度上决定了rocketmq的性能。rocketmq借鉴了kafka的设计，采用了文件存储。</p>
@@ -448,7 +450,7 @@
                             
         				
                             
-                				<a href="/tags/#java" title="java" rel="11">
+                				<a href="/tags/#java" title="java" rel="14">
                                     java
                                 </a>
                             
@@ -602,6 +604,7 @@
 
 <!-- Custom Theme JavaScript -->
 <script src="/js/hux-blog.min.js "></script>
+<script src="/js/toc.js "></script>
 
 
 <!-- async load function -->
@@ -634,6 +637,12 @@
     <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
 -->
 
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#toc').toc();
+}); </script>
 
 <!-- jquery.tagcloud.js -->
 <script>

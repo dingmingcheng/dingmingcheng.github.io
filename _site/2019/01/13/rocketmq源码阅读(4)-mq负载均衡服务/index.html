@@ -168,6 +168,8 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
+				<div id="toc"></div>
+
 				<h2 id="前言">前言</h2>
 
 <p>上一文在消费者初始化中，提到了客户端的负载均衡服务。再简单介绍一下负载均衡服务</p>
@@ -596,7 +598,7 @@
                             
         				
                             
-                				<a href="/tags/#java" title="java" rel="11">
+                				<a href="/tags/#java" title="java" rel="14">
                                     java
                                 </a>
                             
@@ -750,6 +752,7 @@
 
 <!-- Custom Theme JavaScript -->
 <script src="/js/hux-blog.min.js "></script>
+<script src="/js/toc.js "></script>
 
 
 <!-- async load function -->
@@ -782,6 +785,12 @@
     <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
 -->
 
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#toc').toc();
+}); </script>
 
 <!-- jquery.tagcloud.js -->
 <script>

@@ -170,6 +170,8 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
+				<div id="toc"></div>
+
 				<p>前几天在整理电脑，为了玩玩其他有意思的东西。把window和ubuntu的双系统给干掉了，弄个了kali liunx。最近想写博客来着，需要重新弄jekyll的环境，其实之前弄这环境就感觉特别麻烦，而且各种坑。最近docker比较火，所以这次就打算试试docker来快速搭建该环境</p>
 
 <h3 id="安装docker">安装docker</h3>
@@ -269,7 +271,7 @@ sudo docker run -p 4000:4000 --rm --volume="$PWD:/srv/jekyll" -it jekyll/jekyll 
                             
         				
                             
-                				<a href="/tags/#java" title="java" rel="11">
+                				<a href="/tags/#java" title="java" rel="14">
                                     java
                                 </a>
                             
@@ -423,6 +425,7 @@ sudo docker run -p 4000:4000 --rm --volume="$PWD:/srv/jekyll" -it jekyll/jekyll 
 
 <!-- Custom Theme JavaScript -->
 <script src="/js/hux-blog.min.js "></script>
+<script src="/js/toc.js "></script>
 
 
 <!-- async load function -->
@@ -455,6 +458,12 @@ sudo docker run -p 4000:4000 --rm --volume="$PWD:/srv/jekyll" -it jekyll/jekyll 
     <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
 -->
 
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#toc').toc();
+}); </script>
 
 <!-- jquery.tagcloud.js -->
 <script>

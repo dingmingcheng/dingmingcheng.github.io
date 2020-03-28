@@ -168,6 +168,8 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
+				<div id="toc"></div>
+
 				<h2 id="前言">前言</h2>
 
 <p>所谓策略模式，就是可以采取不同的策略去完成我们需要的过程。举个简单的例子来说，一个商场每到节假日就会举办促销活动，不同的节假日有着不同的促销策略。如果在节假日要到时在进行修改，其实是非常不利于维护的，于是策略模式便有了用武之地。</p>
@@ -422,7 +424,7 @@
                             
         				
                             
-                				<a href="/tags/#java" title="java" rel="11">
+                				<a href="/tags/#java" title="java" rel="14">
                                     java
                                 </a>
                             
@@ -576,6 +578,7 @@
 
 <!-- Custom Theme JavaScript -->
 <script src="/js/hux-blog.min.js "></script>
+<script src="/js/toc.js "></script>
 
 
 <!-- async load function -->
@@ -608,6 +611,12 @@
     <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
 -->
 
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#toc').toc();
+}); </script>
 
 <!-- jquery.tagcloud.js -->
 <script>

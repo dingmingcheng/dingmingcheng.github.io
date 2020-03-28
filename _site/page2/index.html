@@ -156,6 +156,76 @@
             ">
     			
 <div class="post-preview">
+    <a href="/2019/02/24/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(6)-remoting%E6%A8%A1%E5%9D%97/">
+        <h2 class="post-title">
+            rocketmq源码阅读(6)——remoting模块
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+本文中，会看看rocketmq中remoting模块中的代码。remoting模块相对而言会比较简单，主要是对netty进行了一层封装，至于netty的细节本文中就不细讲了，建议对netty有一些基本的了解再来看此文会比较好。我们其实可以看看像rocketmq这种成熟的消息队列中间件是如何使用netty这种高性能网络通信框架。
+
+从功能上来看，分为NettyRemotingClien...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on February 24, 2019
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2019/01/20/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(5)-%E6%B6%88%E8%B4%B9%E8%80%85%E6%B6%88%E8%B4%B9%E6%B5%81%E7%A8%8B/">
+        <h2 class="post-title">
+            rocketmq源码阅读(5)——消费者消费流程
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+在消费者初始化过程中，我们看到了PullRequest的分发，接下来就是看看具体的消费流程。大体的流程是这样的：
+
+
+  PullRequest的处理
+  回调PullCallBack处理pullResult
+  ConsumeMessageService处理消息
+
+
+PullRequest的处理
+
+PullMessageService在拿到PullRequest后，直接转发给Def...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on January 20, 2019
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2019/01/13/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(4)-mq%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%9C%8D%E5%8A%A1/">
+        <h2 class="post-title">
+            rocketmq源码阅读(4)——mq负载均衡服务
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+上一文在消费者初始化中，提到了客户端的负载均衡服务。再简单介绍一下负载均衡服务
+
+rebalance服务主要用于每个消费者实例匹配一个或者多个queue，以保证broker端的queue只对应一个实例，避免多个实例消费相同的queue。
+
+rebalance主要包括RebalancePullImpl和RebalancePushImpl，位于org.apache.rocketmq.cl...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on January 13, 2019
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
     <a href="/2019/01/13/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(3)-mq%E6%B6%88%E8%B4%B9%E8%80%85%E5%88%9D%E5%A7%8B%E5%8C%96/">
         <h2 class="post-title">
             rocketmq源码阅读(3)——mq消费者初始化
@@ -296,78 +366,6 @@
 </div>
 <hr>
 
-<div class="post-preview">
-    <a href="/2018/07/11/%E8%BD%AC-Java-Stream-API%E5%85%A5%E9%97%A8%E7%AF%87/">
-        <h2 class="post-title">
-            [转]Java Stream API入门篇
-        </h2>
-        
-        <div class="post-content-preview">
-            
-  来本文转载于http://www.cnblogs.com/CarpenterLee/p/6545321.html，十分感谢CarpenterLee写出如此棒的文章。
-
-  来到了毕业后真正意义上的第一家公司，要说这近两个月在技术层面最大的感受，一是授权方式的演变，这里暂不讨论。第二个就是java8引入的Lambda，Stream，彻底改变了我对编程的理解。不过，在开始接触时，对于写下的...
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by New Boy on July 11, 2018
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2018/06/17/OAuth1.0a%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/">
-        <h2 class="post-title">
-            OAuth1.0a踩坑记录
-        </h2>
-        
-        <div class="post-content-preview">
-            前言
-
-最近工作中接触到了OAuth1.0a，相比较OAuth2.0，1.0a确实是复杂了不少，中间也踩了不少的坑，特此记录。关于OAuth1.0，1.0a，2.0之间的区别，包括1.0的相关漏洞，可以看看知乎上这篇文章，Oauth 1.0 1.0a 和 2.0 的之间的区别有哪些？,我觉得还是比较详细的。
-
-踩坑记录
-
-生成签名
-
-生成签名踩的坑还是比较多的，一个一个讲吧
-
-1.加密密钥
-...
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by New Boy on June 17, 2018
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2018/06/09/fastjson%E5%AD%A6%E4%B9%A0/">
-        <h2 class="post-title">
-            fastjson学习
-        </h2>
-        
-        <div class="post-content-preview">
-            前言
-
-额，json的介绍就不多说了，非常方便。对于json相关的处理也是工作中非常基础的一部分。不过之前非常乱，最近搜了搜资料，对fastjson做了一个总结，相信以后的json格式上应该是没什么问题了。
-
-主要内容
-
-概括
-
-先概括一下主要的知识点，理一理思绪，对下一步的学习还是十分关键的。
-
-1.测试中我们会接触到三种对象，分别的JSON对象，json串，javabean。JSON对象...
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by New Boy on June 9, 2018
-    </p>
-</div>
-<hr>
-
 
 <!-- Pager -->
 
@@ -416,7 +414,7 @@
                             
                         
                             
-                                <a href="/tags/#java" title="java" rel="11">
+                                <a href="/tags/#java" title="java" rel="14">
                                     java
                                 </a>
                             
@@ -558,6 +556,7 @@
 
 <!-- Custom Theme JavaScript -->
 <script src="/js/hux-blog.min.js "></script>
+<script src="/js/toc.js "></script>
 
 
 <!-- async load function -->
@@ -590,6 +589,12 @@
     <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
 -->
 
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#toc').toc();
+}); </script>
 
 <!-- jquery.tagcloud.js -->
 <script>

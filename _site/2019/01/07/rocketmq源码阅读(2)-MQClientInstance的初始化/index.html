@@ -168,6 +168,8 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
+				<div id="toc"></div>
+
 				<h2 id="前言">前言</h2>
 
 <p>上篇在读mq生成者相关的代码时。在DefaultMQProducer的初始化最后一步时，代码是<strong>mQClientFactory.start();</strong>。至于MQClientInstance的关键性在上篇文章中也提到了。这篇就从<strong>mQClientFactory.start();</strong>开始吧。先放上相关的代码吧</p>
@@ -465,7 +467,7 @@
                             
         				
                             
-                				<a href="/tags/#java" title="java" rel="11">
+                				<a href="/tags/#java" title="java" rel="14">
                                     java
                                 </a>
                             
@@ -619,6 +621,7 @@
 
 <!-- Custom Theme JavaScript -->
 <script src="/js/hux-blog.min.js "></script>
+<script src="/js/toc.js "></script>
 
 
 <!-- async load function -->
@@ -651,6 +654,12 @@
     <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
 -->
 
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#toc').toc();
+}); </script>
 
 <!-- jquery.tagcloud.js -->
 <script>

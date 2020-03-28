@@ -156,6 +156,77 @@
             ">
     			
 <div class="post-preview">
+    <a href="/2018/01/13/mysql%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95%E4%B8%8Esysbench/">
+        <h2 class="post-title">
+            mysql基准测试与sysbench
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+之前常常会看到QPS，TPS这些字样，确实这些指标也是衡量数据库性能的非常重要的指标，而基准测试则是抛开业务，对机子上的数据库进行测试，自己也尝试用sysbench做了一遍，废话少说。
+
+##测试过程
+
+测试主要依赖自带的oltp.lua这个脚本文件，不同系统应该会在不同文件夹下，我的是mac，位于/usr/local/Cellar/sysbench/1.0.11_1/share/s...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by dingmc on January 13, 2018
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2018/01/08/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%AE%80%E5%8D%95OOM%E5%88%86%E6%9E%90/">
+        <h2 class="post-title">
+            记一次简单OOM分析
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+说到OOM，out of memory也是一个广泛存在的问题，如果线上出了问题，临时抱佛脚肯定是不行的，所以未雨绸缪是必须的。
+
+测试过程
+
+首先是程序的准备
+
+准备了两个OOM的程序
+
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+/**
+ * @Autho...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on January 8, 2018
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2017/12/24/mysql%E4%B8%AD%E7%9A%84explain%E7%9A%84%E4%BD%BF%E7%94%A8/">
+        <h2 class="post-title">
+            mysql中的explain的使用
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+由于开源简单等优势，mysql近几年也变得越来越火，最近看到一个报告，报告显示中国开发者常用的数据库中，mysql稳居第一，使用比例高达79.0%，而且在“全球开发者常用的数据库”中，mysql也稳居第一，高达55.6%。数据库的io一直是系统性能调优中非常重要的一环，写出好的sql语句也是开发者必须具备的基本素质之一，explain的合理使用也可以帮助开发者对sql语句进行相关的优...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by dingmc on December 24, 2017
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
     <a href="/2017/12/23/%E8%BD%AC-java%E5%9F%BA%E7%A1%80-%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E4%B8%8E%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA/">
         <h2 class="post-title">
             [转]java基础-内存泄漏与内存溢出
@@ -319,26 +390,6 @@ git clone git@github.com:dingmingcheng/...
 </div>
 <hr>
 
-<div class="post-preview">
-    <a href="/2017/06/05/%E5%86%99%E5%9C%A8%E9%80%80%E5%BD%B9%E5%90%8E/">
-        <h2 class="post-title">
-            写在退役后
-        </h2>
-        
-        <div class="post-content-preview">
-            不知为何，明明最近事情如此多，还是突然想写点东西，也许是受我父亲的影响吧，说实话，自从上次省赛打完后就有这想法，今天不知为何，感觉有点累，也不想学习，也算是写这段文字的契机了吧。话说我语文一直不好，高考100都没上，只想借着深夜的一股冲动，抒发抒发感情，就当是把过去写给未来吧。
-
-
-
-一直以来我都感觉自己是个目的性很强的人，不过大学三年来，时间真的过的很快，许多当初定下的目标也似乎渐行渐远，...
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by dingmc on June 5, 2017
-    </p>
-</div>
-<hr>
-
 
 <!-- Pager -->
 
@@ -348,6 +399,10 @@ git clone git@github.com:dingmingcheng/...
         <a href="/page4">&larr; Newer Posts</a>
     </li>
     
+    
+    <li class="next">
+        <a href="/page6">Older Posts &rarr;</a>
+    </li>
     
 </ul>
 
@@ -383,7 +438,7 @@ git clone git@github.com:dingmingcheng/...
                             
                         
                             
-                                <a href="/tags/#java" title="java" rel="11">
+                                <a href="/tags/#java" title="java" rel="14">
                                     java
                                 </a>
                             
@@ -525,6 +580,7 @@ git clone git@github.com:dingmingcheng/...
 
 <!-- Custom Theme JavaScript -->
 <script src="/js/hux-blog.min.js "></script>
+<script src="/js/toc.js "></script>
 
 
 <!-- async load function -->
@@ -557,6 +613,12 @@ git clone git@github.com:dingmingcheng/...
     <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
 -->
 
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#toc').toc();
+}); </script>
 
 <!-- jquery.tagcloud.js -->
 <script>

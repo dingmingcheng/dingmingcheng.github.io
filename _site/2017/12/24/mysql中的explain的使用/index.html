@@ -168,6 +168,8 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
+				<div id="toc"></div>
+
 				<h2 id="前言">前言</h2>
 
 <p>由于开源简单等优势，mysql近几年也变得越来越火，最近看到一个报告，报告显示中国开发者常用的数据库中，mysql稳居第一，使用比例高达79.0%，而且在“全球开发者常用的数据库”中，mysql也稳居第一，高达55.6%。数据库的io一直是系统性能调优中非常重要的一环，写出好的sql语句也是开发者必须具备的基本素质之一，explain的合理使用也可以帮助开发者对sql语句进行相关的优化。这篇博文也讲讲explain中一些参数。</p>
@@ -334,7 +336,7 @@
                             
         				
                             
-                				<a href="/tags/#java" title="java" rel="11">
+                				<a href="/tags/#java" title="java" rel="14">
                                     java
                                 </a>
                             
@@ -488,6 +490,7 @@
 
 <!-- Custom Theme JavaScript -->
 <script src="/js/hux-blog.min.js "></script>
+<script src="/js/toc.js "></script>
 
 
 <!-- async load function -->
@@ -520,6 +523,12 @@
     <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
 -->
 
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#toc').toc();
+}); </script>
 
 <!-- jquery.tagcloud.js -->
 <script>

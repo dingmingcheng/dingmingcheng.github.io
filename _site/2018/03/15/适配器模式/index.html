@@ -168,6 +168,8 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
+				<div id="toc"></div>
+
 				<h2 id="前言">前言</h2>
 
 <p>说起适配器模式，从字面上理解，还是做到一个适配的功能，笔记本电脑的硬件层面就有个很好的例子，记得刚买笔记本电脑时，特别不习惯笔记本键盘，打dota特别难受，那时候家里台式机上有个键盘，可惜是PS/2接口（就是那种圆形插口），然后去买了个转换口，顺利完成暴走：）。其实罗里吧嗦讲了一堆，还是回到代码层面，在进行代码重构时，老接口我们希望不再进行改动，在其基础上新增功能，就如usb接口一样，我们无法进行修改，这时就需要一个适配类。</p>
@@ -330,7 +332,7 @@
                             
         				
                             
-                				<a href="/tags/#java" title="java" rel="11">
+                				<a href="/tags/#java" title="java" rel="14">
                                     java
                                 </a>
                             
@@ -484,6 +486,7 @@
 
 <!-- Custom Theme JavaScript -->
 <script src="/js/hux-blog.min.js "></script>
+<script src="/js/toc.js "></script>
 
 
 <!-- async load function -->
@@ -516,6 +519,12 @@
     <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
 -->
 
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#toc').toc();
+}); </script>
 
 <!-- jquery.tagcloud.js -->
 <script>

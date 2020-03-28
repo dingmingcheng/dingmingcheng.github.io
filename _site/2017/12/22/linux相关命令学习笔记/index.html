@@ -168,6 +168,8 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
+				<div id="toc"></div>
+
 				<h2 id="前言">前言</h2>
 
 <p>最早应该是在操作系统的课程上接触到了linux系统，那时候其实对linux并没有什么具体的概念，真正接触应该大三下学期，给自己的电脑装了双系统，也在ubuntu上开发过一个web项目，再到暑假去看了《linux权威指南》，也算是入了门了，不过其中的命令也是非常多，常常会忘记，之前会吧平时用到的一些命令存在txt中，既然现在开了博客，也打算一起整理过来。</p>
@@ -334,7 +336,7 @@ lsof
                             
         				
                             
-                				<a href="/tags/#java" title="java" rel="11">
+                				<a href="/tags/#java" title="java" rel="14">
                                     java
                                 </a>
                             
@@ -488,6 +490,7 @@ lsof
 
 <!-- Custom Theme JavaScript -->
 <script src="/js/hux-blog.min.js "></script>
+<script src="/js/toc.js "></script>
 
 
 <!-- async load function -->
@@ -520,6 +523,12 @@ lsof
     <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
 -->
 
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#toc').toc();
+}); </script>
 
 <!-- jquery.tagcloud.js -->
 <script>

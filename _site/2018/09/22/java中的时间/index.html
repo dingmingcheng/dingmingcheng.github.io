@@ -168,6 +168,8 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
+				<div id="toc"></div>
+
 				<p>工欲善其事，必先利其器</p>
 
 <p>工程中其实对时间的使用是非常多的。Java中的time其实一直都是一个比较蛋疼的问题。我看网上也是对其诟病已久。Java8也推出了java.time包以便于统一时间相关的管理，就此对Java中的时间进行一个简单的总结。主要是各种类型之间的转换，在此做一个简单的记录总结。</p>
@@ -294,7 +296,7 @@
                             
         				
                             
-                				<a href="/tags/#java" title="java" rel="11">
+                				<a href="/tags/#java" title="java" rel="14">
                                     java
                                 </a>
                             
@@ -448,6 +450,7 @@
 
 <!-- Custom Theme JavaScript -->
 <script src="/js/hux-blog.min.js "></script>
+<script src="/js/toc.js "></script>
 
 
 <!-- async load function -->
@@ -480,6 +483,12 @@
     <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
 -->
 
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#toc').toc();
+}); </script>
 
 <!-- jquery.tagcloud.js -->
 <script>

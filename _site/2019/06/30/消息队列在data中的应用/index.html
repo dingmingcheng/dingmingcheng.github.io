@@ -168,6 +168,8 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
+				<div id="toc"></div>
+
 				<p>在不久前，在data和exchange项目中，我们将所有用到rocketmq的地方全部切换到了kafka上。在结汇项目中，消息队列也已经用了近一年多，期间也踩过几个坑，此wiki用以记录消息队列在data和exchange中的实践</p>
 
 <h2 id="不经意的timeout_clean_queue">不经意的TIMEOUT_CLEAN_QUEUE</h2>
@@ -308,7 +310,7 @@
                             
         				
                             
-                				<a href="/tags/#java" title="java" rel="11">
+                				<a href="/tags/#java" title="java" rel="14">
                                     java
                                 </a>
                             
@@ -462,6 +464,7 @@
 
 <!-- Custom Theme JavaScript -->
 <script src="/js/hux-blog.min.js "></script>
+<script src="/js/toc.js "></script>
 
 
 <!-- async load function -->
@@ -494,6 +497,12 @@
     <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
 -->
 
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#toc').toc();
+}); </script>
 
 <!-- jquery.tagcloud.js -->
 <script>

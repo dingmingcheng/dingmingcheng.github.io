@@ -168,6 +168,8 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
+				<div id="toc"></div>
+
 				<h2 id="前言">前言</h2>
 
 <p>其实这开头还是在全部写完才加上去的。其实这篇文章也不是那么入门了，毕竟也涉及到源码了。不说熟练掌握rocketmq的架构，至少得熟悉rocketmq的整体流程，包括broker，queue，namesrv。当然，本文并未涵盖事务消息，VIPChannel，延迟消息，队列选择算法的选择等，一些高级用法的源码会在之后慢慢补充起来。不过话说，估计也没人看——、</p>
@@ -995,7 +997,7 @@
                             
         				
                             
-                				<a href="/tags/#java" title="java" rel="11">
+                				<a href="/tags/#java" title="java" rel="14">
                                     java
                                 </a>
                             
@@ -1149,6 +1151,7 @@
 
 <!-- Custom Theme JavaScript -->
 <script src="/js/hux-blog.min.js "></script>
+<script src="/js/toc.js "></script>
 
 
 <!-- async load function -->
@@ -1181,6 +1184,12 @@
     <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
 -->
 
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#toc').toc();
+}); </script>
 
 <!-- jquery.tagcloud.js -->
 <script>

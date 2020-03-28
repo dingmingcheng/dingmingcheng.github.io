@@ -168,6 +168,8 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
+				<div id="toc"></div>
+
 				<p>博客停了两个月，再打开时竟然感到有一丝陌生，看着最熟悉的键盘和屏幕也不知道该敲什么，脑海中竟然有想打出“int main()”的想法，呵，真是“无药可救”了。不过确实，十二年前那次数学竞赛的偶然获奖也注定了我是更爱那些数学公式的。</p>
 
 <p>两个月前因为总总原因结束了三个多月的实习，回到了阔别已久的学校，和同学们好好聚了聚，也不知道下次毕业后再见到你们这帮<del>蠢逼</del>天才是什么时候了，不过大部分在杭州问题应该还是比较乐观的。另外，再加上头疼的毕业设计，和春招的准备，写了几篇设计模式，这笔一停，就是两个月。</p>
@@ -232,7 +234,7 @@
                             
         				
                             
-                				<a href="/tags/#java" title="java" rel="11">
+                				<a href="/tags/#java" title="java" rel="14">
                                     java
                                 </a>
                             
@@ -386,6 +388,7 @@
 
 <!-- Custom Theme JavaScript -->
 <script src="/js/hux-blog.min.js "></script>
+<script src="/js/toc.js "></script>
 
 
 <!-- async load function -->
@@ -418,6 +421,12 @@
     <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
 -->
 
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#toc').toc();
+}); </script>
 
 <!-- jquery.tagcloud.js -->
 <script>

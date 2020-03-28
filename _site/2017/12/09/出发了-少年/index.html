@@ -168,6 +168,8 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
+				<div id="toc"></div>
+
 				<p>    这是我的第一篇的博客，趁着今天周六，想写一篇杂记，写点东西，但一时对着电脑，竟不知如何提笔，算了，还是想到什么写什么了。</p>
 
 <p>   还是先讲讲为何会想到搭建这个博客吧。要说初衷，是因为专业，因为职业，作为计算机行业，不断学习肯定是必须的，想到之前在微博上看见这么一句话，“比你聪明的人比你还努力，为什么还要努力”，虽说是个段子，别的行业我不清楚，前半句来形容我们专业是再恰当不过的了，无论是之前acm在役时，还是之后转服务器，转工程之后，总是会碰见许多的问题，遇到问题也更多是去百度去谷歌，不过自己也没有黄蓉母亲那种过目不忘的本领，还是希望记下这些问题和解决方法，进行一个简单的归纳总结，当然如果能帮到其他同学更是我的荣幸。还有就是想练练文笔，想写点东西，这其实更多得和我的成长有关系，我爸年轻的时候（给我爸吹一波: )）很是痴迷文学，常常通宵写文章，也是曾是出版社的记者，当地作协的骨干，然而颇有讽刺意味的是，我的语文成绩一直很差，数学很强，这正与我爸完全相反。进入大学后，也不再需要去学习语文，竟不知为何想写点东西，特别是在acm退役之后（恩。。。终于不害怕偏题了，虽然没有题目）。还有我觉得我是一个比较有归属感，集体感的人，无论是之前大学时候的学生会，集训队，还是现在刚开的博客。</p>
@@ -241,7 +243,7 @@
                             
         				
                             
-                				<a href="/tags/#java" title="java" rel="11">
+                				<a href="/tags/#java" title="java" rel="14">
                                     java
                                 </a>
                             
@@ -395,6 +397,7 @@
 
 <!-- Custom Theme JavaScript -->
 <script src="/js/hux-blog.min.js "></script>
+<script src="/js/toc.js "></script>
 
 
 <!-- async load function -->
@@ -427,6 +430,12 @@
     <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
 -->
 
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#toc').toc();
+}); </script>
 
 <!-- jquery.tagcloud.js -->
 <script>

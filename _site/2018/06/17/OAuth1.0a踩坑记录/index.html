@@ -168,6 +168,8 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
+				<div id="toc"></div>
+
 				<h2 id="前言">前言</h2>
 
 <p>最近工作中接触到了OAuth1.0a，相比较OAuth2.0，1.0a确实是复杂了不少，中间也踩了不少的坑，特此记录。关于OAuth1.0，1.0a，2.0之间的区别，包括1.0的相关漏洞，可以看看知乎上这篇文章，<a href="https://www.zhihu.com/question/19851243">Oauth 1.0 1.0a 和 2.0 的之间的区别有哪些？</a>,我觉得还是比较详细的。</p>
@@ -263,7 +265,7 @@
                             
         				
                             
-                				<a href="/tags/#java" title="java" rel="11">
+                				<a href="/tags/#java" title="java" rel="14">
                                     java
                                 </a>
                             
@@ -417,6 +419,7 @@
 
 <!-- Custom Theme JavaScript -->
 <script src="/js/hux-blog.min.js "></script>
+<script src="/js/toc.js "></script>
 
 
 <!-- async load function -->
@@ -449,6 +452,12 @@
     <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
 -->
 
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#toc').toc();
+}); </script>
 
 <!-- jquery.tagcloud.js -->
 <script>

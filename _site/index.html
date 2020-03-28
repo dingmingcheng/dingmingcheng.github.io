@@ -174,6 +174,74 @@
 <hr>
 
 <div class="post-preview">
+    <a href="/2020/01/27/spring%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-3-IOC%E4%B8%8EBean%E7%9A%84%E8%A7%A3%E6%9E%90%E4%B8%8E%E6%B3%A8%E5%86%8C/">
+        <h2 class="post-title">
+            spring源码阅读（3）IOC与Bean的解析与注册
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on January 27, 2020
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2020/01/19/spring%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-2-IOC%E4%B8%8EBean%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96%E4%B8%8E%E5%88%9D%E5%A7%8B%E5%8C%96/">
+        <h2 class="post-title">
+            spring源码阅读（2）IOC与Bean的实例化与初始化
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+之前写到spring中的bean主要分为两部分：
+
+bean的解析与注册
+
+bean的实例化和初始化
+
+打算先写写bean的实例化和初始化，也就是springmvc也好，springboot也好，所有的bean已经转换成了BeanDefinition放入了内存中。
+
+顺带在后面也会总结总结bean的生命周期
+
+过程
+
+上篇文章中看了下BeanFactory相关的接口，所以目前对整体的...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on January 19, 2020
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2020/01/09/spring%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-1-IOC%E4%B8%8EBeanFactory/">
+        <h2 class="post-title">
+            spring源码阅读（1）IOC与BeanFactory
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+(以下分析均基于spring-5.1.8)
+
+因为spring这个框架在日常工作中的应用实在是太广泛了，便决定下一个阶段学学spring。因为spring非常庞大，一时不知道怎么下手，向hzk咨询了下，决定先看spring的官方文档，再结合相关书籍资料去读源码。spring虽然已经从springmvc到springboot，但核心还是spring-core,spring-contex...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on January 9, 2020
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
     <a href="/2019/11/24/%E8%AF%BB-%E7%BB%8F%E6%B5%8E%E5%AD%A6%E9%80%9A%E8%AF%86-%E8%AE%B0%E5%BD%95/">
         <h2 class="post-title">
             读《经济学通识》记录
@@ -304,76 +372,6 @@ private static void readCommitlog(int/*读取的消息数量*/ t) throws Excepti
 </div>
 <hr>
 
-<div class="post-preview">
-    <a href="/2019/02/24/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(6)-remoting%E6%A8%A1%E5%9D%97/">
-        <h2 class="post-title">
-            rocketmq源码阅读(6)——remoting模块
-        </h2>
-        
-        <div class="post-content-preview">
-            前言
-
-本文中，会看看rocketmq中remoting模块中的代码。remoting模块相对而言会比较简单，主要是对netty进行了一层封装，至于netty的细节本文中就不细讲了，建议对netty有一些基本的了解再来看此文会比较好。我们其实可以看看像rocketmq这种成熟的消息队列中间件是如何使用netty这种高性能网络通信框架。
-
-从功能上来看，分为NettyRemotingClien...
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by New Boy on February 24, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/01/20/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(5)-%E6%B6%88%E8%B4%B9%E8%80%85%E6%B6%88%E8%B4%B9%E6%B5%81%E7%A8%8B/">
-        <h2 class="post-title">
-            rocketmq源码阅读(5)——消费者消费流程
-        </h2>
-        
-        <div class="post-content-preview">
-            前言
-
-在消费者初始化过程中，我们看到了PullRequest的分发，接下来就是看看具体的消费流程。大体的流程是这样的：
-
-
-  PullRequest的处理
-  回调PullCallBack处理pullResult
-  ConsumeMessageService处理消息
-
-
-PullRequest的处理
-
-PullMessageService在拿到PullRequest后，直接转发给Def...
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by New Boy on January 20, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/01/13/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(4)-mq%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%9C%8D%E5%8A%A1/">
-        <h2 class="post-title">
-            rocketmq源码阅读(4)——mq负载均衡服务
-        </h2>
-        
-        <div class="post-content-preview">
-            前言
-
-上一文在消费者初始化中，提到了客户端的负载均衡服务。再简单介绍一下负载均衡服务
-
-rebalance服务主要用于每个消费者实例匹配一个或者多个queue，以保证broker端的queue只对应一个实例，避免多个实例消费相同的queue。
-
-rebalance主要包括RebalancePullImpl和RebalancePushImpl，位于org.apache.rocketmq.cl...
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by New Boy on January 13, 2019
-    </p>
-</div>
-<hr>
-
 
 <!-- Pager -->
 
@@ -418,7 +416,7 @@ rebalance主要包括RebalancePullImpl和RebalancePushImpl，位于org.apache.ro
                             
                         
                             
-                                <a href="/tags/#java" title="java" rel="11">
+                                <a href="/tags/#java" title="java" rel="14">
                                     java
                                 </a>
                             
@@ -560,6 +558,7 @@ rebalance主要包括RebalancePullImpl和RebalancePushImpl，位于org.apache.ro
 
 <!-- Custom Theme JavaScript -->
 <script src="/js/hux-blog.min.js "></script>
+<script src="/js/toc.js "></script>
 
 
 <!-- async load function -->
@@ -592,6 +591,12 @@ rebalance主要包括RebalancePullImpl和RebalancePushImpl，位于org.apache.ro
     <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
 -->
 
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#toc').toc();
+}); </script>
 
 <!-- jquery.tagcloud.js -->
 <script>

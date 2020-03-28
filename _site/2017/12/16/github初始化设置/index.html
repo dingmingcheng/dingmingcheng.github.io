@@ -168,6 +168,8 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
+				<div id="toc"></div>
+
 				<h2 id="ssh配置">SSH配置</h2>
 
 <p>ssh配置其实很简单，网上也有很多的教程，直接给个传送门吧，一步一步来就OK了，<a href="https://jingyan.baidu.com/article/a65957f4e91ccf24e77f9b11.html">windows下github ssh配置</a>，<a href="http://blog.csdn.net/yin1031468524/article/details/50096723">linux/mac下配置</a></p>
@@ -262,7 +264,7 @@ git clone https://github.com/dingmingcheng/dingmingcheng.github.io.git
                             
         				
                             
-                				<a href="/tags/#java" title="java" rel="11">
+                				<a href="/tags/#java" title="java" rel="14">
                                     java
                                 </a>
                             
@@ -416,6 +418,7 @@ git clone https://github.com/dingmingcheng/dingmingcheng.github.io.git
 
 <!-- Custom Theme JavaScript -->
 <script src="/js/hux-blog.min.js "></script>
+<script src="/js/toc.js "></script>
 
 
 <!-- async load function -->
@@ -448,6 +451,12 @@ git clone https://github.com/dingmingcheng/dingmingcheng.github.io.git
     <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
 -->
 
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#toc').toc();
+}); </script>
 
 <!-- jquery.tagcloud.js -->
 <script>
