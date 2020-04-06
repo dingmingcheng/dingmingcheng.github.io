@@ -8,7 +8,7 @@ tag: rocketmq
 
 ## 前言
 
-本文中，会看看rocketmq中remoting模块中的代码。remoting模块相对而言会比较简单，主要是对netty进行了一层封装，至于netty的细节本文中就不细讲了，建议对netty有一些基本的了解再来看此文会比较好。我们其实可以看看像rocketmq这种成熟的消息队列中间件是如何使用netty这种高性能网络通信框架。
+本文中，会看看rocketmq中remoting模块中的代码。remoting模块主要对netty进行了一层封装，至于netty的细节本文中就不细讲了，建议对netty有一些基本的了解再来看此文会比较好。我们其实可以看看像rocketmq这种成熟的消息队列中间件是如何使用netty这种高性能网络通信框架。
 
 从功能上来看，分为**NettyRemotingClient**和**NettyRemotingServer**这两个类，两个有分别继承了抽象类**NettyRemotingAbstract**，顾名思义，**NettyRemotingServer**就是服务端，**NettyRemotingClient**就是客户端，分别来看一下
 
@@ -464,7 +464,7 @@ public void processResponseCommand(ChannelHandlerContext ctx, RemotingCommand cm
 
 ```
 
-response比较简单，就这些
+response大致就是就这些
 
 ### request
 
@@ -492,7 +492,7 @@ pair.getObject2().submit(requestTask);
 
 其中processorTable是用了策略模式，根据requestCode对不同的执行器以及对应的ExecutorService进行了一层映射
 
-最后来看看run的实现，也是比较简单的
+最后来看看run的实现
 
 ``` java
 @Override

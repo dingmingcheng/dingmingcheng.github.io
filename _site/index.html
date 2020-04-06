@@ -174,19 +174,25 @@
 <hr>
 
 <div class="post-preview">
-    <a href="/2020/01/27/spring%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-3-IOC%E4%B8%8EBean%E7%9A%84%E8%A7%A3%E6%9E%90%E4%B8%8E%E6%B3%A8%E5%86%8C/">
+    <a href="/2020/02/09/spring%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-4-IOC%E4%B8%8E%E5%BE%AA%E7%8E%AF%E4%BE%9D%E8%B5%96/">
         <h2 class="post-title">
-            spring源码阅读（3）IOC与Bean的解析与注册
+            spring源码阅读（4）IOC与循环依赖
         </h2>
         
         <div class="post-content-preview">
             前言
 
+关于spring解决循环依赖的问题，在之前第二篇讲Bean的实例化与初始化的时候，有3个地方提到过循环依赖的问题，可以来看看这3个地方是怎么实现的
 
+获取提前暴露的Bean
+
+在AbstractBeanFactory#doGetBean方法中的第一步，就是尝试从缓存中拿到bean，
+
+		// Eagerly check singleton cache for manually re...
         </div>
     </a>
     <p class="post-meta">
-        Posted by New Boy on January 27, 2020
+        Posted by New Boy on February 9, 2020
     </p>
 </div>
 <hr>

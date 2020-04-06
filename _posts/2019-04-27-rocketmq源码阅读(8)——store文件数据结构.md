@@ -97,7 +97,7 @@ private static void readCommitlog(int/*读取的消息数量*/ t) throws Excepti
 
 ### ConsumerQueue
 
-consumerQueue就更简单了
+consumerQueue就更明显了
 
 ``` java
 public static void readConsumerQueue(int sum) throws Exception{

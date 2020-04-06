@@ -42,7 +42,9 @@ spring作为一个bean的容器，其最基本的功能就是IOC（控制反转�
 
 ## BeanFactory总体架构
 
-先上一张BeanFactory的依赖图，最上层的类便是DefaultListableBeanFactory：
+先上一张BeanFactory的依赖图，最上层的类便是
+![](/img/in-post/spring/beanFactory.png)
+DefaultListableBeanFactory：
 
 第一眼看会觉得BeanFacory的体系非常复杂，而且部分类中的代码也是非常得长，还是得先仔细看看相关的接口
 

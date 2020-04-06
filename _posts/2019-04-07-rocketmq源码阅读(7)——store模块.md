@@ -34,7 +34,7 @@ tag: rocketmq
 
 可以看到commitLog只有个大小为1G，名称为全数字的一个文件。
 
-commitLog做为rocketmq中最重要的存储文件，其存储的核心内容正是该broker接收到的所有的消息体，为了保证性能，单个文件的默认值为1G。文件名代表着该文件存储的第一条消息的offset，这么做的理由也很明显，方便搜索消息。在下文中，我们会看看内部数据结构，尝试读取文件的内容
+commitLog做为rocketmq中最重要的存储文件，其存储的核心内容正是该broker接收到的所有的消息体，为了保证性能，单个文件的默认值为1G。文件名代表着该文件存储的第一条消息的offset，这么做的理由我认为方便搜索消息（2020.04.06补充：os的pageCache有大小限制，一般1.5G-2G，1g正好可以加载到虚拟内存中）。在下文中，我们会看看内部数据结构，尝试读取文件的内容
 
 **config**
 
@@ -46,7 +46,7 @@ config中存储的主要是相关的最后消费的offset，消费delay值，订
 
 ![](/img/in-post/rocketmq-7-store/4.png)
 
-很明显，它为每个topic创建了一个文件夹，为每个topic的每个queue也创建了一个文件夹，内部的文件也存储了该队列的消费情况。consumerQueue文件的数据结构在等会也会尝试去解读
+很直观看到，它为每个topic创建了一个文件夹，为每个topic的每个queue也创建了一个文件夹，内部的文件也存储了该队列的消费情况。consumerQueue文件的数据结构在等会也会尝试去解读
 
 **index**
 
@@ -224,7 +224,7 @@ if (keys != null && keys.length() > 0) {
 
 举个具体的例子，当要向index写入一个key的时候，会先计算该key的hashCode，再对5000000取模得到值pos_a，于是便可以拿到第pos_a个Hash Slot中的值记为value_a。另外我们取header中的IndexCount记为index_pos，于是相关的信息就可以写入到40+5000000\*4+index_pos\*20 字节处，此时的slotValue设为value_a。然后将pos_a处的Hash_slot的值设为index_pos。最后更新Index Header中的信息。
 
-按以上的流程走一遍，也就轻易看出来Index中的slotValue对hash冲突的解决，其原理有些类似于hashMap，也就是数组加链表的形式
+按以上的流程走一遍，也就轻易看出来Index中的slotValue对hash冲突的解决，其原理有些类似于hashMap，像数组加链表的形式。不过这边直接通过一个数组来实现了，而且，如果有新节点加入的话，是加入到头节点中，不是尾节点中
 
 
 

@@ -322,7 +322,7 @@
 <span class="o">}</span>
 </code></pre></div></div>
 
-<p>逻辑比较简单，就是生成clientId（IP@instanceName@UnitName），然后找是否存在对应的MQClientInstance，若无则创建对象。</p>
+<p>逻辑是这样的，就是生成clientId（IP@instanceName@UnitName），然后找是否存在对应的MQClientInstance，若无则创建对象。</p>
 
 <p>接下来就是<strong>mQClientFactory.registerProducer(this.defaultMQProducer.getProducerGroup(), this);</strong> 顾名思义，将生产者注册到MQClientInstance中，跟进去其实也就是一行代码</p>
 
