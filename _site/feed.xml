@@ -5,15 +5,15 @@
     <description></description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 06 Apr 2020 10:21:50 +0800</pubDate>
-    <lastBuildDate>Mon, 06 Apr 2020 10:21:50 +0800</lastBuildDate>
+    <pubDate>Thu, 16 Apr 2020 00:01:14 +0800</pubDate>
+    <lastBuildDate>Thu, 16 Apr 2020 00:01:14 +0800</lastBuildDate>
     <generator>Jekyll v3.8.3</generator>
     
       <item>
         <title>st算法</title>
         <description>&lt;h2 id=&quot;前言&quot;&gt;前言&lt;/h2&gt;
 
-&lt;p&gt;大概是去年十月份开始，开始刷起了leetcode。当时，主要是两个目的，一是加强自己的思维能力，个人觉得算法还是很有意思的，二是开始在日常工作中使用python写些脚步来处理些重复的劳动，借此去学习学习python。大学打了多年acm，所以感觉leetcode题目的难度还是有限，除去水题，数论方向上的题目基本没有，图论方向也少往往也就点到为止，搜索，动态规划相关的题目会稍多些，也比较适合工作以后刷刷。&lt;/p&gt;
+&lt;p&gt;大概是去年十月份开始，开始刷起了leetcode。当时，主要是两个目的，一是加强自己的思维能力，个人觉得算法还是很有意思的，二是开始在日常工作中使用python写些脚步来处理些重复的劳动，借此去学习学习python（不过后面打着打着就开始用java了，蛋疼）。&lt;/p&gt;
 
 &lt;p&gt;以前打比赛常用到RMQ算法，不过当时都没有深入了解过原理，前段时间仔细看了看原理和以前的模版，特地整理了一下，在O(1)的时间复制度实现区间最值查询，真的很巧妙&lt;/p&gt;
 
@@ -76,6 +76,10 @@
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;以上即为对st算法介绍，至此，其实除了rmq问题，对于区间求最大公倍数，最小公约数，st算法也同样适用。其实类似这种区间查询，以前还常常使用线段树，O(log(n))的效率也是很可观的&lt;/p&gt;
+
+&lt;p&gt;偷偷放张最新的排名图（菜鸡也能上分，哈哈）：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/in-post/st/leetcode.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Sun, 09 Feb 2020 00:00:00 +0800</pubDate>
         <link>http://localhost:4000/2020/02/09/st%E7%AE%97%E6%B3%95/</link>
@@ -1088,7 +1092,7 @@ sudo docker run -p 4000:4000 --rm --volume=&quot;$PWD:/srv/jekyll&quot; -it jeky
 
 &lt;p&gt;1.最显而易见的方法就是直接增大BrokerConfig中的waitTimeMillsInSendQueue这个字段的值&lt;/p&gt;
 
-&lt;p&gt;2.切换中间件。回归到业务本身，data用于拉取店铺的订单数据，通过rocketmq发送给下游的结汇业务。而rocketmq最早是阿里借鉴了kafka的设计，为交易系统做的一套中间件，4.2.0版本还不支持对大数据的处理。这么来看，其实号称百万级的并发写入的kafka似乎更符合我们的业务场景。&lt;/p&gt;
+&lt;p&gt;2.切换中间件。回归到业务本身，data用于拉取店铺的订单数据，通过rocketmq发送给下游的结汇业务。而rocketmq最早是阿里借鉴了kafka的设计，为交易系统做的一套中间件。这么来看，其实号称百万级的并发写入的kafka似乎更符合我们的业务场景。&lt;/p&gt;
 
 &lt;p&gt;其实可以单单从底层的存储来看看kafka和rocketmq的区别。&lt;/p&gt;
 
@@ -1097,8 +1101,6 @@ sudo docker run -p 4000:4000 --rm --volume=&quot;$PWD:/srv/jekyll&quot; -it jeky
 &lt;p&gt;2.讲讲kafka的底层存储的区别&lt;/p&gt;
 
 &lt;p&gt;因为正好kafka已经在项目的其他地方有用到，所以抽时间把rocketmq的流量全切到了kafka上。一是保证rocketmq的稳定，保证其他的业务系统的稳定使用，二也是为了我们data-exchange系统的稳定&lt;/p&gt;
-
-&lt;h3 id=&quot;kafka在data-exchange中的实践&quot;&gt;kafka在data-exchange中的实践&lt;/h3&gt;
 
 </description>
         <pubDate>Sun, 30 Jun 2019 00:00:00 +0800</pubDate>

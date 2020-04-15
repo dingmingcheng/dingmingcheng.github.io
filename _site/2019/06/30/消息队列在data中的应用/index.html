@@ -243,7 +243,7 @@
 
 <p>1.最显而易见的方法就是直接增大BrokerConfig中的waitTimeMillsInSendQueue这个字段的值</p>
 
-<p>2.切换中间件。回归到业务本身，data用于拉取店铺的订单数据，通过rocketmq发送给下游的结汇业务。而rocketmq最早是阿里借鉴了kafka的设计，为交易系统做的一套中间件，4.2.0版本还不支持对大数据的处理。这么来看，其实号称百万级的并发写入的kafka似乎更符合我们的业务场景。</p>
+<p>2.切换中间件。回归到业务本身，data用于拉取店铺的订单数据，通过rocketmq发送给下游的结汇业务。而rocketmq最早是阿里借鉴了kafka的设计，为交易系统做的一套中间件。这么来看，其实号称百万级的并发写入的kafka似乎更符合我们的业务场景。</p>
 
 <p>其实可以单单从底层的存储来看看kafka和rocketmq的区别。</p>
 
@@ -252,8 +252,6 @@
 <p>2.讲讲kafka的底层存储的区别</p>
 
 <p>因为正好kafka已经在项目的其他地方有用到，所以抽时间把rocketmq的流量全切到了kafka上。一是保证rocketmq的稳定，保证其他的业务系统的稳定使用，二也是为了我们data-exchange系统的稳定</p>
-
-<h3 id="kafka在data-exchange中的实践">kafka在data-exchange中的实践</h3>
 
 
 
