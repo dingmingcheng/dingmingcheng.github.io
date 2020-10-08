@@ -156,6 +156,34 @@
             ">
     			
 <div class="post-preview">
+    <a href="/2019/04/07/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(7)-store%E6%A8%A1%E5%9D%97/">
+        <h2 class="post-title">
+            rocketmq源码阅读(7)——store模块
+        </h2>
+        
+        <div class="post-content-preview">
+            前言
+
+在rocketmq中，store模块，也就是底层存储模块，是最为核心的部分，也在很大程度上决定了rocketmq的性能。rocketmq借鉴了kafka的设计，采用了文件存储。
+
+整体介绍
+
+消费模型
+
+先看看rocketmq的存储架构(图来源于此博文)
+
+
+
+可以看到在broker接收到消息后，首先会把消息写入到commitLog中，之后会异步将消息分发给ConsumerQueue...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by New Boy on April 7, 2019
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
     <a href="/2019/02/24/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(6)-remoting%E6%A8%A1%E5%9D%97/">
         <h2 class="post-title">
             rocketmq源码阅读(6)——remoting模块
@@ -347,25 +375,6 @@ rebalance主要包括RebalancePullImpl和RebalancePushImpl，位于org.apache.ro
 </div>
 <hr>
 
-<div class="post-preview">
-    <a href="/2018/07/11/%E8%BD%AC-Java-Stream-API%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95/">
-        <h2 class="post-title">
-            [转]Java Stream API性能测试
-        </h2>
-        
-        <div class="post-content-preview">
-            
-  来本文转载于http://www.cnblogs.com/CarpenterLee/p/6675568.html，十分感谢CarpenterLee写出如此棒的文章。
-
-  来到了毕业后真正意义上的第一家公司，要说这近两个月在技术层面最大的感受，一是授权方式的演变，这里暂不讨论。第二个就是java8引入的Lambda，Stream，彻底改变了我对编程的理解。不过，在开始接触时，对于写下的...
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by New Boy on July 11, 2018
-    </p>
-</div>
-<hr>
-
 
 <!-- Pager -->
 
@@ -414,7 +423,7 @@ rebalance主要包括RebalancePullImpl和RebalancePushImpl，位于org.apache.ro
                             
                         
                             
-                                <a href="/tags/#java" title="java" rel="14">
+                                <a href="/tags/#java" title="java" rel="15">
                                     java
                                 </a>
                             

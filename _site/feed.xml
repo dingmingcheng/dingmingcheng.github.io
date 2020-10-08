@@ -5,9 +5,182 @@
     <description></description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Thu, 16 Apr 2020 00:01:14 +0800</pubDate>
-    <lastBuildDate>Thu, 16 Apr 2020 00:01:14 +0800</lastBuildDate>
+    <pubDate>Thu, 08 Oct 2020 22:09:06 +0800</pubDate>
+    <lastBuildDate>Thu, 08 Oct 2020 22:09:06 +0800</lastBuildDate>
     <generator>Jekyll v3.8.3</generator>
+    
+      <item>
+        <title>首届云原生编程挑战赛初赛记录</title>
+        <description>&lt;h2 id=&quot;前言&quot;&gt;前言&lt;/h2&gt;
+
+&lt;p&gt;话说，今年5月份安利hzk来参加leetcode的周赛的时候，被反安利了一波阿里云的中间件挑战赛，不过今年换了个名字，叫云原生编程挑战赛。不过hzk忙着结婚，把我拉进坑自己却跑了。对于这种偏工程化的比赛，之前从未参加过，便打算试试。由于工作比较忙的缘故，大概是花了两个月的时间，在每天下班后抽时间写bug，改bug。期间走了不少弯路，一直到比赛结束，还有些优化没来得及写，但总的来说，对个人的提升还是很大的。趁着国庆这个假期，把这次项目总结一下。&lt;/p&gt;
+
+&lt;h3 id=&quot;题目介绍&quot;&gt;题目介绍&lt;/h3&gt;
+
+&lt;p&gt;题目是让实现一个基于tail-based采样的分布式链路追踪系统。其中涉及到两点概念：&lt;/p&gt;
+
+&lt;p&gt;1.分布式链路追踪系统。该系统用来记录请求范围内的信息，用户在页面的一次点击发送请求，这个请求的所有处理过程，比如经过多少个服务，在哪些机器上执行，每个服务的耗时和异常情况。&lt;/p&gt;
+
+&lt;p&gt;2.Tail-based采样。这种采样是指只采集有具体特征的数据，比如错慢全采，大客户全采。&lt;/p&gt;
+
+&lt;p&gt;下图是官方给出的流程图&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/in-post/f-tracing/p1.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;下面是官方给出的文件中的数据样例&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;d614959183521b4b|1587457762873000|d614959183521b4b|0|311601|order|getOrder|192.168.1.3|http.status_code=200
+
+d614959183521b4b|1587457762877000|69a3876d5c352191|d614959183521b4b|305265|Item|getItem|192.168.1.3|http.status_code=200
+
+d614959183521b4b|1587457763183000|dffcd4177c315535|d614959183521b4b|980|Loginc|getLogisticy|192.168.1.2|http.status_code=200
+
+d614959183521b4b|1587457762878000|52637ab771da6ae6|d614959183521b4b|304284|Loginc|getAddress|192.168.1.2|http.status_code=200
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;每个节点一份数据文件。数据格式进行了简化，每行数据(即一个span)包含如下信息：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;traceId | startTime | spanId | parentSpanId | duration | serviceName | spanName | host | tags
+
+具体各字段的：
+
+- traceId：全局唯一的Id，用作整个链路的唯一标识与组装
+- startTime：调用的开始时间
+- spanId: 调用链中某条数据(span)的id
+- parentSpanId: 调用链中某条数据(span)的父亲id，头节点的span的parantSpanId为0
+- duration：调用耗时
+- serviceName：调用的服务名
+- spanName：调用的埋点名
+- host：机器标识，比如ip，机器名
+- tags: 链路信息中tag信息，存在多个tag的key和value信息。格式为key1=val1&amp;amp;key2=val2&amp;amp;key3=val3 比如 http.status_code=200&amp;amp;error=1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;要求&lt;/p&gt;
+
+&lt;p&gt;找到所有tags中存在 http.status_code 不为 200，或者 error 等于1的调用链路。输出数据按照 traceId 分组，并按照startTime升序排序。记录每个 traceId 分组下的全部数据，最终输出每个traceId下所有数据的CheckSum(Md5值）。&lt;/p&gt;
+
+&lt;p&gt;注意：一条链路的数据，可能会出现两个数据流中，例如span在数据流1中，parentSpan在数据流2中。 当数据流1中某个span出现符合要求时，那对应的调用链(相同的traceId)的其他所有span都需要保存，即使其他span出现在数据流2中。相同traceId的第一条数据（span）到最后一条数据不会超过2万行。&lt;/p&gt;
+
+&lt;h3 id=&quot;题目理解与分析&quot;&gt;题目理解与分析&lt;/h3&gt;
+
+&lt;p&gt;下面的流程图是我按个人理解画的流程图&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/in-post/f-tracing/p2.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;可以看出，我们开发以及优化的点集中在3，4，5，6，7这几个步骤中。总结下：&lt;/p&gt;
+
+&lt;p&gt;1.快速从输入流中读取数据&lt;/p&gt;
+
+&lt;p&gt;2.快速从读取的数据中过滤出异常的行&lt;/p&gt;
+
+&lt;p&gt;3.server根据接收到client端传送过来的traceId，再从两个client端获取到异常traceId所对应的完整的数据&lt;/p&gt;
+
+&lt;p&gt;4.对每个异常的traceId对于的完整的数据根据其中的时间字段进行排序以及md5&lt;/p&gt;
+
+&lt;p&gt;5.client端的数据缓存、同步。因为输入流肯定大于本机内存，所以肯定要考虑做流式处理。&lt;/p&gt;
+
+&lt;p&gt;由于我们只考虑异常的数据，所以网络开销很有限，我们优化的侧重点要放在client端，以及相关的数据的搜索&lt;/p&gt;
+
+&lt;h3 id=&quot;具体实现&quot;&gt;具体实现&lt;/h3&gt;
+
+&lt;p&gt;1.存储模型&lt;/p&gt;
+
+&lt;p&gt;因为考虑到相同traceId的第一条数据（span）到最后一条数据不会超过2万行，client端通过&lt;em&gt;List&amp;lt;Map&amp;lt;TraceId, List&amp;lt;byte[]»&amp;gt;和水位标记clusterHw&lt;/em&gt;来做数据缓存和同步。list固定长度为10，相当于缓存了10*5M=50M的数据。&lt;/p&gt;
+
+&lt;p&gt;2.线程模型&lt;/p&gt;
+
+&lt;p&gt;client端主要有两个线程，第一个线程用于数据的读取以及数据的搜索，然后将对应的（byte数组，每一条span的起始下标，该span是否为异常span）添加到阻塞队列Q中，第二个是处理线程，用于消费阻塞队列中的数据，并发送异常的traceId给server&lt;/p&gt;
+
+&lt;p&gt;3.通信模式&lt;/p&gt;
+
+&lt;p&gt;client节点和server节点之间，使用netty来做tcp长连接通信。&lt;/p&gt;
+
+&lt;p&gt;4.数据读取&lt;/p&gt;
+
+&lt;p&gt;最初数据的读取，我采用的是&lt;em&gt;BufferedReader#readLine()&lt;/em&gt;方法，然后对读取出来的String做特征判断。后来发现这种方式效率太低。调整为&lt;em&gt;inputStream#read(byte b[], int off, int len)&lt;/em&gt;，这样每次都是从输入流中读取5M的内容（因为5M差不多是20000多行的内容）&lt;/p&gt;
+
+&lt;p&gt;5.特征数据查找&lt;/p&gt;
+
+&lt;p&gt;这里查找包含两个内容，给定一个byte[]，找到其中每一个span的起始下标，以及确定该span是否为异常的span。其中根据数据的特征做了一些特征优化，提升了不少效率。这里最初有尝试过使用kmp来进行匹配，但效率真的很感人，连String.indexOf()都没比过。最后通过dfs+特征优化，能跳就跳，将时间复杂度从O(n)优化到O(n/3)左右&lt;/p&gt;
+
+&lt;p&gt;6.数据流式处理&lt;/p&gt;
+
+&lt;p&gt;在第1点中提到了client中缓存了10&lt;em&gt;5M的数据，这边就是通过两个忙轮询来实现了数据的流式处理。每组数据是5M，那么第i组数据能被删除的充要条件就是client端已经处理完第i+1次的server端的回查，因为为了防止漏数据，在回查第i+1组的异常的traceId的时候，我们会从第i组以及第i+2组中找到对应的数据。那么对应的两个忙轮询就是1.client处理数据并放入&lt;/em&gt;List&amp;lt;Map&amp;lt;TraceId, List&amp;lt;byte[]»&amp;gt;时，该Map必须为空；2.在查询第i+1组的异常traceId时，第i+2组的数据必须已经处理完成。对应代码如下&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;tmp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;traceMapList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dataProcessService&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;pos&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;incrementAndGet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PARTITION&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tmp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;Thread&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sleep&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HashMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Integer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;copyMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;oriPos&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;){&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;oriPos&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HashMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;gt;();&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;oriPos&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;pos&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;//                noeProcessSleepCnt.incrementAndGet();&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;Thread&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sleep&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Exception&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;traceMapList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;oriPos&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;7.Jvm参数优化&lt;/p&gt;
+
+&lt;p&gt;调高新生代大小，因为流式处理，所以对象存活时间短，要避免发生full gc。另外使用Parallel垃圾收集器，提高系统的吞吐量。&lt;/p&gt;
+
+&lt;p&gt;8.程序预热，触发JIT&lt;/p&gt;
+
+&lt;p&gt;在正式开始跑之前（即调用setParameter接口之前），先跑一遍预热程序，触发C2编译器，将热点代码直接编译成机器代码，提高程序运行效率&lt;/p&gt;
+
+&lt;p&gt;9.使用JNI来提高性能&lt;/p&gt;
+
+&lt;p&gt;代码中涉及到数组拷贝的地方都使用了System.arrayCopy()来提高效率&lt;/p&gt;
+
+&lt;p&gt;10.减少对象的创建&lt;/p&gt;
+
+&lt;p&gt;为了降低对象新建和销毁，从数据读取开始到最后上报结果，都是直接操作byte，中间使用任何的String&lt;/p&gt;
+
+&lt;p&gt;11.使用volatile关键字&lt;/p&gt;
+
+&lt;p&gt;对于很多单线程写，多线程读的变量，都使用了volatile关键字来保证内存可见性，保证了线程安全&lt;/p&gt;
+
+&lt;p&gt;12.使用合理的排序&lt;/p&gt;
+
+&lt;p&gt;由于要求是按startTime进行升序排序，但该场景中，其实startTime是基本有序的，所以采取的排序策略是：client端进行插入排序，时间复杂度接近O(N)，在Server端使用合并排序来合并两个有序序列，时间复杂度为O(N)&lt;/p&gt;
+
+&lt;h3 id=&quot;最后成绩以及待改进的点&quot;&gt;最后成绩以及待改进的点&lt;/h3&gt;
+
+&lt;p&gt;最后的成绩是在32名，处理总共12.8G的数据（每个client处理6.4G）花了8.156秒。后面想想其实还是有些可提升的空间，但早期努力错了方向，没有get到重点，赛程后半段没有太多的时间进行调整了。后面看比较靠前的选手的思路，在我原有程序的基础上，发现还是有些可以优化的点。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/in-post/f-tracing/p3.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;1.使用原始集合库&lt;/p&gt;
+
+&lt;p&gt;Java中的原生集合确实很好用，但它不能作用于原始类型，这一定程度上降低程序的效率（增加内存使用以及垃圾收集器的开销），比如开源的HPPC，其中就有一系列针对于原始类型的集合。&lt;/p&gt;
+
+&lt;p&gt;2.减少内存拷贝&lt;/p&gt;
+
+&lt;p&gt;虽然程序中用了JNI来进行数组的拷贝，但后面想想完全可以减少好多次数据的拷贝。之前的数据结构为&lt;em&gt;List&amp;lt;Map&amp;lt;TraceId, List&amp;lt;byte[]»&amp;gt;&lt;/em&gt;，其时可以拆成一个byte[50 * 1024 * 1024]的数组，存放映射关系的List也可以改为*List&amp;lt;Map&amp;lt;TraceId, List&lt;Integer&gt;&amp;gt;&amp;gt;*，这样就可以直接在byte数组上做一个流式的缓存，对应的List中改为直接存储span对应的索引&lt;/Integer&gt;&lt;/p&gt;
+
+&lt;p&gt;3.抛弃springboot&lt;/p&gt;
+
+&lt;p&gt;抛弃框架&lt;/p&gt;
+
+&lt;p&gt;另外，在这种特别注重性能的比赛场景下，计算机语言还是对最后的成绩有一些影响，最优秀的Java选手也就在15名左右。突然想起以前acm比赛，C的超时时间都是1s，而java都是2s（留下了没技术的泪水）。特此记录下参加的第一场工程类的编程比赛。&lt;/p&gt;
+</description>
+        <pubDate>Mon, 05 Oct 2020 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2020/10/05/%E9%A6%96%E5%B1%8A%E4%BA%91%E5%8E%9F%E7%94%9F%E7%BC%96%E7%A8%8B%E6%8C%91%E6%88%98%E8%B5%9B%E5%88%9D%E8%B5%9B%E8%AE%B0%E5%BD%95/</link>
+        <guid isPermaLink="true">http://localhost:4000/2020/10/05/%E9%A6%96%E5%B1%8A%E4%BA%91%E5%8E%9F%E7%94%9F%E7%BC%96%E7%A8%8B%E6%8C%91%E6%88%98%E8%B5%9B%E5%88%9D%E8%B5%9B%E8%AE%B0%E5%BD%95/</guid>
+        
+        <category>java</category>
+        
+        
+      </item>
     
       <item>
         <title>st算法</title>
@@ -80,6 +253,7 @@
 &lt;p&gt;偷偷放张最新的排名图（菜鸡也能上分，哈哈）：&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/img/in-post/st/leetcode.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
 </description>
         <pubDate>Sun, 09 Feb 2020 00:00:00 +0800</pubDate>
         <link>http://localhost:4000/2020/02/09/st%E7%AE%97%E6%B3%95/</link>
@@ -1289,243 +1463,6 @@ sudo docker run -p 4000:4000 --rm --volume=&quot;$PWD:/srv/jekyll&quot; -it jeky
         <pubDate>Sat, 27 Apr 2019 00:00:00 +0800</pubDate>
         <link>http://localhost:4000/2019/04/27/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(8)-store%E6%96%87%E4%BB%B6%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/</link>
         <guid isPermaLink="true">http://localhost:4000/2019/04/27/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(8)-store%E6%96%87%E4%BB%B6%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/</guid>
-        
-        <category>rocketmq</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>rocketmq源码阅读(7)——store模块</title>
-        <description>&lt;h2 id=&quot;前言&quot;&gt;前言&lt;/h2&gt;
-
-&lt;p&gt;在rocketmq中，store模块，也就是底层存储模块，是最为核心的部分，也在很大程度上决定了rocketmq的性能。rocketmq借鉴了kafka的设计，采用了文件存储。&lt;/p&gt;
-
-&lt;h2 id=&quot;整体介绍&quot;&gt;整体介绍&lt;/h2&gt;
-
-&lt;h3 id=&quot;消费模型&quot;&gt;消费模型&lt;/h3&gt;
-
-&lt;p&gt;先看看rocketmq的存储架构(图来源于&lt;a href=&quot;https://www.jianshu.com/p/b73fdd893f98&quot;&gt;此博文&lt;/a&gt;)&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/img/in-post/rocketmq-7-store/2.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;可以看到在broker接收到消息后，首先会把消息写入到commitLog中，之后会异步将消息分发给ConsumerQueue和IndexFile，之后相关的细节也将主要围绕commitLog，consumerQueue，indexFIle来讲&lt;/p&gt;
-
-&lt;h3 id=&quot;存储文件目录&quot;&gt;存储文件目录&lt;/h3&gt;
-
-&lt;p&gt;在部署broker的机器上，rocketmq相关数据都存储在了&lt;strong&gt;~/store&lt;/strong&gt;文件夹下，相关日志都存储在&lt;strong&gt;~/logs/rocketmqlogs&lt;/strong&gt;文件夹下。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/img/in-post/rocketmq-7-store/1.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;主要包含4个文件夹，逐个来看看&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;commitlog&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/img/in-post/rocketmq-7-store/3.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;可以看到commitLog只有个大小为1G，名称为全数字的一个文件。&lt;/p&gt;
-
-&lt;p&gt;commitLog做为rocketmq中最重要的存储文件，其存储的核心内容正是该broker接收到的所有的消息体，为了保证性能，单个文件的默认值为1G。文件名代表着该文件存储的第一条消息的offset，这么做的理由我认为方便搜索消息（2020.04.06补充：os的pageCache有大小限制，一般1.5G-2G，1g正好可以加载到虚拟内存中）。在下文中，我们会看看内部数据结构，尝试读取文件的内容&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;config&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;config中存储的主要是相关的最后消费的offset，消费delay值，订阅情况等配置信息，主要用于broker在启动时对相关参数的初始化，以及broker停机时相关参数从内存序列化到磁盘上。里面的文件也都是json格式的，也很方便去研究。就不细说了&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;consumequeue&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;顾名思义，代表着消费情况，可以看看树形目录图&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/img/in-post/rocketmq-7-store/4.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;很直观看到，它为每个topic创建了一个文件夹，为每个topic的每个queue也创建了一个文件夹，内部的文件也存储了该队列的消费情况。consumerQueue文件的数据结构在等会也会尝试去解读&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;index&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;index文件主要用于消息的搜索，文件名称就是文件新建的时间，这命名也方便了根据时间去筛选消息。常用于监控，消息搜素等。文件的数据结构会更复杂一些，下文也会尝试去对文件进行解析。&lt;/p&gt;
-
-&lt;h3 id=&quot;代码逻辑&quot;&gt;代码逻辑&lt;/h3&gt;
-
-&lt;p&gt;再来从源代码上来看看文件的存储细节吧&lt;/p&gt;
-
-&lt;p&gt;在netty接收到了消息后，会根据RemotingCommand的code路由到对应的Processor上（接收消息时也就是指SendMessageProcessor）。Processer就会将消息转交给store模块中的MessageStore服务处理。&lt;/p&gt;
-
-&lt;p&gt;在DefaultMessageStore.java中，也可以看到3个关键的变量&lt;/p&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CommitLog&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;commitLog&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ConcurrentMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;cm&quot;&gt;/* topic */&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ConcurrentMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Integer&lt;/span&gt;&lt;span class=&quot;cm&quot;&gt;/* queueId */&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ConsumeQueue&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;consumeQueueTable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IndexService&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;indexService&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;需要提一下的是，存储模型中的dispatch操作是由reputMessageService来异步完成的，reputMessageService会从commitLog中读取消息相关信息，然后写入到indexFile和consumerQueue对应的文件中去&lt;/p&gt;
-
-&lt;p&gt;另外先提一下，Rocketmq操作文件统一使用的是MappedFile这个类。&lt;/p&gt;
-
-&lt;p&gt;接着往下看CommitLog处理消息的逻辑&lt;/p&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;//org/apache/rocketmq/store/CommitLog#putMessage(final MessageExtBrokerInner msg)&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;//找到最后创建的CommitLog文件&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;MappedFile&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mappedFile&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;mappedFileQueue&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getLastMappedFile&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;.....&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mappedFile&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mappedFile&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;isFull&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;mappedFile&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;mappedFileQueue&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getLastMappedFile&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// Mark: NewFile may be cause noise&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;.....&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;//将消息写入MappedFile的内存缓冲区&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mappedFile&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;appendMessage&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;msg&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;appendMessageCallback&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;.....&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;CommitLog中有个很关键的字段MappedFileQueue，其实也就是一个包含MappedFile的队列，MappedFile也是保证磁盘吞吐量的关键所在，来看看MappedFile的处理逻辑&lt;/p&gt;
-
-&lt;h4 id=&quot;mappedfile处理消息&quot;&gt;MappedFile处理消息&lt;/h4&gt;
-
-&lt;p&gt;先来看看MappedFile内的所有字段&lt;/p&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;OS_PAGE_SIZE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1024&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AtomicLong&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TOTAL_MAPPED_VIRTUAL_MEMORY&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AtomicLong&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-
-&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AtomicInteger&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TOTAL_MAPPED_FILES&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AtomicInteger&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;//当前文件的写入的字节位置&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;protected&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AtomicInteger&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;wrotePosition&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AtomicInteger&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;protected&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AtomicInteger&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;committedPosition&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AtomicInteger&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AtomicInteger&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;flushedPosition&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AtomicInteger&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;protected&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fileSize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;protected&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;FileChannel&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fileChannel&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;cm&quot;&gt;/**
-* Message will put to here first, and then reput to FileChannel if writeBuffer is not null.
-*/&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;//内存缓冲区，依赖TransientStorePool的开启，默认不开启&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;protected&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ByteBuffer&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;writeBuffer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;//默认缓存了5个大小为1G的DirectByteBuffer&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;protected&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TransientStorePool&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;transientStorePool&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fileName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fileFromOffset&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;File&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;file&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;//文件内存缓冲区&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MappedByteBuffer&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mappedByteBuffer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;volatile&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;storeTimestamp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;boolean&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;firstCreateInQueue&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;再来看看写入消息的函数&lt;/p&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AppendMessageResult&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;appendMessagesInner&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MessageExt&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;messageExt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AppendMessageCallback&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cb&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;currentPos&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;wrotePosition&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-
-  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;currentPos&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;fileSize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;//截取未写入数据的内存缓冲区&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;ByteBuffer&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;byteBuffer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;writeBuffer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;writeBuffer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;slice&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;mappedByteBuffer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;slice&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;byteBuffer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;position&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;currentPos&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;AppendMessageResult&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;//...&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;//将消息体按照固定的规则，逐个字节写入到ByteBuffer中，后续读取文件也主要参考doAppend这个方法&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cb&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;doAppend&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getFileFromOffset&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;byteBuffer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;fileSize&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;currentPos&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MessageExtBrokerInner&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;messageExt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;//...&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;wrotePosition&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;addAndGet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getWroteBytes&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;storeTimestamp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getStoreTimestamp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;AppendMessageResult&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;AppendMessageStatus&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;UNKNOWN_ERROR&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;其中最为主要的就是&lt;strong&gt;result = cb.doAppend(this.getFileFromOffset(), byteBuffer, this.fileSize - currentPos, (MessageExtBrokerInner) messageExt);&lt;/strong&gt;，这个方法就是将消息体按照固定的规则，逐个字节写入到ByteBuffer中，后续读取文件也主要参考doAppend这个方法。&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;还要提一句的就是ByteBuffer和MappedByteBuffer这两个类，这两个类属于java nio包中的内容，大大提高了java处理文件的效率。ByteBuffer又分为&lt;strong&gt;DirectByteBuffer&lt;/strong&gt;和&lt;strong&gt;HeapByteBuffer&lt;/strong&gt;，DirectByteBuffer由系统直接管理，HeapByteBuffer由jvm管理。&lt;/p&gt;
-
-  &lt;p&gt;ByteBuffer中最为关键的就是3个参数：position，limit，capacity。capacity即代表容量。简单来说，写的时候会直接写入到position这个位置，position会自增，读取时，会从position开始读，读到limit为止。&lt;/p&gt;
-
-  &lt;p&gt;MappedByteBuffer继承了ByteBuffer，对文件做了一层映射。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;既然数据暂时写入到了ByteBuffer中，那什么时候才会刷到文件中呢？&lt;/p&gt;
-
-&lt;p&gt;我又去整理了一下MappedFile中的所有方法，找出了以下几个可能相关的方法：&lt;/p&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;flush&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;flushLeastPages&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;commit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;commitLeastPages&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;我们看到写入的消息有可能缓存在两个地方，一个是writeBuffer字段，一个是文件直接映射的MappedByteBuffer。经过代码阅读，我发现开启TransientStorePool时才会走commit方法，而commit方法的作用就是将ByteBuffer中的内容写入FileChannel中。那开启TransientStorePool和writeBuffer又有什么关系呢？其实TransientStorePool内部就是生成了5个(默认)大小为1G的ByteBuffer，MappedFile中的writeBuffer就是取的是TransientStorePool中创建好的ByteBuffer。默认TransientStorePool是不开启的，所以commit方法默认是不走的。&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;使用TransientStorePool和直接使用MappedByteBuffer有什么区别？什么场景下需要开启TransientStorePool呢？&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;另外就是flush方法，flush方法其实就是通过force()方法强制将内存中的信息刷到磁盘上。这个方法主要是FlushConsumeQueueService（consumerQueue异步刷盘）和GroupCommitService（commitLog同步刷盘），FlushRealTimeService（commitLog异步刷盘，默认）这三个服务循环调用。&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;在flush函数中，我注意到一个参数，叫做flushLeastPages，默认为0页，默认页大小为4M，即有一点数据未刷就会立马进行刷盘。如果希望增大磁盘的吞吐量，可以调整flushLeastPages，不过，如果消息还未刷盘，broker挂了，那还是有一定丢失消息的风险的&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;&lt;strong&gt;ConsumerQueue和Index&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;上文中，我们看了MappedFile的实现细节，CommitLog就是通过MappedFileQueue（一个存放MappedFile的queue :-)）来实现数据的存储的。&lt;/p&gt;
-
-&lt;p&gt;上文提到了ReputMessageService会异步从commitLog中读取消息相关信息，然后转换为统一的对象DispatchRequest，然后写入到indexFile和consumerQueue对应的文件中去&lt;/p&gt;
-
-&lt;p&gt;ConsumerQueue的数据结构会相对简单一些，因为这只是服务于消费者进行消费，index会相对复杂一些，因为index主要用于消息的搜索，所以要支持比较高性能的消息搜索。这两者和文件的交互同样是通过MappedFile&lt;/p&gt;
-
-&lt;p&gt;先看看ConsumerQueue的逻辑&lt;/p&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;//org/apache/rocketmq/store/ConsumeQueue#putMessagePositionInfo(final long offset, final int size, final long tagsCode, final long cqOffset)&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;byteBufferIndex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;flip&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;byteBufferIndex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;limit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;CQ_STORE_UNIT_SIZE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;byteBufferIndex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;putLong&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;offset&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;//offset是对应commitLog中的offset&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;byteBufferIndex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;putInt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;byteBufferIndex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;putLong&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tagsCode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mappedFile&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;appendMessage&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;byteBufferIndex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;array&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;再来看看index的插入逻辑&lt;/p&gt;
-
-&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getUniqKey&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;indexFile&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;putKey&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;indexFile&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;msg&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;buildKey&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;topic&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getUniqKey&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()));&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;keys&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;keyset&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;split&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MessageConst&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;KEY_SEPARATOR&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;keyset&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;keyset&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;];&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;indexFile&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;putKey&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;indexFile&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;msg&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;buildKey&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;topic&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;可以看到，一条消息在index中至少会有一套记录。在生产者发送消息时，可以设置Keys（默认也会给UniqKey这个字段设置一个随机字符串，保证至少有一条记录）&lt;/p&gt;
-
-&lt;p&gt;接着来看看默认的index文件数据结构&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/img/in-post/rocketmq-7-store/5.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;总共420000040bytes，大约是400.5M&lt;/p&gt;
-
-&lt;p&gt;总共分为3部分Index Header，HashSlot以及Index&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Index Header：每份文件中Index Header也只会有一份，前40个字节依次表示首个index插入的时间，最新插入index的时间，起始offset，最大offset，hashSlot数量，index数量&lt;/li&gt;
-  &lt;li&gt;Index：按顺序添加key信息，keyHash指key的hashcode，phyoffset代表commitlog中的offset，该条消息和Index Header中的beginTimeStampIndex的时间差，soltValue代表Hash Slot中的值&lt;/li&gt;
-  &lt;li&gt;Hash Slot：500万个连续的int，用于存放key在该文件中的偏移量&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;举个具体的例子，当要向index写入一个key的时候，会先计算该key的hashCode，再对5000000取模得到值pos_a，于是便可以拿到第pos_a个Hash Slot中的值记为value_a。另外我们取header中的IndexCount记为index_pos，于是相关的信息就可以写入到40+5000000*4+index_pos*20 字节处，此时的slotValue设为value_a。然后将pos_a处的Hash_slot的值设为index_pos。最后更新Index Header中的信息。&lt;/p&gt;
-
-&lt;p&gt;按以上的流程走一遍，也就轻易看出来Index中的slotValue对hash冲突的解决，其原理有些类似于hashMap，像数组加链表的形式。不过这边直接通过一个数组来实现了，而且，如果有新节点加入的话，是加入到头节点中，不是尾节点中&lt;/p&gt;
-
-&lt;h2 id=&quot;总结&quot;&gt;总结&lt;/h2&gt;
-
-&lt;p&gt;至此，简单梳理了一下rocketmq的存储模块的设计，下篇文章中会来验证一下commitLog，index以及consumerQueue的数据结构&lt;/p&gt;
-
-</description>
-        <pubDate>Sun, 07 Apr 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/04/07/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(7)-store%E6%A8%A1%E5%9D%97/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/04/07/rocketmq%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB(7)-store%E6%A8%A1%E5%9D%97/</guid>
         
         <category>rocketmq</category>
         

@@ -10,9 +10,9 @@
     <meta name="keyword"  content="">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>[转]Java Stream API性能测试 - New Boy</title>
+    <title>首届云原生编程挑战赛初赛记录 - New Boy</title>
 
-    <link rel="canonical" href="http://localhost:4000/2018/07/11/%E8%BD%AC-Java-Stream-API%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95/">
+    <link rel="canonical" href="http://localhost:4000/2020/10/05/%E9%A6%96%E5%B1%8A%E4%BA%91%E5%8E%9F%E7%94%9F%E7%BC%96%E7%A8%8B%E6%8C%91%E6%88%98%E8%B5%9B%E5%88%9D%E8%B5%9B%E8%AE%B0%E5%BD%95/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -145,12 +145,12 @@
                         <a class="tag" href="/tags/#java" title="java">java</a>
                         
                     </div>
-                    <h1>[转]Java Stream API性能测试</h1>
+                    <h1>首届云原生编程挑战赛初赛记录</h1>
                     
                     
                     <h2 class="subheading"></h2>
                     
-                    <span class="meta">Posted by New Boy on July 11, 2018</span>
+                    <span class="meta">Posted by New Boy on October 5, 2020</span>
                 </div>
             </div>
         </div>
@@ -170,153 +170,167 @@
 
 				<div id="toc"></div>
 
-				<blockquote>
-  <p>来本文转载于http://www.cnblogs.com/CarpenterLee/p/6675568.html，十分感谢<a href="http://www.cnblogs.com/CarpenterLee/">CarpenterLee</a>写出如此棒的文章。</p>
+				<h2 id="前言">前言</h2>
 
-  <p>来到了毕业后真正意义上的第一家公司，要说这近两个月在技术层面最大的感受，一是授权方式的演变，这里暂不讨论。第二个就是java8引入的Lambda，Stream，彻底改变了我对编程的理解。不过，在开始接触时，对于写下的每一行是没底的，因为根本不清楚其运行的原理，其效率。最近想写几篇文章强迫自己加深一下印象，不过恰巧看到几篇很棒的blog，由浅入深，理解十分透彻，难以望其项背，遂转之。</p>
-</blockquote>
+<p>话说，今年5月份安利hzk来参加leetcode的周赛的时候，被反安利了一波阿里云的中间件挑战赛，不过今年换了个名字，叫云原生编程挑战赛。不过hzk忙着结婚，把我拉进坑自己却跑了。对于这种偏工程化的比赛，之前从未参加过，便打算试试。由于工作比较忙的缘故，大概是花了两个月的时间，在每天下班后抽时间写bug，改bug。期间走了不少弯路，一直到比赛结束，还有些优化没来得及写，但总的来说，对个人的提升还是很大的。趁着国庆这个假期，把这次项目总结一下。</p>
 
-<p>已经对Stream API的用法鼓吹够多了，用起简洁直观，但性能到底怎么样呢？会不会有很高的性能损失？本节我们对Stream API的性能一探究竟。</p>
+<h3 id="题目介绍">题目介绍</h3>
 
-<p>为保证测试结果真实可信，我们将JVM运行在<code class="highlighter-rouge">-server</code>模式下，测试数据在GB量级，测试机器采用常见的商用服务器，配置如下：</p>
+<p>题目是让实现一个基于tail-based采样的分布式链路追踪系统。其中涉及到两点概念：</p>
 
-<table>
-  <thead>
-    <tr>
-      <th>OS</th>
-      <th>CentOS 6.7 x86_64</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>CPU</td>
-      <td>Intel Xeon X5675, 12M Cache 3.06 GHz, 6 Cores 12 Threads</td>
-    </tr>
-    <tr>
-      <td>内存</td>
-      <td>96GB</td>
-    </tr>
-    <tr>
-      <td>JDK</td>
-      <td>java version 1.8.0_91, Java HotSpot(TM) 64-Bit Server VM</td>
-    </tr>
-  </tbody>
-</table>
+<p>1.分布式链路追踪系统。该系统用来记录请求范围内的信息，用户在页面的一次点击发送请求，这个请求的所有处理过程，比如经过多少个服务，在哪些机器上执行，每个服务的耗时和异常情况。</p>
 
-<p>测试<a href="https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/perf/StreamBenchmark/src/lee">所用代码在这里</a>，测试<a href="https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/perf/Stream_performance.xlsx">结果汇总</a>.</p>
+<p>2.Tail-based采样。这种采样是指只采集有具体特征的数据，比如错慢全采，大客户全采。</p>
 
-<h2 id="测试方法和测试数据">测试方法和测试数据</h2>
+<p>下图是官方给出的流程图</p>
 
-<p>性能测试并不是容易的事，Java性能测试更费劲，因为虚拟机对性能的影响很大，JVM对性能的影响有两方面：</p>
+<p><img src="/img/in-post/f-tracing/p1.png" alt="" /></p>
 
-<ol>
-  <li>GC的影响。GC的行为是Java中很不好控制的一块，为增加确定性，我们手动指定使用CMS收集器，并使用10GB固定大小的堆内存。集体到JVM参数就是<code class="highlighter-rouge">-XX:+UseConcMarkSweepGC -Xms10G -Xmx10G</code></li>
-  <li>JIT(Just-In-Time)即时编译技术。即时编译技术会将热点代码在JVM运行的过程中编译成本地代码，测试时我们会先对程序预热，触发对测试函数的即时编译。相关的JVM参数是<code class="highlighter-rouge">-XX:CompileThreshold=10000</code>。</li>
-</ol>
+<p>下面是官方给出的文件中的数据样例</p>
 
-<p>Stream并行执行时用到<code class="highlighter-rouge">ForkJoinPool.commonPool()</code>得到的线程池，为控制并行度我们使用Linux的<code class="highlighter-rouge">taskset</code>命令指定JVM可用的核数。</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>d614959183521b4b|1587457762873000|d614959183521b4b|0|311601|order|getOrder|192.168.1.3|http.status_code=200
 
-<p>测试数据由程序随机生成。为防止一次测试带来的抖动，测试4次求出平均时间作为运行时间。</p>
+d614959183521b4b|1587457762877000|69a3876d5c352191|d614959183521b4b|305265|Item|getItem|192.168.1.3|http.status_code=200
 
-<h2 id="实验一-基本类型迭代">实验一 基本类型迭代</h2>
+d614959183521b4b|1587457763183000|dffcd4177c315535|d614959183521b4b|980|Loginc|getLogisticy|192.168.1.2|http.status_code=200
 
-<p>测试内容：找出整型数组中的最小值。对比for循环外部迭代和Stream API内部迭代性能。</p>
+d614959183521b4b|1587457762878000|52637ab771da6ae6|d614959183521b4b|304284|Loginc|getAddress|192.168.1.2|http.status_code=200
+</code></pre></div></div>
 
-<p>测试程序<a href="https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/perf/StreamBenchmark/src/lee/IntTest.java">IntTest</a>，测试结果如下图：</p>
+<p>每个节点一份数据文件。数据格式进行了简化，每行数据(即一个span)包含如下信息：</p>
 
-<p><img src="https://images2015.cnblogs.com/blog/939998/201704/939998-20170406213040378-358737189.png" alt="perf_Stream_min_int" /></p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>traceId | startTime | spanId | parentSpanId | duration | serviceName | spanName | host | tags
 
-<p>图中展示的是for循环外部迭代耗时为基准的时间比值。分析如下：</p>
+具体各字段的：
 
-<ol>
-  <li>对于基本类型Stream串行迭代的性能开销明显高于外部迭代开销（两倍）；</li>
-  <li>Stream并行迭代的性能比串行迭代和外部迭代都好。</li>
-</ol>
+- traceId：全局唯一的Id，用作整个链路的唯一标识与组装
+- startTime：调用的开始时间
+- spanId: 调用链中某条数据(span)的id
+- parentSpanId: 调用链中某条数据(span)的父亲id，头节点的span的parantSpanId为0
+- duration：调用耗时
+- serviceName：调用的服务名
+- spanName：调用的埋点名
+- host：机器标识，比如ip，机器名
+- tags: 链路信息中tag信息，存在多个tag的key和value信息。格式为key1=val1&amp;key2=val2&amp;key3=val3 比如 http.status_code=200&amp;error=1
+</code></pre></div></div>
 
-<p>并行迭代性能跟可利用的核数有关，上图中的并行迭代使用了全部12个核，为考察使用核数对性能的影响，我们专门测试了不同核数下的Stream并行迭代效果：</p>
+<p>要求</p>
 
-<p><img src="https://images2015.cnblogs.com/blog/939998/201704/939998-20170406212936425-1973108530.png" alt="perf_Stream_min_int_par" /></p>
+<p>找到所有tags中存在 http.status_code 不为 200，或者 error 等于1的调用链路。输出数据按照 traceId 分组，并按照startTime升序排序。记录每个 traceId 分组下的全部数据，最终输出每个traceId下所有数据的CheckSum(Md5值）。</p>
 
-<p>分析，对于基本类型：</p>
+<p>注意：一条链路的数据，可能会出现两个数据流中，例如span在数据流1中，parentSpan在数据流2中。 当数据流1中某个span出现符合要求时，那对应的调用链(相同的traceId)的其他所有span都需要保存，即使其他span出现在数据流2中。相同traceId的第一条数据（span）到最后一条数据不会超过2万行。</p>
 
-<ol>
-  <li>使用Stream并行API在单核情况下性能很差，比Stream串行API的性能还差；</li>
-  <li>随着使用核数的增加，Stream并行效果逐渐变好，比使用for循环外部迭代的性能还好。</li>
-</ol>
+<h3 id="题目理解与分析">题目理解与分析</h3>
 
-<p>以上两个测试说明，对于基本类型的简单迭代，Stream串行迭代性能更差，但多核情况下Stream迭代时性能较好。</p>
+<p>下面的流程图是我按个人理解画的流程图</p>
 
-<h2 id="实验二-对象迭代">实验二 对象迭代</h2>
+<p><img src="/img/in-post/f-tracing/p2.png" alt="" /></p>
 
-<p>再来看对象的迭代效果。</p>
+<p>可以看出，我们开发以及优化的点集中在3，4，5，6，7这几个步骤中。总结下：</p>
 
-<p>测试内容：找出字符串列表中最小的元素（自然顺序），对比for循环外部迭代和Stream API内部迭代性能。</p>
+<p>1.快速从输入流中读取数据</p>
 
-<p>测试程序<a href="https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/perf/StreamBenchmark/src/lee/StringTest.java">StringTest</a>，测试结果如下图：</p>
+<p>2.快速从读取的数据中过滤出异常的行</p>
 
-<p><img src="https://images2015.cnblogs.com/blog/939998/201704/939998-20170406213138722-1162992217.png" alt="perf_Stream_min_String" /></p>
+<p>3.server根据接收到client端传送过来的traceId，再从两个client端获取到异常traceId所对应的完整的数据</p>
 
-<p>结果分析如下：</p>
+<p>4.对每个异常的traceId对于的完整的数据根据其中的时间字段进行排序以及md5</p>
 
-<ol>
-  <li>对于对象类型Stream串行迭代的性能开销仍然高于外部迭代开销（1.5倍），但差距没有基本类型那么大。</li>
-  <li>Stream并行迭代的性能比串行迭代和外部迭代都好。</li>
-</ol>
+<p>5.client端的数据缓存、同步。因为输入流肯定大于本机内存，所以肯定要考虑做流式处理。</p>
 
-<p>再来单独考察Stream并行迭代效果：</p>
+<p>由于我们只考虑异常的数据，所以网络开销很有限，我们优化的侧重点要放在client端，以及相关的数据的搜索</p>
 
-<p><img src="https://images2015.cnblogs.com/blog/939998/201704/939998-20170406213204582-2072599993.png" alt="perf_Stream_min_String_par" /></p>
+<h3 id="具体实现">具体实现</h3>
 
-<p>分析，对于对象类型：</p>
+<p>1.存储模型</p>
 
-<ol>
-  <li>使用Stream并行API在单核情况下性能比for循环外部迭代差；</li>
-  <li>随着使用核数的增加，Stream并行效果逐渐变好，多核带来的效果明显。</li>
-</ol>
+<p>因为考虑到相同traceId的第一条数据（span）到最后一条数据不会超过2万行，client端通过<em>List&lt;Map&lt;TraceId, List&lt;byte[]»&gt;和水位标记clusterHw</em>来做数据缓存和同步。list固定长度为10，相当于缓存了10*5M=50M的数据。</p>
 
-<p>以上两个测试说明，对于对象类型的简单迭代，Stream串行迭代性能更差，但多核情况下Stream迭代时性能较好。</p>
+<p>2.线程模型</p>
 
-<h2 id="实验三-复杂对象归约">实验三 复杂对象归约</h2>
+<p>client端主要有两个线程，第一个线程用于数据的读取以及数据的搜索，然后将对应的（byte数组，每一条span的起始下标，该span是否为异常span）添加到阻塞队列Q中，第二个是处理线程，用于消费阻塞队列中的数据，并发送异常的traceId给server</p>
 
-<p>从实验一、二的结果来看，Stream串行执行的效果都比外部迭代差（很多），是不是说明Stream真的不行了？先别下结论，我们再来考察一下更复杂的操作。</p>
+<p>3.通信模式</p>
 
-<p>测试内容：给定订单列表，统计每个用户的总交易额。对比使用外部迭代手动实现和Stream API之间的性能。</p>
+<p>client节点和server节点之间，使用netty来做tcp长连接通信。</p>
 
-<p>我们将订单简化为<code class="highlighter-rouge">&lt;userName, price, timeStamp&gt;</code>构成的元组，并用<code class="highlighter-rouge">Order</code>对象来表示。测试程序<a href="https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/perf/StreamBenchmark/src/lee/ReductionTest.java">ReductionTest</a>，测试结果如下图：</p>
+<p>4.数据读取</p>
 
-<p><img src="https://images2015.cnblogs.com/blog/939998/201704/939998-20170406213231253-1806910111.png" alt="perf_Stream_reduction" /></p>
+<p>最初数据的读取，我采用的是<em>BufferedReader#readLine()</em>方法，然后对读取出来的String做特征判断。后来发现这种方式效率太低。调整为<em>inputStream#read(byte b[], int off, int len)</em>，这样每次都是从输入流中读取5M的内容（因为5M差不多是20000多行的内容）</p>
 
-<p>分析，对于复杂的归约操作：</p>
+<p>5.特征数据查找</p>
 
-<ol>
-  <li>Stream API的性能普遍好于外部手动迭代，并行Stream效果更佳；</li>
-</ol>
+<p>这里查找包含两个内容，给定一个byte[]，找到其中每一个span的起始下标，以及确定该span是否为异常的span。其中根据数据的特征做了一些特征优化，提升了不少效率。这里最初有尝试过使用kmp来进行匹配，但效率真的很感人，连String.indexOf()都没比过。最后通过dfs+特征优化，能跳就跳，将时间复杂度从O(n)优化到O(n/3)左右</p>
 
-<p>再来考察并行度对并行效果的影响，测试结果如下：</p>
+<p>6.数据流式处理</p>
 
-<p><img src="https://images2015.cnblogs.com/blog/939998/201704/939998-20170406213256035-451595873.png" alt="perf_Stream_reduction_par" /></p>
+<p>在第1点中提到了client中缓存了10<em>5M的数据，这边就是通过两个忙轮询来实现了数据的流式处理。每组数据是5M，那么第i组数据能被删除的充要条件就是client端已经处理完第i+1次的server端的回查，因为为了防止漏数据，在回查第i+1组的异常的traceId的时候，我们会从第i组以及第i+2组中找到对应的数据。那么对应的两个忙轮询就是1.client处理数据并放入</em>List&lt;Map&lt;TraceId, List&lt;byte[]»&gt;时，该Map必须为空；2.在查询第i+1组的异常traceId时，第i+2组的数据必须已经处理完成。对应代码如下</p>
 
-<p>分析，对于复杂的归约操作：</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">tmp</span> <span class="o">=</span> <span class="n">traceMapList</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">dataProcessService</span><span class="o">.</span><span class="na">pos</span><span class="o">.</span><span class="na">incrementAndGet</span><span class="o">()</span> <span class="o">%</span> <span class="n">PARTITION</span><span class="o">);</span>
+<span class="k">while</span> <span class="o">(</span><span class="n">tmp</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">5</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
 
-<ol>
-  <li>使用Stream并行归约在单核情况下性能比串行归约以及手动归约都要差，简单说就是最差的；</li>
-  <li>随着使用核数的增加，Stream并行效果逐渐变好，多核带来的效果明显。</li>
-</ol>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="kd">private</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="kt">byte</span><span class="o">[]&gt;&gt;</span> <span class="nf">copyMap</span><span class="o">(</span><span class="kt">int</span> <span class="n">oriPos</span><span class="o">){</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">oriPos</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span>
+        <span class="o">}</span>
+        <span class="k">while</span> <span class="o">(</span><span class="n">oriPos</span> <span class="o">&gt;=</span> <span class="k">this</span><span class="o">.</span><span class="na">pos</span><span class="o">.</span><span class="na">get</span><span class="o">())</span> <span class="o">{</span>
+            <span class="k">try</span> <span class="o">{</span>
+<span class="c1">//                noeProcessSleepCnt.incrementAndGet();</span>
+                <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">5</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">traceMapList</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">oriPos</span> <span class="o">%</span> <span class="mi">10</span><span class="o">);</span>
+    <span class="o">}</span>
 
-<p>以上两个实验说明，对于复杂的归约操作，Stream串行归约效果好于手动归约，在多核情况下，并行归约效果更佳。我们有理由相信，对于其他复杂的操作，Stream API也能表现出相似的性能表现。</p>
+</code></pre></div></div>
 
-<h2 id="结论">结论</h2>
+<p>7.Jvm参数优化</p>
 
-<p>上述三个实验的结果可以总结如下：</p>
+<p>调高新生代大小，因为流式处理，所以对象存活时间短，要避免发生full gc。另外使用Parallel垃圾收集器，提高系统的吞吐量。</p>
 
-<ol>
-  <li>对于简单操作，比如最简单的遍历，Stream串行API性能明显差于显示迭代，但并行的Stream API能够发挥多核特性。</li>
-  <li>对于复杂操作，Stream串行API性能可以和手动实现的效果匹敌，在并行执行时Stream API效果远超手动实现。</li>
-</ol>
+<p>8.程序预热，触发JIT</p>
 
-<p>所以，如果出于性能考虑，1. 对于简单操作推荐使用外部迭代手动实现，2. 对于复杂操作，推荐使用Stream API， 3. 在多核情况下，推荐使用并行Stream API来发挥多核优势，4.单核情况下不建议使用并行Stream API。</p>
+<p>在正式开始跑之前（即调用setParameter接口之前），先跑一遍预热程序，触发C2编译器，将热点代码直接编译成机器代码，提高程序运行效率</p>
 
-<p>如果出于代码简洁性考虑，使用Stream API能够写出更短的代码。即使是从性能方面说，尽可能的使用Stream API也另外一个优势，那就是只要Java Stream类库做了升级优化，代码不用做任何修改就能享受到升级带来的好处。</p>
+<p>9.使用JNI来提高性能</p>
+
+<p>代码中涉及到数组拷贝的地方都使用了System.arrayCopy()来提高效率</p>
+
+<p>10.减少对象的创建</p>
+
+<p>为了降低对象新建和销毁，从数据读取开始到最后上报结果，都是直接操作byte，中间使用任何的String</p>
+
+<p>11.使用volatile关键字</p>
+
+<p>对于很多单线程写，多线程读的变量，都使用了volatile关键字来保证内存可见性，保证了线程安全</p>
+
+<p>12.使用合理的排序</p>
+
+<p>由于要求是按startTime进行升序排序，但该场景中，其实startTime是基本有序的，所以采取的排序策略是：client端进行插入排序，时间复杂度接近O(N)，在Server端使用合并排序来合并两个有序序列，时间复杂度为O(N)</p>
+
+<h3 id="最后成绩以及待改进的点">最后成绩以及待改进的点</h3>
+
+<p>最后的成绩是在32名，处理总共12.8G的数据（每个client处理6.4G）花了8.156秒。后面想想其实还是有些可提升的空间，但早期努力错了方向，没有get到重点，赛程后半段没有太多的时间进行调整了。后面看比较靠前的选手的思路，在我原有程序的基础上，发现还是有些可以优化的点。</p>
+
+<p><img src="/img/in-post/f-tracing/p3.png" alt="" /></p>
+
+<p>1.使用原始集合库</p>
+
+<p>Java中的原生集合确实很好用，但它不能作用于原始类型，这一定程度上降低程序的效率（增加内存使用以及垃圾收集器的开销），比如开源的HPPC，其中就有一系列针对于原始类型的集合。</p>
+
+<p>2.减少内存拷贝</p>
+
+<p>虽然程序中用了JNI来进行数组的拷贝，但后面想想完全可以减少好多次数据的拷贝。之前的数据结构为<em>List&lt;Map&lt;TraceId, List&lt;byte[]»&gt;</em>，其时可以拆成一个byte[50 * 1024 * 1024]的数组，存放映射关系的List也可以改为*List&lt;Map&lt;TraceId, List<Integer>&gt;&gt;*，这样就可以直接在byte数组上做一个流式的缓存，对应的List中改为直接存储span对应的索引</Integer></p>
+
+<p>3.抛弃springboot</p>
+
+<p>抛弃框架</p>
+
+<p>另外，在这种特别注重性能的比赛场景下，计算机语言还是对最后的成绩有一些影响，最优秀的Java选手也就在15名左右。突然想起以前acm比赛，C的超时时间都是1s，而java都是2s（留下了没技术的泪水）。特此记录下参加的第一场工程类的编程比赛。</p>
 
 
                 <hr>
@@ -327,13 +341,9 @@
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2018/07/11/%E8%BD%AC-Java-Stream-API%E5%85%A5%E9%97%A8%E7%AF%87/" data-toggle="tooltip" data-placement="top" title="[转]Java Stream API入门篇">&larr; Previous Post</a>
+                        <a href="/2020/02/09/st%E7%AE%97%E6%B3%95/" data-toggle="tooltip" data-placement="top" title="st算法">&larr; Previous Post</a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2018/07/11/%E8%BD%AC-Java-Stream-API%E8%BF%9B%E9%98%B6%E7%AF%87/" data-toggle="tooltip" data-placement="top" title="[转]Java Stream API进阶篇">Next Post &rarr;</a>
-                    </li>
                     
                 </ul>
 
