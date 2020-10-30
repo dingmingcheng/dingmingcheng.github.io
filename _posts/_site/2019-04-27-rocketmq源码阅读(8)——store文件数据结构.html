@@ -1,0 +1,171 @@
+<p>##前言</p>
+
+<p>上文简单分析了一下rocketmq中的存储部分，本文中，我们来看看主要的存储文件中的数据结构。包括CommitLog，ConsumerQueue以及IndexFile，可以试着去读取这些文件</p>
+
+<h2 id="文件结构">文件结构</h2>
+
+<h3 id="commitlog">CommitLog</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">readCommitlog</span><span class="o">(</span><span class="kt">int</span><span class="cm">/*读取的消息数量*/</span> <span class="n">t</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">{</span>
+  <span class="n">String</span> <span class="n">file</span> <span class="o">=</span> <span class="s">"/Users/dingmc/store/commitlog/00000000000000000000"</span><span class="o">;</span>
+  <span class="n">RandomAccessFile</span> <span class="n">accessFile</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RandomAccessFile</span><span class="o">(</span><span class="n">file</span><span class="o">,</span> <span class="s">"r"</span><span class="o">);</span>
+
+  <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">t</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"----------------第"</span> <span class="o">+</span> <span class="n">j</span> <span class="o">+</span> <span class="s">"条消息----------------"</span><span class="o">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"msgLength:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readInt</span><span class="o">());</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"MESSAGE_MAGIC_CODE:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readInt</span><span class="o">());</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"bodyCRC:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readInt</span><span class="o">());</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"queueId:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readInt</span><span class="o">());</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"flag:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readInt</span><span class="o">());</span>
+
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"QUEUEOFFSET:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readLong</span><span class="o">());</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"PHYSICALOFFSET:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readLong</span><span class="o">());</span>
+
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"SYSFLAG:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readInt</span><span class="o">());</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"BORNTIMESTAMP:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readLong</span><span class="o">());</span>
+    <span class="kt">byte</span><span class="o">[]</span> <span class="n">b</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">4</span><span class="o">];</span>
+    <span class="n">accessFile</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">b</span><span class="o">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="s">"born host:"</span><span class="o">);</span>
+    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="n">b</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="o">);</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="s">"."</span><span class="o">);</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">();</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"born port:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readInt</span><span class="o">());</span>
+
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"STORETIMESTAMP:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readLong</span><span class="o">());</span>
+
+    <span class="n">accessFile</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">b</span><span class="o">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="s">"store host:"</span><span class="o">);</span>
+    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="n">b</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="o">);</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="s">"."</span><span class="o">);</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">();</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"store port:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readInt</span><span class="o">());</span>
+
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"RECONSUMETIMES:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readInt</span><span class="o">());</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Prepared Transaction Offset："</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readLong</span><span class="o">());</span>
+    <span class="c1">//bodyLength</span>
+    <span class="kt">int</span> <span class="n">bodyLength</span><span class="o">;</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"bodyLength:"</span> <span class="o">+</span> <span class="o">(</span><span class="n">bodyLength</span> <span class="o">=</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readInt</span><span class="o">()));</span>
+
+    <span class="c1">//大于4k会进行压缩</span>
+    <span class="kt">byte</span><span class="o">[]</span> <span class="n">b1</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">bodyLength</span><span class="o">];</span>
+    <span class="n">accessFile</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">b1</span><span class="o">);</span>
+    <span class="n">String</span> <span class="n">bodyStr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">b1</span><span class="o">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"body:"</span> <span class="o">+</span> <span class="n">bodyStr</span><span class="o">);</span>
+
+    <span class="c1">//topiclength</span>
+    <span class="kt">byte</span><span class="o">[]</span> <span class="n">b2</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">1</span><span class="o">];</span>
+    <span class="n">accessFile</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">b2</span><span class="o">);</span>
+    <span class="kt">int</span> <span class="n">topicLength</span> <span class="o">=</span> <span class="n">byteArrayToInt</span><span class="o">(</span><span class="n">b2</span><span class="o">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"topic length:"</span> <span class="o">+</span> <span class="n">topicLength</span><span class="o">);</span>
+
+    <span class="c1">//topic</span>
+    <span class="kt">byte</span><span class="o">[]</span> <span class="n">b3</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">topicLength</span><span class="o">];</span>
+    <span class="n">accessFile</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">b3</span><span class="o">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"topic name:"</span> <span class="o">+</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">b3</span><span class="o">));</span>
+
+    <span class="c1">//properties</span>
+    <span class="kt">int</span> <span class="n">propertiesLen</span> <span class="o">=</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readShort</span><span class="o">();</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"PROPERTIESLen:"</span> <span class="o">+</span> <span class="n">propertiesLen</span><span class="o">);</span>
+    <span class="kt">byte</span><span class="o">[]</span> <span class="n">b4</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">propertiesLen</span><span class="o">];</span>
+    <span class="n">accessFile</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">b4</span><span class="o">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"PROPERTIES:"</span> <span class="o">+</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">b4</span><span class="o">));</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+</code></pre></div></div>
+
+<p>没什么好说的，就按rocketmq源码中怎么写进去的，这边就怎么读出来，多看看多试试就行，再附上一段控制台结果：</p>
+
+<p><img src="/img/in-post/rocketmq-8-store/6.png" alt="" /></p>
+
+<h3 id="consumerqueue">ConsumerQueue</h3>
+
+<p>consumerQueue就更明显了</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">readConsumerQueue</span><span class="o">(</span><span class="kt">int</span> <span class="n">sum</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">{</span>
+  <span class="n">String</span> <span class="n">file</span> <span class="o">=</span> <span class="s">"/Users/dingmc/store/consumequeue/test_topic/1/00000000000000000000"</span><span class="o">;</span>
+  <span class="n">RandomAccessFile</span> <span class="n">accessFile</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RandomAccessFile</span><span class="o">(</span><span class="n">file</span><span class="o">,</span> <span class="s">"r"</span><span class="o">);</span>
+  <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">sum</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"------------------"</span><span class="o">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"offset:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readLong</span><span class="o">());</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"size:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readInt</span><span class="o">());</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"tagcode:"</span> <span class="o">+</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readLong</span><span class="o">());</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>附上控制台输出结果</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">------------------</span>
+<span class="nl">offset:</span><span class="mi">263</span>
+<span class="nl">size:</span><span class="mi">263</span>
+<span class="nl">tagcode:</span><span class="mi">0</span>
+<span class="o">------------------</span>
+<span class="nl">offset:</span><span class="mi">526</span>
+<span class="nl">size:</span><span class="mi">319</span>
+<span class="nl">tagcode:</span><span class="o">-</span><span class="mi">1143080936</span><span class="err">、</span>
+</code></pre></div></div>
+
+<h3 id="indexfile">IndexFile</h3>
+
+<p>最后是indexFile的读取，indexFile数据结构稍微复杂些。我这边发送了两条key一样的消息，这样就会造成hash冲突，我试着从index文件中找这个key：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">readIndex</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">{</span>
+  <span class="n">String</span> <span class="n">key</span> <span class="o">=</span> <span class="s">"test_topic#keys"</span><span class="o">;</span>
+  <span class="kt">int</span> <span class="n">absSlotPos</span> <span class="o">=</span> <span class="mi">40</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">*</span> <span class="o">(</span><span class="n">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">hashCode</span><span class="o">())</span> <span class="o">%</span> <span class="mi">5000000</span><span class="o">);</span>
+  <span class="n">String</span> <span class="n">file</span> <span class="o">=</span> <span class="s">"/Users/dingmc/store/index/20190304141342419"</span><span class="o">;</span>
+  <span class="n">RandomAccessFile</span> <span class="n">accessFile</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RandomAccessFile</span><span class="o">(</span><span class="n">file</span><span class="o">,</span> <span class="s">"r"</span><span class="o">);</span>
+  <span class="c1">//MappedByteBuffer方式</span>
+  <span class="c1">//        FileChannel channel = accessFile.getChannel();</span>
+  <span class="c1">//        MappedByteBuffer mappedByteBuffer = channel.map(MapMode.READ_ONLY, 0, 20000000);</span>
+  <span class="c1">//        System.out.println(mappedByteBuffer.getInt(absSlotPos));</span>
+
+  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"keyHash:"</span> <span class="o">+</span> <span class="n">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">hashCode</span><span class="o">()));</span>
+  <span class="n">accessFile</span><span class="o">.</span><span class="na">skipBytes</span><span class="o">(</span><span class="n">absSlotPos</span><span class="o">);</span>
+  <span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="n">accessFile</span><span class="o">.</span><span class="na">readInt</span><span class="o">();</span>
+  <span class="k">while</span> <span class="o">(</span><span class="n">index</span> <span class="o">!=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"-----------------------"</span><span class="o">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"slot index:"</span> <span class="o">+</span> <span class="n">index</span><span class="o">);</span>
+    <span class="kt">int</span> <span class="n">absIndexPos</span> <span class="o">=</span> <span class="mi">40</span> <span class="o">+</span> <span class="mi">5000000</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">+</span> <span class="n">index</span> <span class="o">*</span> <span class="mi">20</span><span class="o">;</span>
+
+    <span class="n">RandomAccessFile</span> <span class="n">accessFile2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RandomAccessFile</span><span class="o">(</span><span class="n">file</span><span class="o">,</span> <span class="s">"r"</span><span class="o">);</span>
+    <span class="n">accessFile2</span><span class="o">.</span><span class="na">skipBytes</span><span class="o">(</span><span class="n">absIndexPos</span><span class="o">);</span>
+
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"keyhash:"</span> <span class="o">+</span> <span class="n">accessFile2</span><span class="o">.</span><span class="na">readInt</span><span class="o">());</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"commitLogOffset:"</span> <span class="o">+</span> <span class="n">accessFile2</span><span class="o">.</span><span class="na">readLong</span><span class="o">());</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"timeDiff(storeTime - indexFileBegintime):"</span> <span class="o">+</span> <span class="n">accessFile2</span><span class="o">.</span><span class="na">readInt</span><span class="o">());</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="n">accessFile2</span><span class="o">.</span><span class="na">readInt</span><span class="o">();</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"lastSlotIndex:"</span> <span class="o">+</span> <span class="n">index</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+</code></pre></div></div>
+
+<p>果然读出来两条记录：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">keyHash:</span><span class="mi">2128978283</span>
+<span class="o">-----------------------</span>
+<span class="n">slot</span> <span class="nl">index:</span><span class="mi">4</span>
+<span class="nl">keyhash:</span><span class="mi">2128978283</span>
+<span class="nl">commitLogOffset:</span><span class="mi">263</span>
+<span class="n">timeDiff</span><span class="o">(</span><span class="n">storeTime</span> <span class="o">-</span> <span class="n">indexFileBegintime</span><span class="o">):</span><span class="mi">143</span>
+<span class="nl">lastSlotIndex:</span><span class="mi">2</span>
+<span class="o">-----------------------</span>
+<span class="n">slot</span> <span class="nl">index:</span><span class="mi">2</span>
+<span class="nl">keyhash:</span><span class="mi">2128978283</span>
+<span class="nl">commitLogOffset:</span><span class="mi">0</span>
+<span class="n">timeDiff</span><span class="o">(</span><span class="n">storeTime</span> <span class="o">-</span> <span class="n">indexFileBegintime</span><span class="o">):</span><span class="mi">0</span>
+<span class="nl">lastSlotIndex:</span><span class="mi">0</span>
+</code></pre></div></div>
+
+<h2 id="总结">总结</h2>
+
+<p>本文主要试着去读了读几个存储文件，果然正如所预料的那样</p>

@@ -1,0 +1,60 @@
+<h2 id="前言">前言</h2>
+
+<p>之前常常会看到QPS，TPS这些字样，确实这些指标也是衡量数据库性能的非常重要的指标，而基准测试则是抛开业务，对机子上的数据库进行测试，自己也尝试用sysbench做了一遍，废话少说。</p>
+
+<p>##测试过程</p>
+
+<p>测试主要依赖自带的oltp.lua这个脚本文件，不同系统应该会在不同文件夹下，我的是mac，位于/usr/local/Cellar/sysbench/1.0.11_1/share/sysbench/tests/include/oltp_legacy/oltp.lua，文件搜索一下也能找到。</p>
+
+<p>其次是要准备一个叫做sbtest的库</p>
+
+<p>测试过程比较简单，主要包含三个部分：1.准备数据；2.执行测试；3.清理数据</p>
+
+<ol>
+  <li>
+    <p>准备数据</p>
+
+    <p>准备数据就是初始化表</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sysbench /usr/local/Cellar/sysbench/1.0.11_1/share/sysbench/tests/include/oltp_legacy/oltp.lua <span class="nt">--mysql-host</span><span class="o">=</span>127.0.0.1 <span class="nt">--mysql-port</span><span class="o">=</span>3306 <span class="nt">--mysql-user</span><span class="o">={</span>username<span class="o">}</span> <span class="nt">--mysql-password</span><span class="o">={</span>password<span class="o">}</span> <span class="nt">--oltp-test-mode</span><span class="o">=</span>complex <span class="nt">--oltp-tables-count</span><span class="o">=</span>10 <span class="nt">--oltp-table-size</span><span class="o">=</span>100000 <span class="nt">--threads</span><span class="o">=</span>10 <span class="nt">--time</span><span class="o">=</span>120 <span class="nt">--report-interval</span><span class="o">=</span>10 prepare
+</code></pre></div>    </div>
+
+    <p>其中涉及到的主要参数（当然可以执行sysbench –help了解各参数的具体解释）：</p>
+
+    <p>其中主要有mysql和oltp的参数，其实都比较易懂，mysql的就是连接相关参数</p>
+
+    <p>oltp-test-mode这边选的是complex模式，有这些模式：simple(简单select测试),complex(事务测试),nontrx(非事务测试),sp(存储过程)</p>
+
+    <p>oltp-tables-count就是初始化表的数量，这里为10张表</p>
+
+    <p>oltp-table-size初始化表的大小</p>
+
+    <p>thread代表开启线程数</p>
+
+    <p>time代表最长测试时间</p>
+
+    <p>report-interval表示每10秒输出一次测试进度报告</p>
+  </li>
+  <li>
+    <p>执行测试</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sysbench /usr/local/Cellar/sysbench/1.0.11_1/share/sysbench/tests/include/oltp_legacy/oltp.lua <span class="nt">--mysql-host</span><span class="o">=</span>127.0.0.1 <span class="nt">--mysql-port</span><span class="o">=</span>3306 <span class="nt">--mysql-user</span><span class="o">={</span>username<span class="o">}</span> <span class="nt">--mysql-password</span><span class="o">={</span>password<span class="o">}</span> <span class="nt">--oltp-test-mode</span><span class="o">=</span>complex <span class="nt">--oltp-tables-count</span><span class="o">=</span>10 <span class="nt">--oltp-table-size</span><span class="o">=</span>100000 <span class="nt">--threads</span><span class="o">=</span>10 <span class="nt">--time</span><span class="o">=</span>120 <span class="nt">--report-interval</span><span class="o">=</span>10 run <span class="o">&gt;&gt;</span> /Users/dingmingcheng/Desktop/sysbenchtest.log
+</code></pre></div>    </div>
+
+    <p>测试结果重定向至测试报告中</p>
+
+    <p>结果如下，数据还是很详细的</p>
+
+    <p><img src="/img/in-post/mysql-sysbench/pic1.png" alt="" /></p>
+  </li>
+  <li>
+    <p>清理数据</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sysbench /usr/local/Cellar/sysbench/1.0.11_1/share/sysbench/tests/include/oltp_legacy/oltp.lua <span class="nt">--mysql-host</span><span class="o">=</span>127.0.0.1 <span class="nt">--mysql-port</span><span class="o">=</span>3306 <span class="nt">--mysql-user</span><span class="o">={</span>username<span class="o">}</span> <span class="nt">--mysql-password</span><span class="o">={</span>password<span class="o">}</span> <span class="nt">--oltp-tables-count</span><span class="o">=</span>10 cleanup
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<h2 id="结尾">结尾</h2>
+
+<p>当然，sysbench除了mysql的测试还可以进行别的测试，如cpu测试，memory测试，文件io测试等等，有兴趣可以看看这篇<a href="https://www.cnblogs.com/chenmh/p/5866058.html">文章</a></p>

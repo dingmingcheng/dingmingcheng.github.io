@@ -1,0 +1,214 @@
+<h2 id="前言">前言</h2>
+
+<p>(以下分析均基于spring-5.1.8)</p>
+
+<p>因为spring这个框架在日常工作中的应用实在是太广泛了，便决定下一个阶段学学spring。因为spring非常庞大，一时不知道怎么下手，向hzk咨询了下，决定先看<a href="https://docs.spring.io/spring/docs/5.2.3.BUILD-SNAPSHOT/spring-framework-reference/core.html#beans-introduction">spring的官方文档</a>，再结合相关书籍资料去读源码。spring虽然已经从springmvc到springboot，但核心还是spring-core,spring-context,spring-beans,spring-aop这些。</p>
+
+<p>所以这一阶段的学习主要是针对ioc和aop的学习。另外希望能从源码的角度找到部分问题的答案：</p>
+
+<p>1.spring bean的生命周期是怎么样的？</p>
+
+<p>2.spring是如何解决循环依赖的？</p>
+
+<p>3.如何对spring进行扩展</p>
+
+<p>4.spring对aop的实现方式</p>
+
+<p>…</p>
+
+<h2 id="ioc">IOC</h2>
+
+<p>spring作为一个bean的容器，其最基本的功能就是IOC（控制反转），其中也主要包含了两部分：依赖查找和依赖注入，打个比方，一个大的项目中会有非常多的对象（单例或多例），各个对象间还会有依赖，如果没有spring给我们管理，特别是程序员水平不一的情况下，很可能会导致项目越来越复杂，维护成本越来越高。IOC正是帮我很好的解决了各个对象间依赖的问题，让大家更关注于业务本身。</p>
+
+<p>而管理bean的正是我们接下来要看的BeanFactory</p>
+
+<p>总的来说，sping从启动开始，bean主要有两个过程：</p>
+
+<h3 id="bean的解析与注册">bean的解析与注册</h3>
+
+<p>无论是早起的解析<strong>xml</strong>配置，还是通过<strong>component-scan</strong>的方式，其目的就是将类转换成<strong>AbstractBeanDefinition</strong>并添加到spring的中</p>
+
+<h3 id="bean的实例化和初始化">bean的实例化和初始化</h3>
+
+<p>实例化就是new一个对象，并把其所依赖的对象，属性字段也注入进去。其主要的过程就是将上一步中生成的<strong>BeanDefinition</strong>转换成实例对象</p>
+
+<h2 id="beanfactory总体架构">BeanFactory总体架构</h2>
+
+<p>先上一张BeanFactory的依赖图，最上层的类便是
+<img src="/img/in-post/spring/beanFactory.png" alt="" />
+DefaultListableBeanFactory：</p>
+
+<p>第一眼看会觉得BeanFacory的体系非常复杂，而且部分类中的代码也是非常得长，还是得先仔细看看相关的接口</p>
+
+<h3 id="aliasregistry">AliasRegistry</h3>
+
+<p>其中就四个方法，均是别名相关</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="kt">void</span> <span class="nf">registerAlias</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">String</span> <span class="n">alias</span><span class="o">);</span>
+	<span class="kt">void</span> <span class="nf">removeAlias</span><span class="o">(</span><span class="n">String</span> <span class="n">alias</span><span class="o">);</span>
+	<span class="kt">boolean</span> <span class="nf">isAlias</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">);</span>
+	<span class="n">String</span><span class="o">[]</span> <span class="nf">getAliases</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">);</span>
+</code></pre></div></div>
+
+<h3 id="beandefinitionregistry">BeanDefinitionRegistry</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">registerBeanDefinition</span><span class="o">(</span><span class="n">String</span> <span class="n">beanName</span><span class="o">,</span> <span class="n">BeanDefinition</span> <span class="n">beanDefinition</span><span class="o">)</span>
+			<span class="kd">throws</span> <span class="n">BeanDefinitionStoreException</span><span class="o">;</span>
+<span class="kt">void</span> <span class="nf">removeBeanDefinition</span><span class="o">(</span><span class="n">String</span> <span class="n">beanName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">NoSuchBeanDefinitionException</span><span class="o">;</span>
+<span class="n">BeanDefinition</span> <span class="nf">getBeanDefinition</span><span class="o">(</span><span class="n">String</span> <span class="n">beanName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">NoSuchBeanDefinitionException</span><span class="o">;</span>
+
+<span class="kt">boolean</span> <span class="nf">containsBeanDefinition</span><span class="o">(</span><span class="n">String</span> <span class="n">beanName</span><span class="o">);</span>
+
+<span class="n">String</span><span class="o">[]</span> <span class="nf">getBeanDefinitionNames</span><span class="o">();</span>
+
+<span class="kt">int</span> <span class="nf">getBeanDefinitionCount</span><span class="o">();</span>
+
+<span class="kt">boolean</span> <span class="nf">isBeanNameInUse</span><span class="o">(</span><span class="n">String</span> <span class="n">beanName</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>这个接口也比较好理解，都是针对BeanDefinition的“增删查”操作</p>
+
+<p>以上两个接口是bean的解析与注册相关，再来看看bean的实例化与初始化</p>
+
+<h3 id="beanfactory">BeanFactory</h3>
+
+<p>最基本的接口，BeanFactory之于spring就如同chuck berry之于摇滚</p>
+
+<p>忽略重载，其中主要是以下几个接口</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//根据条件（比如名称，类名等）找到对应的bean实例</span>
+<span class="n">Object</span> <span class="nf">getBean</span><span class="o">(...);</span>
+<span class="c1">//查找对应的ObjectProvider</span>
+<span class="n">ObjectProvider</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="nf">getBeanProvider</span><span class="o">(...);</span>
+<span class="c1">//是否存在bean</span>
+<span class="kt">boolean</span> <span class="nf">containsBean</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">);</span>
+<span class="c1">//是否为单例</span>
+<span class="kt">boolean</span> <span class="nf">isSingleton</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">);</span>
+<span class="c1">//是否为多例</span>
+<span class="kt">boolean</span> <span class="nf">isPrototype</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">);</span>
+<span class="c1">//名称和类是否匹配</span>
+<span class="kt">boolean</span> <span class="nf">isTypeMatch</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">targetType</span><span class="o">)</span>
+<span class="c1">//根据bean的名称获取bean的别名</span>
+<span class="n">String</span><span class="o">[]</span> <span class="nf">getAliases</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">);</span>
+<span class="c1">//根据名称获取class类型</span>
+<span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">getType</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>除了其中ObjectProvider是4.3才引进来的，其余的都好理解。ObjectProvider继承自ObjectFactory，我理解是给了使用者更大的自由度来决定注入的Bean，特别是在存在多个同类型的bean时。</p>
+
+<h3 id="listablebeanfactory">ListableBeanFactory</h3>
+
+<p>大致的接口如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">boolean</span> <span class="nf">containsBeanDefinition</span><span class="o">(</span><span class="n">String</span> <span class="n">beanName</span><span class="o">);</span>
+<span class="c1">//查询beanDefinition总数</span>
+<span class="kt">int</span> <span class="nf">getBeanDefinitionCount</span><span class="o">();</span>
+<span class="n">String</span><span class="o">[]</span> <span class="nf">getBeanDefinitionNames</span><span class="o">();</span>
+<span class="c1">//根据</span>
+<span class="n">String</span><span class="o">[]</span> <span class="nf">getBeanNamesForType</span><span class="o">();</span>
+<span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">T</span><span class="o">&gt;</span> <span class="nf">getBeansOfType</span><span class="o">();</span>
+<span class="n">String</span><span class="o">[]</span> <span class="nf">getBeanNamesForAnnotation</span><span class="o">();</span>
+  <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="nf">getBeansWithAnnotation</span><span class="o">();</span>
+<span class="o">&lt;</span><span class="n">A</span> <span class="kd">extends</span> <span class="n">Annotation</span><span class="o">&gt;</span> <span class="n">A</span> <span class="nf">findAnnotationOnBean</span><span class="o">()</span>
+</code></pre></div></div>
+
+<p>正如Listable所表示，这些接口会用于列出bean以及beanDefinition</p>
+
+<p>###HierarchicalBeanFactory</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//拿到父工厂</span>
+<span class="n">BeanFactory</span> <span class="nf">getParentBeanFactory</span><span class="o">();</span>
+<span class="c1">//当前工厂是否含有bean</span>
+<span class="kt">boolean</span> <span class="nf">containsLocalBean</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">);</span>
+</code></pre></div></div>
+
+<p>###AutowireCapableBeanFactory</p>
+
+<p>和HierarchicalBeanFactory，ListableBeanFactory一样，该接口也只继承了BeanFactory接口。但相较于另外两个，这个会复杂很多</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="c1">//-------------------------------------------------------------------------</span>
+<span class="c1">// Typical methods for creating and populating external bean instances</span>
+<span class="c1">//-------------------------------------------------------------------------</span>
+<span class="c1">//根据类名创建bean</span>
+<span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="nf">createBean</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">beanClass</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">BeansException</span><span class="o">;</span>
+<span class="c1">//重新装配一个bean对象(existingBean)</span>
+<span class="kt">void</span> <span class="nf">autowireBean</span><span class="o">(</span><span class="n">Object</span> <span class="n">existingBean</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">BeansException</span><span class="o">;</span>
+<span class="c1">//会重新实例化一个beanName类型的对象（existingBean）</span>
+<span class="n">Object</span> <span class="nf">configureBean</span><span class="o">(</span><span class="n">Object</span> <span class="n">existingBean</span><span class="o">,</span> <span class="n">String</span> <span class="n">beanName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">BeansException</span><span class="o">;</span>
+
+
+<span class="c1">//-------------------------------------------------------------------------</span>
+<span class="c1">// Specialized methods for fine-grained control over the bean lifecycle</span>
+<span class="c1">//-------------------------------------------------------------------------</span>
+
+<span class="c1">//创建bean</span>
+<span class="n">Object</span> <span class="nf">createBean</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">beanClass</span><span class="o">,</span> <span class="kt">int</span> <span class="n">autowireMode</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">dependencyCheck</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">BeansException</span><span class="o">;</span>
+<span class="c1">//自动装配bean的相关参数</span>
+<span class="n">Object</span> <span class="nf">autowire</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">beanClass</span><span class="o">,</span> <span class="kt">int</span> <span class="n">autowireMode</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">dependencyCheck</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">BeansException</span><span class="o">;</span>
+<span class="c1">//自动装配bean的相关参数</span>
+<span class="kt">void</span> <span class="nf">autowireBeanProperties</span><span class="o">(</span><span class="n">Object</span> <span class="n">existingBean</span><span class="o">,</span> <span class="kt">int</span> <span class="n">autowireMode</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">dependencyCheck</span><span class="o">)</span>
+  <span class="kd">throws</span> <span class="n">BeansException</span><span class="o">;</span>
+<span class="c1">//自动装配bean的相关参数</span>
+<span class="kt">void</span> <span class="nf">applyBeanPropertyValues</span><span class="o">(</span><span class="n">Object</span> <span class="n">existingBean</span><span class="o">,</span> <span class="n">String</span> <span class="n">beanName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">BeansException</span><span class="o">;</span>
+<span class="c1">//初始化一个bean</span>
+<span class="n">Object</span> <span class="nf">initializeBean</span><span class="o">(</span><span class="n">Object</span> <span class="n">existingBean</span><span class="o">,</span> <span class="n">String</span> <span class="n">beanName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">BeansException</span><span class="o">;</span>
+
+<span class="c1">//初始化之前执行BeanPostProcessors</span>
+<span class="n">Object</span> <span class="nf">applyBeanPostProcessorsBeforeInitialization</span><span class="o">(</span><span class="n">Object</span> <span class="n">existingBean</span><span class="o">,</span> <span class="n">String</span> <span class="n">beanName</span><span class="o">)</span>
+  <span class="kd">throws</span> <span class="n">BeansException</span><span class="o">;</span>
+
+<span class="c1">//初始化之后执行BeanPostProcessors</span>
+<span class="n">Object</span> <span class="nf">applyBeanPostProcessorsAfterInitialization</span><span class="o">(</span><span class="n">Object</span> <span class="n">existingBean</span><span class="o">,</span> <span class="n">String</span> <span class="n">beanName</span><span class="o">)</span>
+  <span class="kd">throws</span> <span class="n">BeansException</span><span class="o">;</span>
+
+<span class="kt">void</span> <span class="nf">destroyBean</span><span class="o">(</span><span class="n">Object</span> <span class="n">existingBean</span><span class="o">);</span>
+
+
+<span class="c1">//-------------------------------------------------------------------------</span>
+<span class="c1">// Delegate methods for resolving injection points</span>
+<span class="c1">//-------------------------------------------------------------------------</span>
+
+<span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">NamedBeanHolder</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="nf">resolveNamedBean</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">requiredType</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">BeansException</span><span class="o">;</span>
+
+<span class="n">Object</span> <span class="nf">resolveBeanByName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">DependencyDescriptor</span> <span class="n">descriptor</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">BeansException</span><span class="o">;</span>
+
+<span class="nd">@Nullable</span>
+<span class="n">Object</span> <span class="nf">resolveDependency</span><span class="o">(</span><span class="n">DependencyDescriptor</span> <span class="n">descriptor</span><span class="o">,</span> <span class="nd">@Nullable</span> <span class="n">String</span> <span class="n">requestingBeanName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">BeansException</span><span class="o">;</span>
+<span class="c1">//依赖查找</span>
+<span class="nd">@Nullable</span>
+<span class="n">Object</span> <span class="nf">resolveDependency</span><span class="o">(</span><span class="n">DependencyDescriptor</span> <span class="n">descriptor</span><span class="o">,</span> <span class="nd">@Nullable</span> <span class="n">String</span> <span class="n">requestingBeanName</span><span class="o">,</span> <span class="nd">@Nullable</span> <span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">autowiredBeanNames</span><span class="o">,</span> <span class="nd">@Nullable</span> <span class="n">TypeConverter</span> <span class="n">typeConverter</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">BeansException</span><span class="o">;</span>
+
+</code></pre></div></div>
+
+<p>这个接口主要包含了两部分内容：</p>
+
+<p>1.创建以及组装bean实例相关的接口</p>
+
+<p>2.进行依赖查找的接口，就比如项目中常常用到Autowird注解和Value注解，在自动装配bean的相关参数时就会调用AutowiredAnnotationBeanPostProcessor#postProcessPropertyValues方法进行依赖查找以及对象的注入，当然这个后续会具体去看看</p>
+
+<h3 id="singletonbeanregistry">SingletonBeanRegistry</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">registerSingleton</span><span class="o">(</span><span class="n">String</span> <span class="n">beanName</span><span class="o">,</span> <span class="n">Object</span> <span class="n">singletonObject</span><span class="o">);</span>
+<span class="nd">@Nullable</span>
+<span class="n">Object</span> <span class="nf">getSingleton</span><span class="o">(</span><span class="n">String</span> <span class="n">beanName</span><span class="o">);</span>
+<span class="kt">boolean</span> <span class="nf">containsSingleton</span><span class="o">(</span><span class="n">String</span> <span class="n">beanName</span><span class="o">);</span>
+<span class="n">String</span><span class="o">[]</span> <span class="nf">getSingletonNames</span><span class="o">();</span>
+<span class="kt">int</span> <span class="nf">getSingletonCount</span><span class="o">();</span>
+<span class="c1">//返回所有的单例类</span>
+<span class="n">Object</span> <span class="nf">getSingletonMutex</span><span class="o">();</span>
+</code></pre></div></div>
+
+<p>SingletonBeanRegistry也是最底层的接口，它实现的是所有单例类的添加，查找功能，比较简单明了，但很重要，主要就是在操作存放单例类的map</p>
+
+<p>###ConfigurableBeanFactory</p>
+
+<p>ConfigurableBeanFactory继承了HierarchicalBeanFactory和SingletonBeanRegistry，其中方法非常多，就不再列举了，涉及的点非常多，包括父工厂相关，类加载器相关，属性解析器相关，Bean后处理器相关，bean别名相关，FactoryBean相关等等。</p>
+
+<h3 id="configurablelistablebeanfactory">ConfigurableListableBeanFactory</h3>
+
+<p>ConfigurableListableBeanFactory继承了AutowireCapableBeanFactory和ConfigurableBeanFactory和ListableBeanFactory，新增的部分接口也不在此一一列举了</p>
+
+<h2 id="总结">总结</h2>
+
+<p>至此，BeanFactory相关的架构，相关比较重要的接口也写完了。总的来说，接口非常多，但仔细看，还是可以发现各个接口各司其职，井井有条</p>

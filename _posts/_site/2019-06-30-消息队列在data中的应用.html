@@ -1,0 +1,83 @@
+<p>在不久前，在data和exchange项目中，我们将所有用到rocketmq的地方全部切换到了kafka上。在结汇项目中，消息队列也已经用了近一年多，期间也踩过几个坑，此wiki用以记录消息队列在data和exchange中的实践</p>
+
+<h2 id="不经意的timeout_clean_queue">不经意的TIMEOUT_CLEAN_QUEUE</h2>
+
+<p>记得在去年11月初的时候，确切来说是在ebay API的限流正式放开之后。某日早上，日常检查线上error日志，发现了几条之前从未出现过的信息</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sendKernelImpl</span> <span class="n">exception</span><span class="o">,</span> <span class="n">resend</span> <span class="n">at</span> <span class="n">once</span><span class="o">,</span> <span class="nl">InvokeID:</span> <span class="mi">6395301748774370577</span><span class="o">,</span> <span class="nl">RT:</span> <span class="mi">213</span><span class="n">ms</span><span class="o">,</span> <span class="nl">Broker:</span> <span class="n">MessageQueue</span> <span class="o">[</span><span class="n">topic</span><span class="o">=</span><span class="n">ORDER</span><span class="o">,</span> <span class="n">brokerName</span><span class="o">=</span><span class="n">prd</span><span class="o">-</span><span class="n">idc</span><span class="o">-</span><span class="n">broker</span><span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="n">queueId</span><span class="o">=</span><span class="mi">10</span><span class="o">]</span>
+<span class="n">org</span><span class="o">.</span><span class="na">apache</span><span class="o">.</span><span class="na">rocketmq</span><span class="o">.</span><span class="na">client</span><span class="o">.</span><span class="na">exception</span><span class="o">.</span><span class="na">MQBrokerException</span><span class="o">:</span> <span class="nl">CODE:</span> <span class="mi">2</span>  <span class="nl">DESC:</span> <span class="o">[</span><span class="n">TIMEOUT_CLEAN_QUEUE</span><span class="o">]</span><span class="n">broker</span> <span class="n">busy</span><span class="o">,</span> <span class="n">start</span> <span class="n">flow</span> <span class="n">control</span> <span class="k">for</span> <span class="n">a</span> <span class="k">while</span><span class="o">,</span> <span class="n">period</span> <span class="n">in</span> <span class="nl">queue:</span> <span class="mi">209</span><span class="n">ms</span><span class="o">,</span> <span class="n">size</span> <span class="n">of</span> <span class="nl">queue:</span> <span class="mi">0</span>
+<span class="o">....(</span><span class="err">具体的消息体</span><span class="o">)</span>
+</code></pre></div></div>
+
+<p>可以大致看出来，broker太繁忙了，消息发送失败了！去hbase中查了一下（应用在消费这些消息后会入hbase），果然没有找到这些消息！为了暂时减少这种情况的发生，先降低了拉取数据的频率。</p>
+
+<p>本着“翻山越岭，纵横四海”的精神，从git拉下了4.2.0版本的rocketmq源码，还是有必要确定一下为什么会发生这种情况，这样才能采取适合的措施。</p>
+
+<h3 id="溯源">溯源</h3>
+
+<p>在<strong>org.apache.rocketmq.broker.latency.BrokerFastFailure#cleanExpiredRequestInQueue</strong>方法中，我找到了这条日志</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[TIMEOUT_CLEAN_QUEUE]broker busy, start flow control for a while....
+</code></pre></div></div>
+
+<p>再接着分析之前，先简单提一下rocketmq中的通信模块。rocketmq中的RPC也是基于netty来实现的。抛开别的细节，当我们的producer端掉用sendMessage方法时，对应就会有个broker接收到这个请求，之后broker会把这个请求丢到与之相对应的线程池中进行异步处理。</p>
+
+<p>那什么时候会触发[TIMEOUT_CLEAN_QUEUE]呢？broker在启动的时候，会开启很多的异步服务，其中就包括一个BrokerFastFailure服务，这个服务有个功能就是定时去清理“过期”的请求。“过期”请求被干掉后，就会抛出[TIMEOUT_CLEAN_QUEUE]相关异常</p>
+
+<p>怎么才算“过期”请求呢？在请求丢进对应的线程池处理之前，会生成一个时间戳，记录这个请求创建的时间。当触发<strong>cleanExpiredRequestInQueue</strong>方法时，会从线程池的阻塞队列中取出首个请求，如果当前时间比请求创建时间多200ms（默认设为200ms），则会干掉该请求，并抛出异常</p>
+
+<p>然后再来看看相应的处理生产者请求的线程池的配置（相关参数均为默认参数）</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">this</span><span class="o">.</span><span class="na">sendMessageExecutor</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BrokerFixedThreadPoolExecutor</span><span class="o">(</span>
+  <span class="mi">1</span><span class="o">,</span>
+  <span class="mi">1</span><span class="o">,</span>
+  <span class="mi">1000</span> <span class="o">*</span> <span class="mi">60</span><span class="o">,</span>
+  <span class="n">TimeUnit</span><span class="o">.</span><span class="na">MILLISECONDS</span><span class="o">,</span>
+  <span class="k">new</span> <span class="n">LinkedBlockingQueue</span><span class="o">&lt;</span><span class="n">Runnable</span><span class="o">&gt;(</span><span class="mi">10000</span><span class="o">),</span>
+  <span class="k">new</span> <span class="nf">ThreadFactoryImpl</span><span class="o">(</span><span class="s">"SendMessageThread_"</span><span class="o">));</span>
+</code></pre></div></div>
+
+<p>我刚看到的时候，我比较疑惑的是，它的核心线程数和最大线程数竟然只设为了1！这不就相当于单线程去处理请求了吗？在多核处理器的时代，我不得不怀疑这样设置真的好吗？不过很快，我又注意到在这个核心线程数配置上方有这么一行注释</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+* thread numbers for send message thread pool, since spin lock will be used by default since 4.0.x, the default
+* value is 1.
+*/
+</code></pre></div></div>
+
+<p>到这里，就不得不提一下rockemtq的存储了，rocketmq是直接使用了磁盘文件来作为底层的存储，所有topic，所有queue的消息都会写入到<strong>~/store/commitLog</strong>这个文件夹下。众所周知，rocketmq默认使用了异步刷盘的方式，很大程度上提高了系统的吞吐量。而所谓异步刷盘，即消息先写入到ByteBuffer中，然后由FlushRealTimeService服务异步刷新到磁盘上。</p>
+
+<p>因此，消息写入到ByteBuffer的过程就必须保证是线程安全的！那么就需要用到锁，在rocketmq 4.0版本之前，默认是使用了ReentrantLock来保证线程安全，但在4.0版本之后，默认是通过AtomicBoolean来实现的自旋锁以保证线程安全。那么核心线程数设为1以及上面那段注释也就好理解了。自旋锁虽然效率要远高于互斥锁，但自旋锁会一直占用CPU，如果其余线程短时间内没有获取到，会降低CPU的性能，我想这应该就是broker中将核心线程数设为1的原因</p>
+
+<h3 id="broker服务可用性">broker服务可用性</h3>
+
+<p>broker要保证服务的可用性，很容易想到，主要就是要保证内存(这里主要指jvm)和外存(这里主要指磁盘，因为broker的数据是直接写入到文件中的)在容量上不会出现问题，保证中间件可以持续提供服务。</p>
+
+<p>在外存的处理上</p>
+
+<p>1.定时清理磁盘文件</p>
+
+<p>在内存的处理上</p>
+
+<p>1.阻塞队列设置了大小</p>
+
+<p>2.定时清理阻塞队列中的</p>
+
+<p>3.beginTimeInLock</p>
+
+<h3 id="问题解决方案">问题解决方案</h3>
+
+<p>当时有准备了以下几个方案：</p>
+
+<p>1.最显而易见的方法就是直接增大BrokerConfig中的waitTimeMillsInSendQueue这个字段的值</p>
+
+<p>2.切换中间件。回归到业务本身，data用于拉取店铺的订单数据，通过rocketmq发送给下游的结汇业务。而rocketmq最早是阿里借鉴了kafka的设计，为交易系统做的一套中间件。这么来看，其实号称百万级的并发写入的kafka似乎更符合我们的业务场景。</p>
+
+<p>其实可以单单从底层的存储来看看kafka和rocketmq的区别。</p>
+
+<p>1.偷张rocketmq的图</p>
+
+<p>2.讲讲kafka的底层存储的区别</p>
+
+<p>因为正好kafka已经在项目的其他地方有用到，所以抽时间把rocketmq的流量全切到了kafka上。一是保证rocketmq的稳定，保证其他的业务系统的稳定使用，二也是为了我们data-exchange系统的稳定</p>
+

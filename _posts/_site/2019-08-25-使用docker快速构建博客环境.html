@@ -1,0 +1,44 @@
+<p>前几天在整理电脑，为了玩玩其他有意思的东西。把window和ubuntu的双系统给干掉了，弄个了kali liunx。最近想写博客来着，需要重新弄jekyll的环境，其实之前弄这环境就感觉特别麻烦，而且各种坑。最近docker比较火，所以这次就打算试试docker来快速搭建该环境</p>
+
+<h3 id="安装docker">安装docker</h3>
+
+<p>安装docker还是比较简单的，windows和macos下都有客户端下载。这里就简单带一下kali linux上按照docker。其实也是按网上的教程，按顺序执行下来的。也没有碰到问题</p>
+
+<pre><code class="language-SHELL">apt-get update
+apt-get install -y apt-transport-https ca-certificates
+apt-get install dirmngr
+
+apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+echo 'deb https://apt.dockerproject.org/repo debian-stretch main' &gt; /etc/apt/sources.list.d/docker.list
+
+
+apt-get update
+apt-get install docker-engine
+
+service docker start
+</code></pre>
+
+<p>###具体使用</p>
+
+<p>目前博客是放在github page上托管的，在push代码之前，需要在本地先进行“编译”，就是将markdown文件生成静态的html文件。</p>
+
+<pre><code class="language-SHELL"># 1.下在jekyll的官方镜像
+sudo docker pull jekyll/jekyll
+
+# 2.将从github远程仓库上拉取下来的博客代码放到/srv/jekyll/下
+git clone ......
+
+# 3.使用镜像文件中集成好的jekyll环境来“编译”我们的markdown文件
+sudo docker run -p 4000:4000 --rm --volume="$PWD:/srv/jekyll" -it jekyll/jekyll jekyll serve
+
+# 4.访问localhost:4000
+</code></pre>
+
+<p>是不是比之前要简单很多呢</p>
+
+<p>###踩到的坑</p>
+
+<p>因为没在网上找到现有的教材，记录一下踩了的坑</p>
+
+<p>1.文件要放在/srv/jekyll/目录下
+2.要确定/srv/jekyll/下文件的权限，实在拿不准该用什么权限，就统一改成777吧。</p>

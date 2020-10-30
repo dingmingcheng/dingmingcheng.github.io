@@ -1,0 +1,284 @@
+<h2 id="前言">前言</h2>
+
+<p>之前写到spring中的bean主要分为两部分：</p>
+
+<p>bean的解析与注册</p>
+
+<p>bean的实例化和初始化</p>
+
+<p>打算先写写bean的实例化和初始化，也就是springmvc也好，springboot也好，所有的bean已经转换成了BeanDefinition放入了内存中。</p>
+
+<p>顺带在后面也会总结总结bean的生命周期</p>
+
+<h2 id="过程">过程</h2>
+
+<p>上篇文章中看了下BeanFactory相关的接口，所以目前对整体的结构有了个大致的了解</p>
+
+<p>BeanDefinition转化为Bean对象是从<strong>AbstracBeanFacory#getBean()</strong>方法开始的，很快可以找到，<strong>doGetBean()</strong>中有我们想要的东西，省略部分非关键代码，整理如下</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">protected</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="nf">doGetBean</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="nd">@Nullable</span> <span class="kd">final</span> <span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">requiredType</span><span class="o">,</span>
+                          <span class="nd">@Nullable</span> <span class="kd">final</span> <span class="n">Object</span><span class="o">[]</span> <span class="n">args</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">typeCheckOnly</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">BeansException</span> <span class="o">{</span>
+
+  <span class="kd">final</span> <span class="n">String</span> <span class="n">beanName</span> <span class="o">=</span> <span class="n">transformedBeanName</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
+  <span class="n">Object</span> <span class="n">bean</span><span class="o">;</span>
+
+  <span class="c1">// 提前获取已经暴露的对象，防止出现依赖循环，后续会再展开写</span>
+  <span class="n">Object</span> <span class="n">sharedInstance</span> <span class="o">=</span> <span class="n">getSingleton</span><span class="o">(</span><span class="n">beanName</span><span class="o">);</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">sharedInstance</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">args</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">bean</span> <span class="o">=</span> <span class="n">getObjectForBeanInstance</span><span class="o">(</span><span class="n">sharedInstance</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">beanName</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="k">else</span> <span class="o">{</span>
+    <span class="c1">//....</span>
+    <span class="c1">// 校验是否为多例，且是否正在创建</span>
+    <span class="c1">//....</span>
+    <span class="c1">// 如果当前beanFactory无法找到该BeanDefination，则递归到父BeanFactory中查找</span>
+
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="c1">//获取BeanDefinition</span>
+      <span class="kd">final</span> <span class="n">RootBeanDefinition</span> <span class="n">mbd</span> <span class="o">=</span> <span class="n">getMergedLocalBeanDefinition</span><span class="o">(</span><span class="n">beanName</span><span class="o">);</span>
+      <span class="c1">//.....</span>
+      <span class="c1">//如果当前Bean有依赖（DependsOn）,则递归创建bean</span>
+
+      <span class="c1">// Create bean instance.</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">mbd</span><span class="o">.</span><span class="na">isSingleton</span><span class="o">())</span> <span class="o">{</span>
+        <span class="n">sharedInstance</span> <span class="o">=</span> <span class="n">getSingleton</span><span class="o">(</span><span class="n">beanName</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="nf">createBean</span><span class="o">(</span><span class="n">beanName</span><span class="o">,</span> <span class="n">mbd</span><span class="o">,</span> <span class="n">args</span><span class="o">);</span>
+        <span class="o">});</span>
+        <span class="n">bean</span> <span class="o">=</span> <span class="n">getObjectForBeanInstance</span><span class="o">(</span><span class="n">sharedInstance</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">beanName</span><span class="o">,</span> <span class="n">mbd</span><span class="o">);</span>
+      <span class="o">}</span>
+
+      <span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">mbd</span><span class="o">.</span><span class="na">isPrototype</span><span class="o">())</span> <span class="o">{</span>
+        <span class="c1">// It's a prototype -&gt; create a new instance.</span>
+        <span class="n">Object</span> <span class="n">prototypeInstance</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="n">prototypeInstance</span> <span class="o">=</span> <span class="n">createBean</span><span class="o">(</span><span class="n">beanName</span><span class="o">,</span> <span class="n">mbd</span><span class="o">,</span> <span class="n">args</span><span class="o">);</span>
+        <span class="n">bean</span> <span class="o">=</span> <span class="n">getObjectForBeanInstance</span><span class="o">(</span><span class="n">prototypeInstance</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">beanName</span><span class="o">,</span> <span class="n">mbd</span><span class="o">);</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="c1">//...</span>
+    <span class="c1">//对指定的scope进行实例化</span>
+    <span class="c1">//...</span>
+    <span class="k">catch</span> <span class="o">(</span><span class="n">BeansException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+  <span class="k">return</span> <span class="o">(</span><span class="n">T</span><span class="o">)</span> <span class="n">bean</span><span class="o">;</span>
+<span class="o">}</span>
+
+</code></pre></div></div>
+
+<p>可以看到，其中对单例和多例采取了不同的处理方式，多例的直接通过<strong>createBean()</strong>方法创建了一个新的对象实例，而单例是向<strong>getSingleton()</strong>中传入了一个<strong>ObjectFacory</strong>的匿名类，<strong>getSingleton()</strong>方法中核心的代码其实就是调用<strong>ObjectFacory.getObject();</strong>（注：getSingleton()中有部分代码涉及到spring解决循环依赖的问题，之前会另外写文章分析），那其实可以直接来看下<strong>createBean()</strong>方法</p>
+
+<h3 id="createbean">createBean</h3>
+
+<p>关键代码</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Override</span>
+<span class="kd">protected</span> <span class="n">Object</span> <span class="nf">createBean</span><span class="o">(</span><span class="n">String</span> <span class="n">beanName</span><span class="o">,</span> <span class="n">RootBeanDefinition</span> <span class="n">mbd</span><span class="o">,</span> <span class="nd">@Nullable</span> <span class="n">Object</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">//....省略部分不关键代码</span>
+    <span class="c1">// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.</span>
+    <span class="n">Object</span> <span class="n">bean</span> <span class="o">=</span> <span class="n">resolveBeforeInstantiation</span><span class="o">(</span><span class="n">beanName</span><span class="o">,</span> <span class="n">mbdToUse</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">bean</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="n">bean</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="c1">//....省略部分不关键代码</span>
+    <span class="n">Object</span> <span class="n">beanInstance</span> <span class="o">=</span> <span class="n">doCreateBean</span><span class="o">(</span><span class="n">beanName</span><span class="o">,</span> <span class="n">mbdToUse</span><span class="o">,</span> <span class="n">args</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>createBean中有两块需要注意，一个<em>resolveBeforeInstantiation</em>，一个是<em>doCreateBean</em></p>
+
+<p>resolveBeforeInstantiation重要的原因是：这块是和之后的AOP有非常重要的联系</p>
+
+<h3 id="resolvebeforeinstantiation">resolveBeforeInstantiation</h3>
+
+<p>深入两层以后，发现了这段代码</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="o">(</span><span class="n">BeanPostProcessor</span> <span class="n">bp</span> <span class="o">:</span> <span class="n">getBeanPostProcessors</span><span class="o">())</span> <span class="o">{</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">bp</span> <span class="k">instanceof</span> <span class="n">InstantiationAwareBeanPostProcessor</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">InstantiationAwareBeanPostProcessor</span> <span class="n">ibp</span> <span class="o">=</span> <span class="o">(</span><span class="n">InstantiationAwareBeanPostProcessor</span><span class="o">)</span> <span class="n">bp</span><span class="o">;</span>
+    <span class="n">Object</span> <span class="n">result</span> <span class="o">=</span> <span class="n">ibp</span><span class="o">.</span><span class="na">postProcessBeforeInstantiation</span><span class="o">(</span><span class="n">beanClass</span><span class="o">,</span> <span class="n">beanName</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">result</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>在这里，引出了我们接触到的第一个BeanPostProcessor:InstantiationAwareBeanPostProcessor，它相较于BeanPostProcessor多了<strong>postProcessBeforeInstantiation()</strong>和<strong>postProcessAfterInstantiation()</strong>,<strong>postProcessProperties()</strong>方法，此处执行的便是<strong>postProcessBeforeInstantiation</strong>方法，即实例化前执行</p>
+
+<h3 id="docreatebean">doCreateBean</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">protected</span> <span class="n">Object</span> <span class="nf">doCreateBean</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">beanName</span><span class="o">,</span> <span class="kd">final</span> <span class="n">RootBeanDefinition</span> <span class="n">mbd</span><span class="o">,</span> <span class="kd">final</span> <span class="nd">@Nullable</span> <span class="n">Object</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span>
+  <span class="kd">throws</span> <span class="n">BeanCreationException</span> <span class="o">{</span>
+
+  <span class="c1">//1.实例化bean</span>
+  <span class="n">BeanWrapper</span> <span class="n">instanceWrapper</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+  <span class="n">instanceWrapper</span> <span class="o">=</span> <span class="n">createBeanInstance</span><span class="o">(</span><span class="n">beanName</span><span class="o">,</span> <span class="n">mbd</span><span class="o">,</span> <span class="n">args</span><span class="o">);</span>
+  <span class="kd">final</span> <span class="n">Object</span> <span class="n">bean</span> <span class="o">=</span> <span class="n">instanceWrapper</span><span class="o">.</span><span class="na">getWrappedInstance</span><span class="o">();</span>
+
+  <span class="c1">// Allow post-processors to modify the merged bean definition</span>
+  <span class="c1">// 2.MergedBeanDefinitionPostProcessor处理</span>
+  <span class="kd">synchronized</span> <span class="o">(</span><span class="n">mbd</span><span class="o">.</span><span class="na">postProcessingLock</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(!</span><span class="n">mbd</span><span class="o">.</span><span class="na">postProcessed</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">applyMergedBeanDefinitionPostProcessors</span><span class="o">(</span><span class="n">mbd</span><span class="o">,</span> <span class="n">beanType</span><span class="o">,</span> <span class="n">beanName</span><span class="o">);</span>
+      <span class="n">mbd</span><span class="o">.</span><span class="na">postProcessed</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+
+
+  <span class="c1">//3.循环依赖相关</span>
+  <span class="kt">boolean</span> <span class="n">earlySingletonExposure</span> <span class="o">=</span> <span class="o">(</span><span class="n">mbd</span><span class="o">.</span><span class="na">isSingleton</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="o">.</span><span class="na">allowCircularReferences</span> <span class="o">&amp;&amp;</span>
+                                    <span class="n">isSingletonCurrentlyInCreation</span><span class="o">(</span><span class="n">beanName</span><span class="o">));</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">earlySingletonExposure</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">addSingletonFactory</span><span class="o">(</span><span class="n">beanName</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="n">getEarlyBeanReference</span><span class="o">(</span><span class="n">beanName</span><span class="o">,</span> <span class="n">mbd</span><span class="o">,</span> <span class="n">bean</span><span class="o">));</span>
+  <span class="o">}</span>
+
+  <span class="c1">// 4.初始化bean</span>
+  <span class="n">Object</span> <span class="n">exposedObject</span> <span class="o">=</span> <span class="n">bean</span><span class="o">;</span>
+  <span class="n">populateBean</span><span class="o">(</span><span class="n">beanName</span><span class="o">,</span> <span class="n">mbd</span><span class="o">,</span> <span class="n">instanceWrapper</span><span class="o">);</span>
+  <span class="n">exposedObject</span> <span class="o">=</span> <span class="n">initializeBean</span><span class="o">(</span><span class="n">beanName</span><span class="o">,</span> <span class="n">exposedObject</span><span class="o">,</span> <span class="n">mbd</span><span class="o">);</span>
+
+  <span class="k">if</span> <span class="o">(</span><span class="n">earlySingletonExposure</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">//....</span>
+    <span class="c1">//5.循环依赖相关</span>
+  <span class="o">}</span>
+
+  <span class="k">return</span> <span class="n">exposedObject</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>该方法中有非常多重要的步骤，按顺序主要是这几个</p>
+
+<ul>
+  <li>将RootBeanDefinition转换为BeanWrapper，并创建新的一个实例</li>
+</ul>
+
+<p>这一步其实内部逻辑挺复杂的，主要是通过java的反射，找到一个合适的构造器来进行实例化。就不细看了</p>
+
+<ul>
+  <li>MergedBeanDefinitionPostProcessor处理</li>
+</ul>
+
+<p>又碰到了一种新的BeanPostProcessor，做了postProcessMergedBeanDefinition操作。这个其实也挺重要，就比如@Autowird，@PostConstruct和@PreDestroy注解，就是在这里做了一个预处理。</p>
+
+<ul>
+  <li>循环依赖相关处理</li>
+  <li>bean的初始化</li>
+</ul>
+
+<p>两个重要的函数，<strong>populateBean</strong>以及<strong>initializeBean</strong>，前者是做了依赖属性的填充，后者是对bean作了初始化的操作</p>
+
+<ul>
+  <li>循环依赖相关处理</li>
+</ul>
+
+<h3 id="populatebean">populateBean</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">protected</span> <span class="kt">void</span> <span class="nf">populateBean</span><span class="o">(</span><span class="n">String</span> <span class="n">beanName</span><span class="o">,</span> <span class="n">RootBeanDefinition</span> <span class="n">mbd</span><span class="o">,</span> <span class="nd">@Nullable</span> <span class="n">BeanWrapper</span> <span class="n">bw</span><span class="o">)</span> <span class="o">{</span>
+  <span class="c1">//...</span>
+	<span class="c1">//InstantiationAwareBeanPostProcessor执行postProcessAfterInstantiation，如果返回true，则停止继续处理</span>
+  <span class="n">PropertyValues</span> <span class="n">pvs</span> <span class="o">=</span> <span class="o">(</span><span class="n">mbd</span><span class="o">.</span><span class="na">hasPropertyValues</span><span class="o">()</span> <span class="o">?</span> <span class="n">mbd</span><span class="o">.</span><span class="na">getPropertyValues</span><span class="o">()</span> <span class="o">:</span> <span class="kc">null</span><span class="o">);</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">mbd</span><span class="o">.</span><span class="na">getResolvedAutowireMode</span><span class="o">()</span> <span class="o">==</span> <span class="n">AUTOWIRE_BY_NAME</span> <span class="o">||</span> <span class="n">mbd</span><span class="o">.</span><span class="na">getResolvedAutowireMode</span><span class="o">()</span> <span class="o">==</span> <span class="n">AUTOWIRE_BY_TYPE</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// Add property values based on autowire by name if applicable.</span>
+    <span class="c1">//按名称注入</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">mbd</span><span class="o">.</span><span class="na">getResolvedAutowireMode</span><span class="o">()</span> <span class="o">==</span> <span class="n">AUTOWIRE_BY_NAME</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">autowireByName</span><span class="o">(</span><span class="n">beanName</span><span class="o">,</span> <span class="n">mbd</span><span class="o">,</span> <span class="n">bw</span><span class="o">,</span> <span class="n">newPvs</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="c1">// Add property values based on autowire by type if applicable.</span>
+        <span class="c1">//按类型注入</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">mbd</span><span class="o">.</span><span class="na">getResolvedAutowireMode</span><span class="o">()</span> <span class="o">==</span> <span class="n">AUTOWIRE_BY_TYPE</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">autowireByType</span><span class="o">(</span><span class="n">beanName</span><span class="o">,</span> <span class="n">mbd</span><span class="o">,</span> <span class="n">bw</span><span class="o">,</span> <span class="n">newPvs</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="n">pvs</span> <span class="o">=</span> <span class="n">newPvs</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="k">for</span> <span class="o">(</span><span class="n">BeanPostProcessor</span> <span class="n">bp</span> <span class="o">:</span> <span class="n">getBeanPostProcessors</span><span class="o">())</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">bp</span> <span class="k">instanceof</span> <span class="n">InstantiationAwareBeanPostProcessor</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">InstantiationAwareBeanPostProcessor</span> <span class="n">ibp</span> <span class="o">=</span> <span class="o">(</span><span class="n">InstantiationAwareBeanPostProcessor</span><span class="o">)</span> <span class="n">bp</span><span class="o">;</span>
+      <span class="c1">//获取依赖的属性</span>
+      <span class="n">PropertyValues</span> <span class="n">pvsToUse</span> <span class="o">=</span> <span class="n">ibp</span><span class="o">.</span><span class="na">postProcessProperties</span><span class="o">(</span><span class="n">pvs</span><span class="o">,</span> <span class="n">bw</span><span class="o">.</span><span class="na">getWrappedInstance</span><span class="o">(),</span> <span class="n">beanName</span><span class="o">);</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">pvsToUse</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">//已经被打上@Deprecated</span>
+        <span class="n">filteredPds</span> <span class="o">=</span> <span class="n">filterPropertyDescriptorsForDependencyCheck</span><span class="o">(</span><span class="n">bw</span><span class="o">,</span> <span class="n">mbd</span><span class="o">.</span><span class="na">allowCaching</span><span class="o">);</span>
+        <span class="n">pvsToUse</span> <span class="o">=</span> <span class="n">ibp</span><span class="o">.</span><span class="na">postProcessPropertyValues</span><span class="o">(</span><span class="n">pvs</span><span class="o">,</span> <span class="n">filteredPds</span><span class="o">,</span> <span class="n">bw</span><span class="o">.</span><span class="na">getWrappedInstance</span><span class="o">(),</span> <span class="n">beanName</span><span class="o">);</span>
+      <span class="o">}</span>
+      <span class="n">pvs</span> <span class="o">=</span> <span class="n">pvsToUse</span><span class="o">;</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">pvs</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">//将pvs赋值到对应的对象上</span>
+    <span class="n">applyPropertyValues</span><span class="o">(</span><span class="n">beanName</span><span class="o">,</span> <span class="n">mbd</span><span class="o">,</span> <span class="n">bw</span><span class="o">,</span> <span class="n">pvs</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+</code></pre></div></div>
+
+<p>populateBean分为以下几步：</p>
+
+<ul>
+  <li>InstantiationAwareBeanPostProcessor执行postProcessAfterInstantiation</li>
+  <li>按名称注入（即getBean()）和按类型注入，按类型注入会复杂一些，按类型注入的主要的逻辑在<strong>AutowireCapableBeanFactory#resolveDependency</strong>中</li>
+  <li>InstantiationAwareBeanPostProcessor执行postProcessProperties，这一步也很重要，我们常用的@Autowired注解就是在此处进行依赖查找（其实也是调用了<strong>AutowireCapableBeanFactory#resolveDependency</strong>）</li>
+  <li>最后通过<strong>applyPropertyValues</strong>方法，将参数赋值到bean的对象中，这块又涉及了比较BeanWrapper，此处就没细看了</li>
+</ul>
+
+<h3 id="initializebean">initializeBean</h3>
+
+<p>先看看个人简化后的代码</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">protected</span> <span class="n">Object</span> <span class="nf">initializeBean</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">beanName</span><span class="o">,</span> <span class="kd">final</span> <span class="n">Object</span> <span class="n">bean</span><span class="o">,</span> <span class="nd">@Nullable</span> <span class="n">RootBeanDefinition</span> <span class="n">mbd</span><span class="o">)</span> <span class="o">{</span>
+
+  <span class="c1">//调用Aware相关的方法，这里涉及到spring的另外一个功能Aware，里面代码也很直观</span>
+  <span class="n">invokeAwareMethods</span><span class="o">(</span><span class="n">beanName</span><span class="o">,</span> <span class="n">bean</span><span class="o">);</span>
+  <span class="c1">//大名鼎鼎的BeanPostProcessor</span>
+  <span class="n">wrappedBean</span> <span class="o">=</span> <span class="n">applyBeanPostProcessorsBeforeInitialization</span><span class="o">(</span><span class="n">wrappedBean</span><span class="o">,</span> <span class="n">beanName</span><span class="o">);</span>
+  <span class="c1">//InitializingBean</span>
+  <span class="kt">boolean</span> <span class="n">isInitializingBean</span> <span class="o">=</span> <span class="o">(</span><span class="n">wrappedBean</span> <span class="k">instanceof</span> <span class="n">InitializingBean</span><span class="o">);</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">isInitializingBean</span> <span class="o">&amp;&amp;</span> <span class="o">(</span><span class="n">mbd</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="o">!</span><span class="n">mbd</span><span class="o">.</span><span class="na">isExternallyManagedInitMethod</span><span class="o">(</span><span class="s">"afterPropertiesSet"</span><span class="o">)))</span> <span class="o">{</span>
+      <span class="o">((</span><span class="n">InitializingBean</span><span class="o">)</span> <span class="n">bean</span><span class="o">).</span><span class="na">afterPropertiesSet</span><span class="o">();</span>
+  <span class="o">}</span>
+	<span class="c1">//init-method</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">mbd</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">bean</span><span class="o">.</span><span class="na">getClass</span><span class="o">()</span> <span class="o">!=</span> <span class="n">NullBean</span><span class="o">.</span><span class="na">class</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">String</span> <span class="n">initMethodName</span> <span class="o">=</span> <span class="n">mbd</span><span class="o">.</span><span class="na">getInitMethodName</span><span class="o">();</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">hasLength</span><span class="o">(</span><span class="n">initMethodName</span><span class="o">)</span> <span class="o">&amp;&amp;</span>
+        <span class="o">!(</span><span class="n">isInitializingBean</span> <span class="o">&amp;&amp;</span> <span class="s">"afterPropertiesSet"</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">initMethodName</span><span class="o">))</span> <span class="o">&amp;&amp;</span>
+        <span class="o">!</span><span class="n">mbd</span><span class="o">.</span><span class="na">isExternallyManagedInitMethod</span><span class="o">(</span><span class="n">initMethodName</span><span class="o">))</span> <span class="o">{</span>
+      <span class="n">invokeCustomInitMethod</span><span class="o">(</span><span class="n">beanName</span><span class="o">,</span> <span class="n">bean</span><span class="o">,</span> <span class="n">mbd</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+  <span class="c1">//大名鼎鼎的BeanPostProcessor</span>
+  <span class="n">wrappedBean</span> <span class="o">=</span> <span class="n">applyBeanPostProcessorsAfterInitialization</span><span class="o">(</span><span class="n">wrappedBean</span><span class="o">,</span> <span class="n">beanName</span><span class="o">);</span>
+  <span class="k">return</span> <span class="n">wrappedBean</span><span class="o">;</span>
+<span class="o">}</span>
+
+</code></pre></div></div>
+
+<p>如果日常我们spring用的多的话，这段就很容易看懂了，也涉及到了面试常常会问到的Bean的生命周期</p>
+
+<p>至此，createBean就完成了，可以理解为dfs到头了，接着回到doGetBean中看getObjectForBeanInstance方法</p>
+
+<h3 id="getobjectforbeaninstance">getObjectForBeanInstance</h3>
+
+<p>这块其实是FactoryBean的功能，里面会调用<strong>object = factory.getObject();</strong>方法，并对生成的对象调用BeanPostProcessors的方法</p>
+
+<h2 id="bean的生命周期">bean的生命周期</h2>
+
+<p>通过以上的阅读分析，bean的生命周期就非常清晰了：</p>
+
+<ol>
+  <li>InstantiationAwareBeanPostProcessor#postProcessBeforeInstantiation()  例子：AOP</li>
+  <li>实例化，即构造器</li>
+  <li>MergedBeanDefinitionPostProcessor#postProcessMergedBeanDefinition(). 例子：@Autowird @PostContruct @PreDestroy的初始化解析</li>
+  <li>InstantiationAwareBeanPostProcessor#postProcessAfterInstantiation()</li>
+  <li>InstantiationAwareBeanPostProcessor#postProcessProperties(). 比如@Autowired的属性字段</li>
+  <li>相关属性以及依赖的注入</li>
+  <li>Aware相关方法的执行</li>
+  <li>BeanPostProcessor#postProcessBeforeInitialization()</li>
+  <li>InitializingBean#afterPropertiesSet</li>
+  <li>Init-method</li>
+  <li>BeanPostProcessor#postProcessAfterInitialization()</li>
+</ol>
+
+<h2 id="总结">总结</h2>
+
+<p>至此，已基本清楚bean的生命周期，后续还得继续看看依赖循环的解决，各种BeanPostProcessor的实现</p>
+

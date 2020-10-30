@@ -1,0 +1,156 @@
+<blockquote>
+  <p>来本文转载于http://www.cnblogs.com/CarpenterLee/p/6545321.html，十分感谢<a href="http://www.cnblogs.com/CarpenterLee/">CarpenterLee</a>写出如此棒的文章。</p>
+
+  <p>来到了毕业后真正意义上的第一家公司，要说这近两个月在技术层面最大的感受，一是授权方式的演变，这里暂不讨论。第二个就是java8引入的Lambda，Stream，彻底改变了我对编程的理解。不过，在开始接触时，对于写下的每一行是没底的，因为根本不清楚其运行的原理，其效率。最近想写几篇文章强迫自己加深一下印象，不过恰巧看到几篇很棒的blog，由浅入深，理解十分透彻，难以望其项背，遂转之。</p>
+</blockquote>
+
+<p><a href="https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/4-Streams%20API(I).md">本文github地址</a>
+你可能没意识到Java对函数式编程的重视程度，看看Java 8加入函数式编程扩充多少功能就清楚了。Java 8之所以费这么大功夫引入函数式编程，原因有二：</p>
+
+<ol>
+  <li><strong>代码简洁</strong>，函数式编程写出的代码简洁且意图明确，使用<em>stream</em>接口让你从此告别<em>for</em>循环。</li>
+  <li><strong>多核友好</strong>，Java函数式编程使得编写并行程序从未如此简单，你需要的全部就是调用一下<code class="highlighter-rouge">parallel()</code>方法。</li>
+</ol>
+
+<p>这一节我们学习<em>stream</em>，也就是Java函数式编程的主角。对于Java 7来说<em>stream</em>完全是个陌生东西，<em>stream</em>并不是某种数据结构，它只是数据源的一种视图。这里的数据源可以是一个数组，Java容器或I/O channel等。正因如此要得到一个<em>stream</em>通常不会手动创建，而是调用对应的工具方法，比如：</p>
+
+<ul>
+  <li>调用<code class="highlighter-rouge">Collection.stream()</code>或者<code class="highlighter-rouge">Collection.parallelStream()</code>方法</li>
+  <li>调用<code class="highlighter-rouge">Arrays.stream(T[] array)</code>方法</li>
+</ul>
+
+<p>常见的<em>stream</em>接口继承关系如图：</p>
+
+<p><img src="https://images2015.cnblogs.com/blog/939998/201703/939998-20170313215540823-221594903.png" alt="Java_stream_Interfaces" /></p>
+
+<p>图中4种<em>stream</em>接口继承自<code class="highlighter-rouge">BaseStream</code>，其中<code class="highlighter-rouge">IntStream, LongStream, DoubleStream</code>对应三种基本类型（<code class="highlighter-rouge">int, long, double</code>，注意不是包装类型），<code class="highlighter-rouge">Stream</code>对应所有剩余类型的<em>stream</em>视图。为不同数据类型设置不同<em>stream</em>接口，可以1.提高性能，2.增加特定接口函数。</p>
+
+<p><img src="https://images2015.cnblogs.com/blog/939998/201703/939998-20170313215634385-204854577.png" alt="WRONG_Java_stream_Interfaces" /></p>
+
+<p>你可能会奇怪为什么不把<code class="highlighter-rouge">IntStream</code>等设计成<code class="highlighter-rouge">Stream</code>的子接口？毕竟这接口中的方法名大部分是一样的。答案是这些方法的名字虽然相同，但是返回类型不同，如果设计成父子接口关系，这些方法将不能共存，因为Java不允许只有返回类型不同的方法重载。</p>
+
+<p>虽然大部分情况下<em>stream</em>是容器调用<code class="highlighter-rouge">Collection.stream()</code>方法得到的，但<em>stream</em>和<em>collections</em>有以下不同：</p>
+
+<ul>
+  <li><strong>无存储</strong>。<em>stream</em>不是一种数据结构，它只是某种数据源的一个视图，数据源可以是一个数组，Java容器或I/O channel等。</li>
+  <li><strong>为函数式编程而生</strong>。对<em>stream</em>的任何修改都不会修改背后的数据源，比如对<em>stream</em>执行过滤操作并不会删除被过滤的元素，而是会产生一个不包含被过滤元素的新<em>stream</em>。</li>
+  <li><strong>惰式执行</strong>。<em>stream</em>上的操作并不会立即执行，只有等到用户真正需要结果的时候才会执行。</li>
+  <li><strong>可消费性</strong>。<em>stream</em>只能被“消费”一次，一旦遍历过就会失效，就像容器的迭代器那样，想要再次遍历必须重新生成。</li>
+</ul>
+
+<p>对<em>stream</em>的操作分为为两类，<strong>中间操作(intermediate operations)和结束操作(terminal operations)</strong>，二者特点是：</p>
+
+<ol>
+  <li><strong>中间操作总是会惰式执行</strong>，调用中间操作只会生成一个标记了该操作的新<em>stream</em>，仅此而已。</li>
+  <li><strong>结束操作会触发实际计算</strong>，计算发生时会把所有中间操作积攒的操作以<em>pipeline</em>的方式执行，这样可以减少迭代次数。计算完成之后<em>stream</em>就会失效。</li>
+</ol>
+
+<p>如果你熟悉Apache Spark RDD，对<em>stream</em>的这个特点应该不陌生。</p>
+
+<p>下表汇总了<code class="highlighter-rouge">Stream</code>接口的部分常见方法：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>操作类型</th>
+      <th>接口方法</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>中间操作</td>
+      <td>concat() distinct() filter() flatMap() limit() map() peek()  skip() sorted() parallel() sequential() unordered()</td>
+    </tr>
+    <tr>
+      <td>结束操作</td>
+      <td>allMatch() anyMatch() collect() count() findAny() findFirst()  forEach() forEachOrdered() max() min() noneMatch() reduce() toArray()</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>区分中间操作和结束操作最简单的方法，就是看方法的返回值，返回值为<em>stream</em>的大都是中间操作，否则是结束操作。</p>
+
+<h2 id="stream方法使用">stream方法使用</h2>
+
+<p><em>stream</em>跟函数接口关系非常紧密，没有函数接口<em>stream</em>就无法工作。回顾一下：<strong>函数接口是指内部只有一个抽象方法的接口</strong>。通常函数接口出现的地方都可以使用Lambda表达式，所以不必记忆函数接口的名字。</p>
+
+<h3 id="foreach">forEach()</h3>
+
+<p>我们对<code class="highlighter-rouge">forEach()</code>方法并不陌生，在<code class="highlighter-rouge">Collection</code>中我们已经见过。方法签名为<code class="highlighter-rouge">void forEach(Consumer&lt;? super E&gt; action)</code>，作用是对容器中的每个元素执行<code class="highlighter-rouge">action</code>指定的动作，也就是对元素进行遍历。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 使用Stream.forEach()迭代</span>
+<span class="n">Stream</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">stream</span> <span class="o">=</span> <span class="n">Stream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"I"</span><span class="o">,</span> <span class="s">"love"</span><span class="o">,</span> <span class="s">"you"</span><span class="o">,</span> <span class="s">"too"</span><span class="o">);</span>
+<span class="n">stream</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">str</span> <span class="o">-&gt;</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">str</span><span class="o">));</span>
+</code></pre></div></div>
+
+<p>由于<code class="highlighter-rouge">forEach()</code>是结束方法，上述代码会立即执行，输出所有字符串。</p>
+
+<h3 id="filter">filter()</h3>
+
+<p><img src="https://images2015.cnblogs.com/blog/939998/201703/939998-20170313215744635-60161700.png" alt="Stream filter" /></p>
+
+<p>函数原型为<code class="highlighter-rouge">Stream&lt;T&gt; filter(Predicate&lt;? super T&gt; predicate)</code>，作用是返回一个只包含满足<code class="highlighter-rouge">predicate</code>条件元素的<code class="highlighter-rouge">Stream</code>。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 保留长度等于3的字符串</span>
+<span class="n">Stream</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">stream</span><span class="o">=</span> <span class="n">Stream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"I"</span><span class="o">,</span> <span class="s">"love"</span><span class="o">,</span> <span class="s">"you"</span><span class="o">,</span> <span class="s">"too"</span><span class="o">);</span>
+<span class="n">stream</span><span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">str</span> <span class="o">-&gt;</span> <span class="n">str</span><span class="o">.</span><span class="na">length</span><span class="o">()==</span><span class="mi">3</span><span class="o">)</span>
+    <span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">str</span> <span class="o">-&gt;</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">str</span><span class="o">));</span>
+</code></pre></div></div>
+
+<p>上述代码将输出为长度等于3的字符串<code class="highlighter-rouge">you</code>和<code class="highlighter-rouge">too</code>。注意，由于<code class="highlighter-rouge">filter()</code>是个中间操作，如果只调用<code class="highlighter-rouge">filter()</code>不会有实际计算，因此也不会输出任何信息。</p>
+
+<h3 id="distinct">distinct()</h3>
+
+<p><img src="https://images2015.cnblogs.com/blog/939998/201703/939998-20170313215820213-2027403065.png" alt="Stream distinct" /></p>
+
+<p>函数原型为<code class="highlighter-rouge">Stream&lt;T&gt; distinct()</code>，作用是返回一个去除重复元素之后的<code class="highlighter-rouge">Stream</code>。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Stream</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">stream</span><span class="o">=</span> <span class="n">Stream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"I"</span><span class="o">,</span> <span class="s">"love"</span><span class="o">,</span> <span class="s">"you"</span><span class="o">,</span> <span class="s">"too"</span><span class="o">,</span> <span class="s">"too"</span><span class="o">);</span>
+<span class="n">stream</span><span class="o">.</span><span class="na">distinct</span><span class="o">()</span>
+    <span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">str</span> <span class="o">-&gt;</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">str</span><span class="o">));</span>
+</code></pre></div></div>
+
+<p>上述代码会输出去掉一个<code class="highlighter-rouge">too</code>之后的其余字符串。</p>
+
+<h3 id="sorted">sorted()</h3>
+
+<p>排序函数有两个，一个是用自然顺序排序，一个是使用自定义比较器排序，函数原型分别为<code class="highlighter-rouge">Stream&lt;T&gt;　sorted()</code>和<code class="highlighter-rouge">Stream&lt;T&gt;　sorted(Comparator&lt;? super T&gt; comparator)</code>。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Stream</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">stream</span><span class="o">=</span> <span class="n">Stream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"I"</span><span class="o">,</span> <span class="s">"love"</span><span class="o">,</span> <span class="s">"you"</span><span class="o">,</span> <span class="s">"too"</span><span class="o">);</span>
+<span class="n">stream</span><span class="o">.</span><span class="na">sorted</span><span class="o">((</span><span class="n">str1</span><span class="o">,</span> <span class="n">str2</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">str1</span><span class="o">.</span><span class="na">length</span><span class="o">()-</span><span class="n">str2</span><span class="o">.</span><span class="na">length</span><span class="o">())</span>
+    <span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">str</span> <span class="o">-&gt;</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">str</span><span class="o">));</span>
+</code></pre></div></div>
+
+<p>上述代码将输出按照长度升序排序后的字符串，结果完全在预料之中。</p>
+
+<h3 id="map">map()</h3>
+
+<p><img src="https://images2015.cnblogs.com/blog/939998/201703/939998-20170313215854807-2125107413.png" alt="Stream map" /></p>
+
+<p>函数原型为<code class="highlighter-rouge">&lt;R&gt; Stream&lt;R&gt; map(Function&lt;? super T,? extends R&gt; mapper)</code>，作用是返回一个对当前所有元素执行执行<code class="highlighter-rouge">mapper</code>之后的结果组成的<code class="highlighter-rouge">Stream</code>。直观的说，就是对每个元素按照某种操作进行转换，转换前后<code class="highlighter-rouge">Stream</code>中元素的个数不会改变，但元素的类型取决于转换之后的类型。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Stream</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">stream</span><span class="err">　</span><span class="o">=</span> <span class="n">Stream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">"I"</span><span class="o">,</span> <span class="s">"love"</span><span class="o">,</span> <span class="s">"you"</span><span class="o">,</span> <span class="s">"too"</span><span class="o">);</span>
+<span class="n">stream</span><span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">str</span> <span class="o">-&gt;</span> <span class="n">str</span><span class="o">.</span><span class="na">toUpperCase</span><span class="o">())</span>
+    <span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">str</span> <span class="o">-&gt;</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">str</span><span class="o">));</span>
+</code></pre></div></div>
+
+<p>上述代码将输出原字符串的大写形式。</p>
+
+<h3 id="flatmap">flatMap()</h3>
+
+<p><img src="https://images2015.cnblogs.com/blog/939998/201703/939998-20170313215941870-1457129851.png" alt="Stream flatMap" /></p>
+
+<p>函数原型为<code class="highlighter-rouge">&lt;R&gt; Stream&lt;R&gt; flatMap(Function&lt;? super T,? extends Stream&lt;? extends R&gt;&gt; mapper)</code>，作用是对每个元素执行<code class="highlighter-rouge">mapper</code>指定的操作，并用所有<code class="highlighter-rouge">mapper</code>返回的<code class="highlighter-rouge">Stream</code>中的元素组成一个新的<code class="highlighter-rouge">Stream</code>作为最终返回结果。说起来太拗口，通俗的讲<code class="highlighter-rouge">flatMap()</code>的作用就相当于把原<em>stream</em>中的所有元素都”摊平”之后组成的<code class="highlighter-rouge">Stream</code>，转换前后元素的个数和类型都可能会改变。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Stream</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;&gt;</span> <span class="n">stream</span> <span class="o">=</span> <span class="n">Stream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="mi">2</span><span class="o">),</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">5</span><span class="o">));</span>
+<span class="n">stream</span><span class="o">.</span><span class="na">flatMap</span><span class="o">(</span><span class="n">list</span> <span class="o">-&gt;</span> <span class="n">list</span><span class="o">.</span><span class="na">stream</span><span class="o">())</span>
+    <span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">i</span> <span class="o">-&gt;</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">i</span><span class="o">));</span>
+</code></pre></div></div>
+
+<p>上述代码中，原来的<code class="highlighter-rouge">stream</code>中有两个元素，分别是两个<code class="highlighter-rouge">List&lt;Integer&gt;</code>，执行<code class="highlighter-rouge">flatMap()</code>之后，将每个<code class="highlighter-rouge">List</code>都“摊平”成了一个个的数字，所以会新产生一个由5个数字组成的<code class="highlighter-rouge">Stream</code>。所以最终将输出1~5这5个数字。</p>
+
+<h2 id="结语">结语</h2>
+
+<p>截止到目前我们感觉良好，已介绍<code class="highlighter-rouge">Stream</code>API理解起来并不费劲儿。如果你就此以为函数式编程不过如此，恐怕是高兴地太早了。下一节对<a href="http://www.cnblogs.com/CarpenterLee/p/6550212.html"><code class="highlighter-rouge">Stream</code>规约操作</a>的介绍将刷新你现在的认识。</p>
+
+<p><a href="https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/4-Streams%20API(I).md">本文github地址</a>，欢迎关注。</p>

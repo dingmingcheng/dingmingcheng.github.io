@@ -1,0 +1,467 @@
+<h2 id="前言">前言</h2>
+
+<p>在消费者初始化过程中，我们看到了<strong>PullRequest</strong>的分发，接下来就是看看具体的消费流程。大体的流程是这样的：</p>
+
+<ol>
+  <li>PullRequest的处理</li>
+  <li>回调PullCallBack处理pullResult</li>
+  <li>ConsumeMessageService处理消息</li>
+</ol>
+
+<h3 id="pullrequest的处理">PullRequest的处理</h3>
+
+<p>PullMessageService在拿到PullRequest后，直接转发给DefauleMQPushConsumerImpl进行处理：</p>
+
+<p>在拿到PullRequest后，DefauleMQPushConsumerImpl不会马上就去进行RPC调用。如果ProcessQueue中缓存的条数大于1000条，或者大于100M，会停50微秒再将PullRequest重新投递到PullMessageService中，以达到流量控制，避免压力过大。当然，以上数值均为默认值。</p>
+
+<p>这里主要就是一些细节的处理，参数的拼凑，再交由pullAPIWrapper进行RPC通信，当然会传入回调接口。细节的代码就不贴了。</p>
+
+<p>在PullRequest的中，还加杂了PullCallBack的初始化，这个会在看处理pullRequest时再看看。</p>
+
+<h3 id="回调pullcallback处理pullresult">回调PullCallBack处理PullResult</h3>
+
+<p>首先来看看PullCallBack的匿名内部类的实现吧</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">PullCallback</span> <span class="n">pullCallback</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PullCallback</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onSuccess</span><span class="o">(</span><span class="n">PullResult</span> <span class="n">pullResult</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">pullResult</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">pullResult</span> <span class="o">=</span> <span class="n">DefaultMQPushConsumerImpl</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">pullAPIWrapper</span><span class="o">.</span><span class="na">processPullResult</span><span class="o">(</span><span class="n">pullRequest</span><span class="o">.</span><span class="na">getMessageQueue</span><span class="o">(),</span> <span class="n">pullResult</span><span class="o">,</span> <span class="n">subscriptionData</span><span class="o">);</span>
+
+            <span class="k">switch</span> <span class="o">(</span><span class="n">pullResult</span><span class="o">.</span><span class="na">getPullStatus</span><span class="o">())</span> <span class="o">{</span>
+                <span class="k">case</span> <span class="nl">FOUND:</span>
+                    <span class="kt">long</span> <span class="n">prevRequestOffset</span> <span class="o">=</span> <span class="n">pullRequest</span><span class="o">.</span><span class="na">getNextOffset</span><span class="o">();</span>
+                    <span class="n">pullRequest</span><span class="o">.</span><span class="na">setNextOffset</span><span class="o">(</span><span class="n">pullResult</span><span class="o">.</span><span class="na">getNextBeginOffset</span><span class="o">());</span>
+                    <span class="kt">long</span> <span class="n">pullRT</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">beginTimestamp</span><span class="o">;</span>
+                    <span class="n">DefaultMQPushConsumerImpl</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">getConsumerStatsManager</span><span class="o">().</span><span class="na">incPullRT</span><span class="o">(</span><span class="n">pullRequest</span><span class="o">.</span><span class="na">getConsumerGroup</span><span class="o">(),</span>
+                                                                                       <span class="n">pullRequest</span><span class="o">.</span><span class="na">getMessageQueue</span><span class="o">().</span><span class="na">getTopic</span><span class="o">(),</span> <span class="n">pullRT</span><span class="o">);</span>
+
+                    <span class="kt">long</span> <span class="n">firstMsgOffset</span> <span class="o">=</span> <span class="n">Long</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">;</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="n">pullResult</span><span class="o">.</span><span class="na">getMsgFoundList</span><span class="o">()</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">pullResult</span><span class="o">.</span><span class="na">getMsgFoundList</span><span class="o">().</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+                        <span class="n">DefaultMQPushConsumerImpl</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">executePullRequestImmediately</span><span class="o">(</span><span class="n">pullRequest</span><span class="o">);</span>
+                    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                        <span class="c1">//第一条消息的offset</span>
+                        <span class="n">firstMsgOffset</span> <span class="o">=</span> <span class="n">pullResult</span><span class="o">.</span><span class="na">getMsgFoundList</span><span class="o">().</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">getQueueOffset</span><span class="o">();</span>
+
+                        <span class="n">DefaultMQPushConsumerImpl</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">getConsumerStatsManager</span><span class="o">().</span><span class="na">incPullTPS</span><span class="o">(</span><span class="n">pullRequest</span><span class="o">.</span><span class="na">getConsumerGroup</span><span class="o">(),</span>
+                                                                                            <span class="n">pullRequest</span><span class="o">.</span><span class="na">getMessageQueue</span><span class="o">().</span><span class="na">getTopic</span><span class="o">(),</span> <span class="n">pullResult</span><span class="o">.</span><span class="na">getMsgFoundList</span><span class="o">().</span><span class="na">size</span><span class="o">());</span>
+
+                        <span class="c1">//拉取来的消息放入processQueue中</span>
+                        <span class="kt">boolean</span> <span class="n">dispatchToConsume</span> <span class="o">=</span> <span class="n">processQueue</span><span class="o">.</span><span class="na">putMessage</span><span class="o">(</span><span class="n">pullResult</span><span class="o">.</span><span class="na">getMsgFoundList</span><span class="o">());</span>
+                        <span class="c1">//提交给consumerMessageService处理</span>
+                        <span class="n">DefaultMQPushConsumerImpl</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">consumeMessageService</span><span class="o">.</span><span class="na">submitConsumeRequest</span><span class="o">(</span>
+                            <span class="n">pullResult</span><span class="o">.</span><span class="na">getMsgFoundList</span><span class="o">(),</span>
+                            <span class="n">processQueue</span><span class="o">,</span>
+                            <span class="n">pullRequest</span><span class="o">.</span><span class="na">getMessageQueue</span><span class="o">(),</span>
+                            <span class="n">dispatchToConsume</span><span class="o">);</span>
+
+                        <span class="k">if</span> <span class="o">(</span><span class="n">DefaultMQPushConsumerImpl</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">defaultMQPushConsumer</span><span class="o">.</span><span class="na">getPullInterval</span><span class="o">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+                            <span class="n">DefaultMQPushConsumerImpl</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">executePullRequestLater</span><span class="o">(</span><span class="n">pullRequest</span><span class="o">,</span>
+                                                                                   <span class="n">DefaultMQPushConsumerImpl</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">defaultMQPushConsumer</span><span class="o">.</span><span class="na">getPullInterval</span><span class="o">());</span>
+                        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                            <span class="n">DefaultMQPushConsumerImpl</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">executePullRequestImmediately</span><span class="o">(</span><span class="n">pullRequest</span><span class="o">);</span>
+                        <span class="o">}</span>
+                    <span class="o">}</span>
+
+                    <span class="k">if</span> <span class="o">(</span><span class="n">pullResult</span><span class="o">.</span><span class="na">getNextBeginOffset</span><span class="o">()</span> <span class="o">&lt;</span> <span class="n">prevRequestOffset</span>
+                        <span class="o">||</span> <span class="n">firstMsgOffset</span> <span class="o">&lt;</span> <span class="n">prevRequestOffset</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="n">log</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span>
+                            <span class="s">"[BUG] pull message result maybe data wrong, nextBeginOffset: {} firstMsgOffset: {} prevRequestOffset: {}"</span><span class="o">,</span>
+                            <span class="n">pullResult</span><span class="o">.</span><span class="na">getNextBeginOffset</span><span class="o">(),</span>
+                            <span class="n">firstMsgOffset</span><span class="o">,</span>
+                            <span class="n">prevRequestOffset</span><span class="o">);</span>
+                    <span class="o">}</span>
+
+                    <span class="k">break</span><span class="o">;</span>
+                <span class="k">case</span> <span class="nl">NO_NEW_MSG:</span>
+                    <span class="n">pullRequest</span><span class="o">.</span><span class="na">setNextOffset</span><span class="o">(</span><span class="n">pullResult</span><span class="o">.</span><span class="na">getNextBeginOffset</span><span class="o">());</span>
+
+                    <span class="n">DefaultMQPushConsumerImpl</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">correctTagsOffset</span><span class="o">(</span><span class="n">pullRequest</span><span class="o">);</span>
+
+                    <span class="n">DefaultMQPushConsumerImpl</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">executePullRequestImmediately</span><span class="o">(</span><span class="n">pullRequest</span><span class="o">);</span>
+                    <span class="k">break</span><span class="o">;</span>
+                <span class="k">case</span> <span class="nl">NO_MATCHED_MSG:</span>
+                    <span class="n">pullRequest</span><span class="o">.</span><span class="na">setNextOffset</span><span class="o">(</span><span class="n">pullResult</span><span class="o">.</span><span class="na">getNextBeginOffset</span><span class="o">());</span>
+
+                    <span class="n">DefaultMQPushConsumerImpl</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">correctTagsOffset</span><span class="o">(</span><span class="n">pullRequest</span><span class="o">);</span>
+
+                    <span class="n">DefaultMQPushConsumerImpl</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">executePullRequestImmediately</span><span class="o">(</span><span class="n">pullRequest</span><span class="o">);</span>
+                    <span class="k">break</span><span class="o">;</span>
+                <span class="k">case</span> <span class="nl">OFFSET_ILLEGAL:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">"the pull request offset illegal, {} {}"</span><span class="o">,</span>
+                             <span class="n">pullRequest</span><span class="o">.</span><span class="na">toString</span><span class="o">(),</span> <span class="n">pullResult</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+                    <span class="n">pullRequest</span><span class="o">.</span><span class="na">setNextOffset</span><span class="o">(</span><span class="n">pullResult</span><span class="o">.</span><span class="na">getNextBeginOffset</span><span class="o">());</span>
+
+                    <span class="n">pullRequest</span><span class="o">.</span><span class="na">getProcessQueue</span><span class="o">().</span><span class="na">setDropped</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+                    <span class="n">DefaultMQPushConsumerImpl</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">executeTaskLater</span><span class="o">(</span><span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+
+                        <span class="nd">@Override</span>
+                        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+                            <span class="k">try</span> <span class="o">{</span>
+                                <span class="n">DefaultMQPushConsumerImpl</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">offsetStore</span><span class="o">.</span><span class="na">updateOffset</span><span class="o">(</span><span class="n">pullRequest</span><span class="o">.</span><span class="na">getMessageQueue</span><span class="o">(),</span> <span class="n">pullRequest</span><span class="o">.</span><span class="na">getNextOffset</span><span class="o">(),</span> <span class="kc">false</span><span class="o">);</span>
+
+                                <span class="n">DefaultMQPushConsumerImpl</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">offsetStore</span><span class="o">.</span><span class="na">persist</span><span class="o">(</span><span class="n">pullRequest</span><span class="o">.</span><span class="na">getMessageQueue</span><span class="o">());</span>
+
+                                <span class="n">DefaultMQPushConsumerImpl</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">rebalanceImpl</span><span class="o">.</span><span class="na">removeProcessQueue</span><span class="o">(</span><span class="n">pullRequest</span><span class="o">.</span><span class="na">getMessageQueue</span><span class="o">());</span>
+
+                                <span class="n">log</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">"fix the pull request offset, {}"</span><span class="o">,</span> <span class="n">pullRequest</span><span class="o">);</span>
+                            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Throwable</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                                <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"executeTaskLater Exception"</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+                            <span class="o">}</span>
+                        <span class="o">}</span>
+                    <span class="o">},</span> <span class="mi">10000</span><span class="o">);</span>
+                    <span class="k">break</span><span class="o">;</span>
+                <span class="k">default</span><span class="o">:</span>
+                    <span class="k">break</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onException</span><span class="o">(</span><span class="n">Throwable</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">pullRequest</span><span class="o">.</span><span class="na">getMessageQueue</span><span class="o">().</span><span class="na">getTopic</span><span class="o">().</span><span class="na">startsWith</span><span class="o">(</span><span class="n">MixAll</span><span class="o">.</span><span class="na">RETRY_GROUP_TOPIC_PREFIX</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">log</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">"execute the pull request exception"</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="n">DefaultMQPushConsumerImpl</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">executePullRequestLater</span><span class="o">(</span><span class="n">pullRequest</span><span class="o">,</span> <span class="n">PULL_TIME_DELAY_MILLS_WHEN_EXCEPTION</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">};</span>
+
+</code></pre></div></div>
+
+<p>可以看到总共会返回4中拉取状态:FOUND,NO_NEW_MSG,NO_MATCHED_MSG,OFFSET_ILLEGAL。</p>
+
+<p>对于中间两种，会更新本地的offset，然后重新投递PullRequest。对于OFFSET_ILLEGAL，会清理该ProcessQueue。</p>
+
+<p>主要还是来看看FOUND的情况，先是记录一下拉取的时间，然后就把请求丢给consumeMessageService。ConsumeMessageService包括顺序消费(<strong>ConsumeMessageOrderlyService</strong>)和无序消费(<strong>ConsumeMessageConcurrentlyService</strong>)。先来看看无序消费</p>
+
+<h3 id="无序消费">无序消费</h3>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//org/apache/rocketmq/client/impl/consumer/ConsumeMessageConcurrentlyService#submitConsumeRequest</span>
+<span class="c1">//batch消费size</span>
+<span class="kd">final</span> <span class="kt">int</span> <span class="n">consumeBatchSize</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">defaultMQPushConsumer</span><span class="o">.</span><span class="na">getConsumeMessageBatchMaxSize</span><span class="o">();</span>
+<span class="k">if</span> <span class="o">(</span><span class="n">msgs</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&lt;=</span> <span class="n">consumeBatchSize</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">ConsumeRequest</span> <span class="n">consumeRequest</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConsumeRequest</span><span class="o">(</span><span class="n">msgs</span><span class="o">,</span> <span class="n">processQueue</span><span class="o">,</span> <span class="n">messageQueue</span><span class="o">);</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">consumeExecutor</span><span class="o">.</span><span class="na">submit</span><span class="o">(</span><span class="n">consumeRequest</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">RejectedExecutionException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">submitConsumeRequestLater</span><span class="o">(</span><span class="n">consumeRequest</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+    <span class="c1">//对于拉取的消息size大于配置的值，会将消息根据长度进行切分，组成多个ConsumeRequest进行提交</span>
+    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">total</span> <span class="o">&lt;</span> <span class="n">msgs</span><span class="o">.</span><span class="na">size</span><span class="o">();</span> <span class="o">)</span> <span class="o">{</span>
+        <span class="n">List</span><span class="o">&lt;</span><span class="n">MessageExt</span><span class="o">&gt;</span> <span class="n">msgThis</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">MessageExt</span><span class="o">&gt;(</span><span class="n">consumeBatchSize</span><span class="o">);</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">consumeBatchSize</span><span class="o">;</span> <span class="n">i</span><span class="o">++,</span> <span class="n">total</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">total</span> <span class="o">&lt;</span> <span class="n">msgs</span><span class="o">.</span><span class="na">size</span><span class="o">())</span> <span class="o">{</span>
+                <span class="n">msgThis</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">msgs</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">total</span><span class="o">));</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="n">ConsumeRequest</span> <span class="n">consumeRequest</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConsumeRequest</span><span class="o">(</span><span class="n">msgThis</span><span class="o">,</span> <span class="n">processQueue</span><span class="o">,</span> <span class="n">messageQueue</span><span class="o">);</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">consumeExecutor</span><span class="o">.</span><span class="na">submit</span><span class="o">(</span><span class="n">consumeRequest</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">RejectedExecutionException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">for</span> <span class="o">(;</span> <span class="n">total</span> <span class="o">&lt;</span> <span class="n">msgs</span><span class="o">.</span><span class="na">size</span><span class="o">();</span> <span class="n">total</span><span class="o">++)</span> <span class="o">{</span>
+                <span class="n">msgThis</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">msgs</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">total</span><span class="o">));</span>
+            <span class="o">}</span>
+
+            <span class="k">this</span><span class="o">.</span><span class="na">submitConsumeRequestLater</span><span class="o">(</span><span class="n">consumeRequest</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>这里主要是构建了一个ConsumeRequest对象，然后扔到线程池中执行，线程池是这样的</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">this</span><span class="o">.</span><span class="na">consumeExecutor</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ThreadPoolExecutor</span><span class="o">(</span>
+    <span class="c1">//core thread number,默认为20</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">defaultMQPushConsumer</span><span class="o">.</span><span class="na">getConsumeThreadMin</span><span class="o">(),</span>
+    <span class="c1">//max thread number,默认为64</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">defaultMQPushConsumer</span><span class="o">.</span><span class="na">getConsumeThreadMax</span><span class="o">(),</span>
+    <span class="mi">1000</span> <span class="o">*</span> <span class="mi">60</span><span class="o">,</span>
+    <span class="n">TimeUnit</span><span class="o">.</span><span class="na">MILLISECONDS</span><span class="o">,</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">consumeRequestQueue</span><span class="o">,</span>
+    <span class="k">new</span> <span class="nf">ThreadFactoryImpl</span><span class="o">(</span><span class="s">"ConsumeMessageThread_"</span><span class="o">));</span>
+</code></pre></div></div>
+
+<p>再看一下ConsumeRequest的run方法。在DefaultMQPushConsumerImpl中，我们看到了consumeMessageHookList这个变量，在ConsumeRequest中，就是触发这个钩子时候，关于钩子就这么一笔带过了，不贴上来了。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">long</span> <span class="n">beginTimestamp</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+<span class="kt">boolean</span> <span class="n">hasException</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+<span class="n">ConsumeReturnType</span> <span class="n">returnType</span> <span class="o">=</span> <span class="n">ConsumeReturnType</span><span class="o">.</span><span class="na">SUCCESS</span><span class="o">;</span>
+<span class="k">try</span> <span class="o">{</span>
+    <span class="c1">//重置其中标记为"重试"的消息的topic</span>
+    <span class="n">ConsumeMessageConcurrentlyService</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">resetRetryTopic</span><span class="o">(</span><span class="n">msgs</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">msgs</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">msgs</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+        <span class="k">for</span> <span class="o">(</span><span class="n">MessageExt</span> <span class="n">msg</span> <span class="o">:</span> <span class="n">msgs</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">MessageAccessor</span><span class="o">.</span><span class="na">setConsumeStartTimeStamp</span><span class="o">(</span><span class="n">msg</span><span class="o">,</span> <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()));</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="c1">//让注册的listener去消费这些记录</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">listener</span><span class="o">.</span><span class="na">consumeMessage</span><span class="o">(</span><span class="n">Collections</span><span class="o">.</span><span class="na">unmodifiableList</span><span class="o">(</span><span class="n">msgs</span><span class="o">),</span> <span class="n">context</span><span class="o">);</span>
+<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Throwable</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">log</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">"consumeMessage exception: {} Group: {} Msgs: {} MQ: {}"</span><span class="o">,</span>
+             <span class="n">RemotingHelper</span><span class="o">.</span><span class="na">exceptionSimpleDesc</span><span class="o">(</span><span class="n">e</span><span class="o">),</span>
+             <span class="n">ConsumeMessageConcurrentlyService</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">consumerGroup</span><span class="o">,</span>
+             <span class="n">msgs</span><span class="o">,</span>
+             <span class="n">messageQueue</span><span class="o">);</span>
+    <span class="n">hasException</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+<span class="o">}</span>
+<span class="o">...</span>
+<span class="c1">//处理消费结果,消费失败会进行重试</span>
+<span class="k">if</span> <span class="o">(!</span><span class="n">processQueue</span><span class="o">.</span><span class="na">isDropped</span><span class="o">())</span> <span class="o">{</span>
+    <span class="n">ConsumeMessageConcurrentlyService</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">processConsumeResult</span><span class="o">(</span><span class="n">status</span><span class="o">,</span> <span class="n">context</span><span class="o">,</span> <span class="k">this</span><span class="o">);</span>
+<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+    <span class="n">log</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">"processQueue is dropped without process consume result. messageQueue={}, msgs={}"</span><span class="o">,</span> <span class="n">messageQueue</span><span class="o">,</span> <span class="n">msgs</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>对于listener消费的结果，有两种返回结果：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="n">ConsumeConcurrentlyStatus</span> <span class="o">{</span>
+    <span class="cm">/**
+     * Success consumption
+     */</span>
+    <span class="n">CONSUME_SUCCESS</span><span class="o">,</span>
+    <span class="cm">/**
+     * Failure consumption,later try to consume
+     */</span>
+    <span class="n">RECONSUME_LATER</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>众所周知，rocketmq对消息会有重试机制，对于消费失败的消息会重新消费，直至达到配置的值(默认为16)，达到配置的值后会丢入DLQ，也就是死信队列，此时就需要人为干预了。接下来就看看它到底是怎么实现消费重试机制的。（写到这里，正好想到最近项目准备切换成kafka，正好学习借鉴一下：D）</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//org/apache/rocketmq/client/impl/consumer/ConsumeMessageConcurrentlyService#processConsumeResult</span>
+<span class="c1">//...</span>
+<span class="k">switch</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">defaultMQPushConsumer</span><span class="o">.</span><span class="na">getMessageModel</span><span class="o">())</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nl">BROADCASTING:</span>
+        <span class="c1">//...</span>
+        <span class="k">break</span><span class="o">;</span>
+    <span class="k">case</span> <span class="nl">CLUSTERING:</span>
+        <span class="n">List</span><span class="o">&lt;</span><span class="n">MessageExt</span><span class="o">&gt;</span> <span class="n">msgBackFailed</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">MessageExt</span><span class="o">&gt;(</span><span class="n">consumeRequest</span><span class="o">.</span><span class="na">getMsgs</span><span class="o">().</span><span class="na">size</span><span class="o">());</span>
+        <span class="c1">//处理发送失败消息集合，消费成功时，ackIndex = consumeRequest.getMsgs().size() - 1;，失败时ack=-1</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">ackIndex</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">consumeRequest</span><span class="o">.</span><span class="na">getMsgs</span><span class="o">().</span><span class="na">size</span><span class="o">();</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="n">MessageExt</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">consumeRequest</span><span class="o">.</span><span class="na">getMsgs</span><span class="o">().</span><span class="na">get</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+            <span class="c1">//重新发送消息</span>
+            <span class="kt">boolean</span> <span class="n">result</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">sendMessageBack</span><span class="o">(</span><span class="n">msg</span><span class="o">,</span> <span class="n">context</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(!</span><span class="n">result</span><span class="o">)</span> <span class="o">{</span>
+                <span class="c1">//发送失败？重试次数+1。broker也会增加重试次数？</span>
+                <span class="n">msg</span><span class="o">.</span><span class="na">setReconsumeTimes</span><span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getReconsumeTimes</span><span class="o">()</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span>
+                <span class="n">msgBackFailed</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(!</span><span class="n">msgBackFailed</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">consumeRequest</span><span class="o">.</span><span class="na">getMsgs</span><span class="o">().</span><span class="na">removeAll</span><span class="o">(</span><span class="n">msgBackFailed</span><span class="o">);</span>
+
+            <span class="k">this</span><span class="o">.</span><span class="na">submitConsumeRequestLater</span><span class="o">(</span><span class="n">msgBackFailed</span><span class="o">,</span> <span class="n">consumeRequest</span><span class="o">.</span><span class="na">getProcessQueue</span><span class="o">(),</span> <span class="n">consumeRequest</span><span class="o">.</span><span class="na">getMessageQueue</span><span class="o">());</span>
+        <span class="o">}</span>
+        <span class="k">break</span><span class="o">;</span>
+    <span class="k">default</span><span class="o">:</span>
+        <span class="k">break</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="c1">//移除消费队列中的消息，从ProcessQueue的treeMap中移除消费成功的消息，并返回第一条消息的offset，removeMessage中加了写锁，保证写过程线程安全</span>
+<span class="kt">long</span> <span class="n">offset</span> <span class="o">=</span> <span class="n">consumeRequest</span><span class="o">.</span><span class="na">getProcessQueue</span><span class="o">().</span><span class="na">removeMessage</span><span class="o">(</span><span class="n">consumeRequest</span><span class="o">.</span><span class="na">getMsgs</span><span class="o">());</span>
+<span class="k">if</span> <span class="o">(</span><span class="n">offset</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">consumeRequest</span><span class="o">.</span><span class="na">getProcessQueue</span><span class="o">().</span><span class="na">isDropped</span><span class="o">())</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">defaultMQPushConsumerImpl</span><span class="o">.</span><span class="na">getOffsetStore</span><span class="o">().</span><span class="na">updateOffset</span><span class="o">(</span><span class="n">consumeRequest</span><span class="o">.</span><span class="na">getMessageQueue</span><span class="o">(),</span> <span class="n">offset</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>其中sendMessageBack方法即将消息扔到相关consumeGroup的重试队列中。这里就涉及到延迟队列相关的内容。总共会重试16次，16次都失败后会丢进死信队列，需要人工干预。“1s 5s 10s 30s 1m 2m 3m 4m 5m 6m 7m 8m 9m 10m 20m 30m 1h 2h”是默认设置的延迟等级。</p>
+
+<p>在最后，会更新offset，这样在MQClientInstace就可以定时将offset更新到broker端了。</p>
+
+<h3 id="有序消费">有序消费</h3>
+
+<p>在看有序消费之前还是有些疑惑的：</p>
+
+<p>1.怎么保证ProcessQueue只有一次拉取的消息集合？</p>
+
+<p>2.在消息消费失败后又是怎么处理的？</p>
+
+<p>带着问题，我们来看看相关的流程</p>
+
+<p>有序消费中，也会生成个ConsumeRequest对象，其中的run方法：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">final</span> <span class="n">Object</span> <span class="n">objLock</span> <span class="o">=</span> <span class="n">messageQueueLock</span><span class="o">.</span><span class="na">fetchLockObject</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">messageQueue</span><span class="o">);</span>
+<span class="kd">synchronized</span> <span class="o">(</span><span class="n">objLock</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">MessageModel</span><span class="o">.</span><span class="na">BROADCASTING</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">ConsumeMessageOrderlyService</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">defaultMQPushConsumerImpl</span><span class="o">.</span><span class="na">messageModel</span><span class="o">())</span>
+        <span class="o">||</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">processQueue</span><span class="o">.</span><span class="na">isLocked</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="k">this</span><span class="o">.</span><span class="na">processQueue</span><span class="o">.</span><span class="na">isLockExpired</span><span class="o">()))</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="kt">long</span> <span class="n">beginTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">boolean</span> <span class="n">continueConsume</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span> <span class="n">continueConsume</span><span class="o">;</span> <span class="o">)</span> <span class="o">{</span>
+
+            <span class="kd">final</span> <span class="kt">int</span> <span class="n">consumeBatchSize</span> <span class="o">=</span>
+                <span class="n">ConsumeMessageOrderlyService</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">defaultMQPushConsumer</span><span class="o">.</span><span class="na">getConsumeMessageBatchMaxSize</span><span class="o">();</span>
+
+            <span class="c1">//从本地缓存中拉取批量消息</span>
+            <span class="n">List</span><span class="o">&lt;</span><span class="n">MessageExt</span><span class="o">&gt;</span> <span class="n">msgs</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">processQueue</span><span class="o">.</span><span class="na">takeMessags</span><span class="o">(</span><span class="n">consumeBatchSize</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(!</span><span class="n">msgs</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+                <span class="kd">final</span> <span class="n">ConsumeOrderlyContext</span> <span class="n">context</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConsumeOrderlyContext</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">messageQueue</span><span class="o">);</span>
+
+                <span class="n">ConsumeOrderlyStatus</span> <span class="n">status</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+
+                <span class="n">ConsumeMessageContext</span> <span class="n">consumeMessageContext</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+                <span class="c1">//...</span>
+
+                <span class="kt">long</span> <span class="n">beginTimestamp</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+                <span class="n">ConsumeReturnType</span> <span class="n">returnType</span> <span class="o">=</span> <span class="n">ConsumeReturnType</span><span class="o">.</span><span class="na">SUCCESS</span><span class="o">;</span>
+                <span class="kt">boolean</span> <span class="n">hasException</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+                <span class="k">try</span> <span class="o">{</span>
+                    <span class="c1">//消息消费锁</span>
+                    <span class="k">this</span><span class="o">.</span><span class="na">processQueue</span><span class="o">.</span><span class="na">getLockConsume</span><span class="o">().</span><span class="na">lock</span><span class="o">();</span>
+
+                    <span class="n">status</span> <span class="o">=</span> <span class="n">messageListener</span><span class="o">.</span><span class="na">consumeMessage</span><span class="o">(</span><span class="n">Collections</span><span class="o">.</span><span class="na">unmodifiableList</span><span class="o">(</span><span class="n">msgs</span><span class="o">),</span> <span class="n">context</span><span class="o">);</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Throwable</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+                    <span class="k">this</span><span class="o">.</span><span class="na">processQueue</span><span class="o">.</span><span class="na">getLockConsume</span><span class="o">().</span><span class="na">unlock</span><span class="o">();</span>
+                <span class="o">}</span>
+                <span class="c1">//...</span>
+
+                <span class="n">ConsumeMessageOrderlyService</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">getConsumerStatsManager</span><span class="o">()</span>
+                    <span class="o">.</span><span class="na">incConsumeRT</span><span class="o">(</span><span class="n">ConsumeMessageOrderlyService</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">consumerGroup</span><span class="o">,</span> <span class="n">messageQueue</span><span class="o">.</span><span class="na">getTopic</span><span class="o">(),</span> <span class="n">consumeRT</span><span class="o">);</span>
+
+                <span class="c1">//处理改次消息返回结果，</span>
+                <span class="n">continueConsume</span> <span class="o">=</span> <span class="n">ConsumeMessageOrderlyService</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">processConsumeResult</span><span class="o">(</span><span class="n">msgs</span><span class="o">,</span> <span class="n">status</span><span class="o">,</span> <span class="n">context</span><span class="o">,</span> <span class="k">this</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="n">continueConsume</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+
+        <span class="n">ConsumeMessageOrderlyService</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">tryLockLaterAndReconsume</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">messageQueue</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">processQueue</span><span class="o">,</span> <span class="mi">100</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>我们来看看rocketmq内部是怎么实现顺序消费的：</p>
+
+<p>1.给messageQueue对象加锁</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//org.apache.rocketmq.client.impl.consumer.MessageQueueLock</span>
+<span class="kd">private</span> <span class="n">ConcurrentMap</span><span class="o">&lt;</span><span class="n">MessageQueue</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">mqLockTable</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConcurrentHashMap</span><span class="o">&lt;</span><span class="n">MessageQueue</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;();</span>
+<span class="kd">public</span> <span class="n">Object</span> <span class="nf">fetchLockObject</span><span class="o">(</span><span class="kd">final</span> <span class="n">MessageQueue</span> <span class="n">mq</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">Object</span> <span class="n">objLock</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">mqLockTable</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">mq</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="kc">null</span> <span class="o">==</span> <span class="n">objLock</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">objLock</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Object</span><span class="o">();</span>
+        <span class="n">Object</span> <span class="n">prevLock</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">mqLockTable</span><span class="o">.</span><span class="na">putIfAbsent</span><span class="o">(</span><span class="n">mq</span><span class="o">,</span> <span class="n">objLock</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">prevLock</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">objLock</span> <span class="o">=</span> <span class="n">prevLock</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="n">objLock</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>2.给messageQueue相应的ProcessQueue加“锁”</p>
+
+<p>ProcessQueue中的锁其实只是一个为“locked”的布尔变量。在<strong>ConsumeMessageOrderlyService</strong>中起了一个schedule任务，对所有的ProcessQueue的locked变量置为true</p>
+
+<p>至于这个变量其实主要是用在处理pullRequest时：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="o">(</span><span class="n">processQueue</span><span class="o">.</span><span class="na">isLocked</span><span class="o">())</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(!</span><span class="n">pullRequest</span><span class="o">.</span><span class="na">isLockedFirst</span><span class="o">())</span> <span class="o">{</span>
+        <span class="c1">//从broker端获取offset</span>
+        <span class="kd">final</span> <span class="kt">long</span> <span class="n">offset</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">rebalanceImpl</span><span class="o">.</span><span class="na">computePullFromWhere</span><span class="o">(</span><span class="n">pullRequest</span><span class="o">.</span><span class="na">getMessageQueue</span><span class="o">());</span>
+        <span class="kt">boolean</span> <span class="n">brokerBusy</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">&lt;</span> <span class="n">pullRequest</span><span class="o">.</span><span class="na">getNextOffset</span><span class="o">();</span>
+        <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"the first time to pull message, so fix offset from broker. pullRequest: {} NewOffset: {} brokerBusy: {}"</span><span class="o">,</span>
+                 <span class="n">pullRequest</span><span class="o">,</span> <span class="n">offset</span><span class="o">,</span> <span class="n">brokerBusy</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">brokerBusy</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"[NOTIFYME]the first time to pull message, but pull request offset larger than broker consume offset. pullRequest: {} NewOffset: {}"</span><span class="o">,</span>
+                     <span class="n">pullRequest</span><span class="o">,</span> <span class="n">offset</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="n">pullRequest</span><span class="o">.</span><span class="na">setLockedFirst</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+        <span class="n">pullRequest</span><span class="o">.</span><span class="na">setNextOffset</span><span class="o">(</span><span class="n">offset</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">executePullRequestLater</span><span class="o">(</span><span class="n">pullRequest</span><span class="o">,</span> <span class="n">PULL_TIME_DELAY_MILLS_WHEN_EXCEPTION</span><span class="o">);</span>
+    <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"pull message later because not locked in broker, {}"</span><span class="o">,</span> <span class="n">pullRequest</span><span class="o">);</span>
+    <span class="k">return</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>其主要的目的还是保证rebalance服务已经结束，队列已分配好，offset也更新到最新。</p>
+
+<p>3.消息消费锁</p>
+
+<p>即<strong>this.processQueue.getLockConsume().lock();</strong>，这是一个ReentrantLock，保证listerner只能处理一批次的消息。</p>
+
+<p>4.consumingMsgOrderlyTreeMap的使用</p>
+
+<p>consumingMsgOrderlyTreeMap其实是Processqueue中的一个变量，官方注释是这么写的：<em>A subset of msgTreeMap, will only be used when orderly consume</em>.</p>
+
+<p>举个例子来说，一次PullRequest可能拉取了10条Message，不过默认每次消费的条数是1，那在执行<strong>this.processQueue.takeMessags</strong>方法时，consumingMsgOrderlyTreeMap存放的就是msgTreeMap中的第一个消息</p>
+
+<p>通过上面几点，我们可以看到客户端对于顺序消费的把控。接着再来看看对消费结果进行处理的过程，也就是<strong>ConsumeMessageOrderlyService.this.processConsumeResult()</strong>:</p>
+
+<p>不同于无序消费，顺序消费包括<em>SUCCESS</em>和<em>SUSPEND_CURRENT_QUEUE_A_MOMENT</em>这两种状态，来看看核心的代码</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//...</span>
+<span class="c1">//成功消费</span>
+<span class="k">case</span> <span class="nl">SUCCESS:</span>
+    <span class="c1">//获取当前消费的offset，并清空consumingMsgOrderlyTreeMap，返回的offset用于更新缓存中的offset</span>
+    <span class="n">commitOffset</span> <span class="o">=</span> <span class="n">consumeRequest</span><span class="o">.</span><span class="na">getProcessQueue</span><span class="o">().</span><span class="na">commit</span><span class="o">();</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">getConsumerStatsManager</span><span class="o">().</span><span class="na">incConsumeOKTPS</span><span class="o">(</span><span class="n">consumerGroup</span><span class="o">,</span> <span class="n">consumeRequest</span><span class="o">.</span><span class="na">getMessageQueue</span><span class="o">().</span><span class="na">getTopic</span><span class="o">(),</span> <span class="n">msgs</span><span class="o">.</span><span class="na">size</span><span class="o">());</span>
+    <span class="k">break</span><span class="o">;</span>
+<span class="c1">//重试</span>
+<span class="k">case</span> <span class="nl">SUSPEND_CURRENT_QUEUE_A_MOMENT:</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">getConsumerStatsManager</span><span class="o">().</span><span class="na">incConsumeFailedTPS</span><span class="o">(</span><span class="n">consumerGroup</span><span class="o">,</span> <span class="n">consumeRequest</span><span class="o">.</span><span class="na">getMessageQueue</span><span class="o">().</span><span class="na">getTopic</span><span class="o">(),</span> <span class="n">msgs</span><span class="o">.</span><span class="na">size</span><span class="o">());</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">checkReconsumeTimes</span><span class="o">(</span><span class="n">msgs</span><span class="o">))</span> <span class="o">{</span>
+        <span class="c1">//将消息从consumingMsgOrderlyTreeMap中移除，放回msgTreeMap中，稍后进行重新消费</span>
+        <span class="n">consumeRequest</span><span class="o">.</span><span class="na">getProcessQueue</span><span class="o">().</span><span class="na">makeMessageToCosumeAgain</span><span class="o">(</span><span class="n">msgs</span><span class="o">);</span>
+        <span class="c1">//重新提交消费请求</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">submitConsumeRequestLater</span><span class="o">(</span>
+            <span class="n">consumeRequest</span><span class="o">.</span><span class="na">getProcessQueue</span><span class="o">(),</span>
+            <span class="n">consumeRequest</span><span class="o">.</span><span class="na">getMessageQueue</span><span class="o">(),</span>
+            <span class="n">context</span><span class="o">.</span><span class="na">getSuspendCurrentQueueTimeMillis</span><span class="o">());</span>
+        <span class="n">continueConsume</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        <span class="n">commitOffset</span> <span class="o">=</span> <span class="n">consumeRequest</span><span class="o">.</span><span class="na">getProcessQueue</span><span class="o">().</span><span class="na">commit</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="k">break</span><span class="o">;</span>
+<span class="k">default</span><span class="o">:</span>
+	<span class="k">break</span><span class="o">;</span>
+<span class="c1">//...</span>
+<span class="k">if</span> <span class="o">(</span><span class="n">commitOffset</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">consumeRequest</span><span class="o">.</span><span class="na">getProcessQueue</span><span class="o">().</span><span class="na">isDropped</span><span class="o">())</span> <span class="o">{</span>       <span class="k">this</span><span class="o">.</span><span class="na">defaultMQPushConsumerImpl</span><span class="o">.</span><span class="na">getOffsetStore</span><span class="o">().</span><span class="na">updateOffset</span><span class="o">(</span><span class="n">consumeRequest</span><span class="o">.</span><span class="na">getMessageQueue</span><span class="o">(),</span> <span class="n">commitOffset</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>再来看看<em>SUSPEND_CURRENT_QUEUE_A_MOMENT</em>的情况</p>
+
+<p>再来看看<strong>checkReconsumeTimes()</strong>方法：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">checkReconsumeTimes</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">MessageExt</span><span class="o">&gt;</span> <span class="n">msgs</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">//设置重试次数</span>
+    <span class="kt">boolean</span> <span class="n">suspend</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">msgs</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">msgs</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+        <span class="k">for</span> <span class="o">(</span><span class="n">MessageExt</span> <span class="n">msg</span> <span class="o">:</span> <span class="n">msgs</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">//getMaxReconsumeTimes()默认返回Integer.MAX_VALUE</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getReconsumeTimes</span><span class="o">()</span> <span class="o">&gt;=</span> <span class="n">getMaxReconsumeTimes</span><span class="o">())</span> <span class="o">{</span>
+                <span class="n">MessageAccessor</span><span class="o">.</span><span class="na">setReconsumeTime</span><span class="o">(</span><span class="n">msg</span><span class="o">,</span> <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getReconsumeTimes</span><span class="o">()));</span>
+                <span class="c1">//重新发送消息失败</span>
+                <span class="k">if</span> <span class="o">(!</span><span class="n">sendMessageBack</span><span class="o">(</span><span class="n">msg</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="n">suspend</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+                    <span class="n">msg</span><span class="o">.</span><span class="na">setReconsumeTimes</span><span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getReconsumeTimes</span><span class="o">()</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="n">suspend</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+                <span class="n">msg</span><span class="o">.</span><span class="na">setReconsumeTimes</span><span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getReconsumeTimes</span><span class="o">()</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="n">suspend</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>因为getMaxReconsumeTimes()默认返回Integer.MAX_VALUE，所以在相当长的一段时间里会一直尝试重新消费，而不会去拉取消息。</p>
+
+<h3 id="思考">思考</h3>
+
+<p>1.在使用顺序消费时，一定要小心使用<em>SUSPEND_CURRENT_QUEUE_A_MOMENT</em>这个状态，如果出现这个状态，会有一段时间阻塞在相应的消息上，不会继续往下消费。如果要用还是建议设置maxReconsumeTimes的值。</p>
+
+<p>2.对于同一个MessageQueue，只会有一个PullRequest对象，该对象在负载均衡服务中生成。</p>
+

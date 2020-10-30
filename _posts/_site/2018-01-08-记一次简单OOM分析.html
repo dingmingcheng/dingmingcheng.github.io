@@ -1,0 +1,127 @@
+<h2 id="前言">前言</h2>
+
+<p>说到OOM，out of memory也是一个广泛存在的问题，如果线上出了问题，临时抱佛脚肯定是不行的，所以未雨绸缪是必须的。</p>
+
+<h2 id="测试过程">测试过程</h2>
+
+<h3 id="首先是程序的准备">首先是程序的准备</h3>
+
+<p>准备了两个OOM的程序</p>
+
+<pre><code class="language-Java">
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+/**
+ * @Author: dingmingcheng
+ * @Description
+ * @Date: Created in 下午8:15 2018/1/8
+ * @Modifyed By:
+ */
+public class test {
+    static class task implements Runnable{
+
+        Long key;
+        Long value;
+
+        task(Long key, Long value) {
+            this.key = key;
+            this.value = value;
+        }
+        @Override
+        public void run() {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public static void main(String[] args) {
+        ExecutorService threads = Executors.newFixedThreadPool(10);
+        while (true) {
+            threads.execute(new task(100L, 100L));
+        }
+    }
+}
+</code></pre>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kn">import</span> <span class="nn">java.util.concurrent.ExecutorService</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.concurrent.Executors</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.*</span><span class="o">;</span>
+
+<span class="cm">/**
+ * @Author: dingmingcheng
+ * @Description
+ * @Date: Created in 下午8:15 2018/1/8
+ * @Modifyed By:
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">test2</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">List</span><span class="o">&lt;</span><span class="n">Long</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Long</span><span class="o">&gt;();</span>
+        <span class="k">while</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">Long</span> <span class="n">it</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Long</span><span class="o">(</span><span class="mi">123L</span><span class="o">);</span>
+            <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">it</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="具体实现过程">具体实现过程</h3>
+
+<pre><code class="language-Shell">#编译这两个文件
+javac test
+javac test2
+#运行,设置堆内存大小，方便观察结果
+java -Xmx20m test 
+java -Xmx5m test2 
+#查看进程Id
+jps
+</code></pre>
+
+<p>在之前的两个程序分别出现以下的情况</p>
+
+<p>第一个程序</p>
+
+<p><img src="/img/in-post/oom-record/pic1.png" alt="" />
+第二个程序</p>
+
+<p><img src="/img/in-post/oom-record/pic2.png" alt="" /></p>
+
+<p>使用jmap生产dump文件并且进行分析:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#通过·jmap根据pid生成dump文件</span>
+jmap <span class="nt">-dump</span>:live,format<span class="o">=</span>b,file<span class="o">=</span>heap.hprof <span class="o">[</span>pid]
+<span class="c">#通过内置的jhat指令进行分析</span>
+jhat heap.hprof
+</code></pre></div></div>
+
+<p><img src="/img/in-post/oom-record/pic3.png" alt="" /></p>
+
+<p>结果查看地址：localhost:7000/</p>
+
+<p><img src="/img/in-post/oom-record/pic4.png" alt="" /></p>
+
+<p>ecplise中有自带的MAT分析工具，应该会更加地直观，网上还是有很多关于它的使用的</p>
+
+<h3 id="知识发散">知识发散</h3>
+
+<p>在进行测试时，发现OOM还是有很多种情况的，目前接触到这3种情况：</p>
+
+<p>1.GC overhead limit exceede</p>
+
+<p>大意是指98%的时间回收了不到2%的内存，jvm就认为这程序肯定会发生OOM，不再让它继续跑下去了，有兴趣也可以通过jstat命令去查看GC的情况，会出现大量的Full GC</p>
+
+<p>2.Java heap space</p>
+
+<p>超了设定的堆内存</p>
+
+<p>3.unable to create new native thread</p>
+
+<p>这问题时偶然碰见的，在程序一中，用newCachedThreadPool代替newFixedThreadPool就会出现，这其实和本机所允许的最大线程数有关，线程数超过了机子设定值时就会出现，通过ulimit -u也可以看见当前机子上的线程数量。</p>
+
+<p>emmm…之后碰到还可以再补充</p>
+
+<p><em>知易行难，“实践是检验真理的唯一标准”！</em></p>
+

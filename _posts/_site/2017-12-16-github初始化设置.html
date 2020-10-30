@@ -1,0 +1,39 @@
+<h2 id="ssh配置">SSH配置</h2>
+
+<p>ssh配置其实很简单，网上也有很多的教程，直接给个传送门吧，一步一步来就OK了，<a href="https://jingyan.baidu.com/article/a65957f4e91ccf24e77f9b11.html">windows下github ssh配置</a>，<a href="http://blog.csdn.net/yin1031468524/article/details/50096723">linux/mac下配置</a></p>
+
+<h2 id="git协议">git协议</h2>
+
+<p>通常使用git时，进行push，pull，clone等操作时，是使用https协议和SSH协议</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#通常将远程仓库拉到本地有以下两种方式</span>
+git clone git@github.com:dingmingcheng/dingmingcheng.github.io.git
+git clone https://github.com/dingmingcheng/dingmingcheng.github.io.git
+</code></pre></div></div>
+
+<p>而在使用时，https协议可以说是非常不方便的，因为每次都需要输入密码，而git主要是使用SSH协议进行数据加密传输。</p>
+
+<h3 id="ssh协议">ssh协议</h3>
+
+<p>百度百科上是这么介绍ssh协议的：“SSH 为 <a href="https://baike.baidu.com/item/Secure%20Shell">Secure Shell</a> 的缩写，由 IETF 的网络小组（Network Working Group）所制定；SSH 为建立在应用层基础上的安全协议。SSH 是目前较可靠，专为<a href="https://baike.baidu.com/item/%E8%BF%9C%E7%A8%8B%E7%99%BB%E5%BD%95">远程登录</a>会话和其他网络服务提供安全性的协议。利用 SSH 协议可以有效防止远程管理过程中的信息泄露问题。SSH最初是UNIX系统上的一个程序，后来又迅速扩展到其他操作平台。SSH在正确使用时可弥补网络中的漏洞。SSH客户端适用于多种平台。几乎所有UNIX平台—包括<a href="https://baike.baidu.com/item/HP-UX">HP-UX</a>、<a href="https://baike.baidu.com/item/Linux">Linux</a>、<a href="https://baike.baidu.com/item/AIX">AIX</a>、<a href="https://baike.baidu.com/item/Solaris/3517">Solaris</a>、<a href="https://baike.baidu.com/item/Digital">Digital</a> <a href="https://baike.baidu.com/item/UNIX">UNIX</a>、<a href="https://baike.baidu.com/item/Irix">Irix</a>，以及其他平台，都可运行SSH”</p>
+
+<p>简单来说，当我们需要远程登录其他的机器时，ssh就起了很大的作用，使用登陆主要有两种方式，第一种是口令登陆，就是你知道远程机器的密码，每次连接时通过口令登陆即可。（服务端默认端口是22）</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh user@host
+</code></pre></div></div>
+
+<p>之后输入密码即可。</p>
+
+<p>还有一种就是通过公钥，首先需要在本机上生成一对密钥，mac/linux下时在当前用户的文件夹下</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd</span> ~/.ssh/
+<span class="nb">ls</span>
+</code></pre></div></div>
+
+<p>里面会有id_rsa和id_rsa.pub，其中id_rsa.pub中的内容就是你生成公钥，也就是要存在远程主机上的秘钥。</p>
+
+<p>登陆原理很简单，就是用户将自己的公钥储存在远程主机上。登录的时候，远程主机将一个随机字符串发送给客户端，客户端根据自己的私钥加密这个随机字符串之后再发送给远程服务器。远程主机用事先储存的公钥进行解密，如果成功，就证明用户是可信的，直接允许登录shell，不再要求密码。</p>
+
+<h2 id="结尾">结尾</h2>
+
+<p>其实以上只是个人的一些简单的理解，如有错误希望提出，说到加密，其实涉及到了另外一个计算机分支网络安全，计算机发展太快，希望自己能脚踏实地，一点一滴去积累，异步一个脚印。</p>

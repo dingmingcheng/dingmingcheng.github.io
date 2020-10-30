@@ -1,0 +1,242 @@
+<h2 id="前言">前言</h2>
+
+<p>上篇在读mq生成者相关的代码时。在DefaultMQProducer的初始化最后一步时，代码是<strong>mQClientFactory.start();</strong>。至于MQClientInstance的关键性在上篇文章中也提到了。这篇就从<strong>mQClientFactory.start();</strong>开始吧。先放上相关的代码吧</p>
+
+<p>###字段分析</p>
+
+<p>先来看看MQClientInstance中的重要的变量吧</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//该clientInstance配置，主要包括nameSrv，unitName之类的</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="n">ClientConfig</span> <span class="n">clientConfig</span><span class="o">;</span>
+<span class="c1">//下标，atomicInteger维护</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">instanceIndex</span><span class="o">;</span>
+<span class="c1">//IP@instanceName@UnitName</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">clientId</span><span class="o">;</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="kt">long</span> <span class="n">bootTimestamp</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+<span class="c1">//生产者集群缓存</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="n">ConcurrentMap</span><span class="o">&lt;</span><span class="n">String</span><span class="cm">/* group */</span><span class="o">,</span> <span class="n">MQProducerInner</span><span class="o">&gt;</span> <span class="n">producerTable</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConcurrentHashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">MQProducerInner</span><span class="o">&gt;();</span>
+<span class="c1">//消费者集群缓存</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="n">ConcurrentMap</span><span class="o">&lt;</span><span class="n">String</span><span class="cm">/* group */</span><span class="o">,</span> <span class="n">MQConsumerInner</span><span class="o">&gt;</span> <span class="n">consumerTable</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConcurrentHashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">MQConsumerInner</span><span class="o">&gt;();</span>
+<span class="c1">//顾名思义，MQAdminExtInner的作用是mq后台管理的扩展。通常用在相关的监控中</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="n">ConcurrentMap</span><span class="o">&lt;</span><span class="n">String</span><span class="cm">/* group */</span><span class="o">,</span> <span class="n">MQAdminExtInner</span><span class="o">&gt;</span> <span class="n">adminExtTable</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConcurrentHashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">MQAdminExtInner</span><span class="o">&gt;();</span>
+<span class="c1">//netty配置</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="n">NettyClientConfig</span> <span class="n">nettyClientConfig</span><span class="o">;</span>
+<span class="c1">//rpc统一入口</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="n">MQClientAPIImpl</span> <span class="n">mQClientAPIImpl</span><span class="o">;</span>
+<span class="c1">//mq管理入口，包括topic创建接口，offset查询接口</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="n">MQAdminImpl</span> <span class="n">mQAdminImpl</span><span class="o">;</span>
+<span class="c1">//存储topic映射表</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="n">ConcurrentMap</span><span class="o">&lt;</span><span class="n">String</span><span class="cm">/* Topic */</span><span class="o">,</span> <span class="n">TopicRouteData</span><span class="o">&gt;</span> <span class="n">topicRouteTable</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConcurrentHashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">TopicRouteData</span><span class="o">&gt;();</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="n">Lock</span> <span class="n">lockNamesrv</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ReentrantLock</span><span class="o">();</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="n">Lock</span> <span class="n">lockHeartbeat</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ReentrantLock</span><span class="o">();</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="n">ConcurrentMap</span><span class="o">&lt;</span><span class="n">String</span><span class="cm">/* Broker Name */</span><span class="o">,</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">Long</span><span class="cm">/* brokerId */</span><span class="o">,</span> <span class="n">String</span><span class="cm">/* address */</span><span class="o">&gt;&gt;</span> <span class="n">brokerAddrTable</span> <span class="o">=</span>
+    <span class="k">new</span> <span class="n">ConcurrentHashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">Long</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;&gt;();</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="n">ConcurrentMap</span><span class="o">&lt;</span><span class="n">String</span><span class="cm">/* Broker Name */</span><span class="o">,</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="cm">/* address */</span><span class="o">,</span> <span class="n">Integer</span><span class="o">&gt;&gt;</span> <span class="n">brokerVersionTable</span> <span class="o">=</span>
+    <span class="k">new</span> <span class="n">ConcurrentHashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Integer</span><span class="o">&gt;&gt;();</span>
+<span class="c1">//单核心线程数的线程池</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="n">ScheduledExecutorService</span> <span class="n">scheduledExecutorService</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="na">newSingleThreadScheduledExecutor</span><span class="o">(</span><span class="k">new</span> <span class="n">ThreadFactory</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Thread</span> <span class="nf">newThread</span><span class="o">(</span><span class="n">Runnable</span> <span class="n">r</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">Thread</span><span class="o">(</span><span class="n">r</span><span class="o">,</span> <span class="s">"MQClientFactoryScheduledThread"</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">});</span>
+<span class="c1">//和broker进行rpc通讯时会用到，再讲MQClientAPIImpl会细讲</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="n">ClientRemotingProcessor</span> <span class="n">clientRemotingProcessor</span><span class="o">;</span>
+<span class="c1">//拉取消息服务，用于消费</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="n">PullMessageService</span> <span class="n">pullMessageService</span><span class="o">;</span>
+<span class="c1">//消息消费的负载均衡服务</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="n">RebalanceService</span> <span class="n">rebalanceService</span><span class="o">;</span>
+<span class="c1">//默认producerGroupName为"CLIENT_INNER_PRODUCER"的生产者group</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="n">DefaultMQProducer</span> <span class="n">defaultMQProducer</span><span class="o">;</span>
+<span class="c1">//主要用于消费消息回调时使用，也就是上面的pullMessageService中会用到，之后会细讲</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="n">ConsumerStatsManager</span> <span class="n">consumerStatsManager</span><span class="o">;</span>
+<span class="kd">private</span> <span class="kd">final</span> <span class="n">AtomicLong</span> <span class="n">sendHeartbeatTimesTotal</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AtomicLong</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+<span class="kd">private</span> <span class="n">ServiceState</span> <span class="n">serviceState</span> <span class="o">=</span> <span class="n">ServiceState</span><span class="o">.</span><span class="na">CREATE_JUST</span><span class="o">;</span>
+<span class="kd">private</span> <span class="n">DatagramSocket</span> <span class="n">datagramSocket</span><span class="o">;</span>
+<span class="kd">private</span> <span class="n">Random</span> <span class="n">random</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Random</span><span class="o">();</span>
+</code></pre></div></div>
+
+<p>###MQClientInstance启动流程</p>
+
+<p>再来看看<strong>start()</strong>的详细流程：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kt">void</span> <span class="nf">start</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">MQClientException</span> <span class="o">{</span>
+    <span class="kd">synchronized</span> <span class="o">(</span><span class="k">this</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">switch</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">serviceState</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">case</span> <span class="nl">CREATE_JUST:</span>
+                <span class="k">this</span><span class="o">.</span><span class="na">serviceState</span> <span class="o">=</span> <span class="n">ServiceState</span><span class="o">.</span><span class="na">START_FAILED</span><span class="o">;</span>
+                <span class="c1">// If not specified,looking address from name server</span>
+                <span class="k">if</span> <span class="o">(</span><span class="kc">null</span> <span class="o">==</span> <span class="k">this</span><span class="o">.</span><span class="na">clientConfig</span><span class="o">.</span><span class="na">getNamesrvAddr</span><span class="o">())</span> <span class="o">{</span>
+                    <span class="k">this</span><span class="o">.</span><span class="na">mQClientAPIImpl</span><span class="o">.</span><span class="na">fetchNameServerAddr</span><span class="o">();</span>
+                <span class="o">}</span>
+                <span class="c1">// Start request-response channel</span>
+                <span class="c1">//启动NettyRemotingClient，rocketmq中netty的使用，和namesrv的交互都在此</span>
+                <span class="k">this</span><span class="o">.</span><span class="na">mQClientAPIImpl</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+                <span class="c1">// Start various schedule tasks</span>
+                <span class="k">this</span><span class="o">.</span><span class="na">startScheduledTask</span><span class="o">();</span>
+                <span class="c1">// Start pull service</span>
+                <span class="c1">//针对push消息拉取模式,拉取消息服务，主要是从一个阻塞队列中取出pullrequest，遍历consumerTable</span>
+                <span class="k">this</span><span class="o">.</span><span class="na">pullMessageService</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+                <span class="c1">// Start rebalance service,负载均衡服务</span>
+                <span class="k">this</span><span class="o">.</span><span class="na">rebalanceService</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+                <span class="c1">// Start push service</span>
+                <span class="c1">//创建默认producer组CLIENT_INNER_PRODUCER</span>
+                <span class="k">this</span><span class="o">.</span><span class="na">defaultMQProducer</span><span class="o">.</span><span class="na">getDefaultMQProducerImpl</span><span class="o">().</span><span class="na">start</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+                <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"the client factory [{}] start OK"</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">clientId</span><span class="o">);</span>
+                <span class="k">this</span><span class="o">.</span><span class="na">serviceState</span> <span class="o">=</span> <span class="n">ServiceState</span><span class="o">.</span><span class="na">RUNNING</span><span class="o">;</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="k">case</span> <span class="nl">RUNNING:</span>
+                <span class="c1">//第二次来就是Running</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="k">case</span> <span class="nl">SHUTDOWN_ALREADY:</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="k">case</span> <span class="nl">START_FAILED:</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="nf">MQClientException</span><span class="o">(</span><span class="s">"The Factory object["</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">getClientId</span><span class="o">()</span> <span class="o">+</span> <span class="s">"] has been created before, and failed."</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+            <span class="k">default</span><span class="o">:</span>
+                <span class="k">break</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>可以看到主要就这是这几行代码</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">this</span><span class="o">.</span><span class="na">mQClientAPIImpl</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+<span class="k">this</span><span class="o">.</span><span class="na">startScheduledTask</span><span class="o">();</span>
+<span class="k">this</span><span class="o">.</span><span class="na">pullMessageService</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+<span class="k">this</span><span class="o">.</span><span class="na">rebalanceService</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+</code></pre></div></div>
+
+<h3 id="mqclientapi的初始化">MQClientAPI的初始化</h3>
+
+<p>MQClientAPI的启动就是remotingClient的启动，也就是RPC的客户端的启动是在这里，相对应的RPC的服务端是在broker端进行初始化。其中涉及到了netty的使用。会在之后一起看看。</p>
+
+<h3 id="开启mqclientinstance的相关定时任务">开启MQClientInstance的相关定时任务</h3>
+
+<p>跟踪进去，我们可以发现是这么5个任务</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">private</span> <span class="kt">void</span> <span class="nf">startScheduledTask</span><span class="o">()</span> <span class="o">{</span>
+    <span class="c1">//如果未指定namesrvAddress，指定了rocketmq.namesrv.domain.subgroup，会每两分钟去获取nameSrvAddress</span>
+    <span class="k">if</span> <span class="o">(</span><span class="kc">null</span> <span class="o">==</span> <span class="k">this</span><span class="o">.</span><span class="na">clientConfig</span><span class="o">.</span><span class="na">getNamesrvAddr</span><span class="o">())</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">scheduledExecutorService</span><span class="o">.</span><span class="na">scheduleAtFixedRate</span><span class="o">(</span><span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+                <span class="k">try</span> <span class="o">{</span>
+                    <span class="n">MQClientInstance</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">mQClientAPIImpl</span><span class="o">.</span><span class="na">fetchNameServerAddr</span><span class="o">();</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"ScheduledTask fetchNameServerAddr exception"</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">},</span> <span class="mi">1000</span> <span class="o">*</span> <span class="mi">10</span><span class="o">,</span> <span class="mi">1000</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">2</span><span class="o">,</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">MILLISECONDS</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="c1">//遍历所有的consumerTable和producerTable，更新所有的topic</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">scheduledExecutorService</span><span class="o">.</span><span class="na">scheduleAtFixedRate</span><span class="o">(</span><span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="n">MQClientInstance</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">updateTopicRouteInfoFromNameServer</span><span class="o">();</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"ScheduledTask updateTopicRouteInfoFromNameServer exception"</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">},</span> <span class="mi">10</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">clientConfig</span><span class="o">.</span><span class="na">getPollNameServerInterval</span><span class="o">(),</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">MILLISECONDS</span><span class="o">);</span>
+
+    <span class="c1">//清理下线broker 发送心跳，维护brokerAddrTable，brokerVersionTable</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">scheduledExecutorService</span><span class="o">.</span><span class="na">scheduleAtFixedRate</span><span class="o">(</span><span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="n">MQClientInstance</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">cleanOfflineBroker</span><span class="o">();</span>
+                <span class="n">MQClientInstance</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">sendHeartbeatToAllBrokerWithLock</span><span class="o">();</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"ScheduledTask sendHeartbeatToAllBroker exception"</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">},</span> <span class="mi">1000</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">clientConfig</span><span class="o">.</span><span class="na">getHeartbeatBrokerInterval</span><span class="o">(),</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">MILLISECONDS</span><span class="o">);</span>
+
+    <span class="k">this</span><span class="o">.</span><span class="na">scheduledExecutorService</span><span class="o">.</span><span class="na">scheduleAtFixedRate</span><span class="o">(</span><span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="c1">//持久化消费者集群的queue 的offset</span>
+                <span class="n">MQClientInstance</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">persistAllConsumerOffset</span><span class="o">();</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"ScheduledTask persistAllConsumerOffset exception"</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">},</span> <span class="mi">1000</span> <span class="o">*</span> <span class="mi">10</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">clientConfig</span><span class="o">.</span><span class="na">getPersistConsumerOffsetInterval</span><span class="o">(),</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">MILLISECONDS</span><span class="o">);</span>
+
+    <span class="k">this</span><span class="o">.</span><span class="na">scheduledExecutorService</span><span class="o">.</span><span class="na">scheduleAtFixedRate</span><span class="o">(</span><span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="c1">//对于push模式的消费方式，需要动态调整线程池大小</span>
+                <span class="n">MQClientInstance</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">adjustThreadPool</span><span class="o">();</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"ScheduledTask adjustThreadPool exception"</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">},</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">MINUTES</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>总共有个定时任务：</p>
+
+<ul>
+  <li>
+    <p>获取nameSrv任务</p>
+
+    <p>在没有配置nameSrv的时候，会通过提供的<strong>rocketmq.namesrv.domain</strong>来定时获取nameSrv地址。主要是用于动态调整nameSrv服务器时，不需要修改项目配置</p>
+  </li>
+  <li>
+    <p>更新topic信息任务</p>
+
+    <p>从consumerTable和producerTable中获取topic信息。然后<strong>MQClientInstance.updateTopicRouteInfoFromNameServer()</strong>，这一块在讲producer的时候有写过</p>
+  </li>
+  <li>
+    <p>维护broker信息任务</p>
+
+    <p>主要清理下线broker和添加新增的broker。</p>
+  </li>
+  <li>
+    <p>持久化offset任务</p>
+
+    <p>将本地缓存的offset同步到broker端。保证消息的成功消费。</p>
+  </li>
+  <li>
+    <p>动态调整线程池任务</p>
+
+    <p>根据rebalanceService中所有的ProcessQueue的消息长度，来决定ConsumeMessageService的核心线程数（ProcessQueue存放着需要消费的消息队列，ConsumeMessageService就是消息消费服务，处理消费结果）。不过不知道为什么，在4.3.1的版本中，<strong>incCorePoolSize()</strong>和<strong>decCorePoolSize()</strong>内的方法都被注释掉了。所以这个任务没有起作用。</p>
+  </li>
+</ul>
+
+<h3 id="拉取消息启动">拉取消息启动</h3>
+
+<p>也就是pullMessageService。总所周知，rocketmq的消息消费有两种，一个pull模式，一个push模式。pull好理解，根据本地存的offset，去broker上拉取消息。而push模式，是broker端往client端推消息，其实push实际上还是从broker上拉取，正是通过这个<strong>pullMessageService</strong>。</p>
+
+<p>其核心的部分就是</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">while</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="na">isStopped</span><span class="o">())</span> <span class="o">{</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="c1">//从阻塞队列中获取pullRequest</span>
+        <span class="n">PullRequest</span> <span class="n">pullRequest</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">pullRequestQueue</span><span class="o">.</span><span class="na">take</span><span class="o">();</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">pullMessage</span><span class="o">(</span><span class="n">pullRequest</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">ignored</span><span class="o">)</span> <span class="o">{</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"Pull Message Service Run Method exception"</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>那么就有问题了？什么时候会往这个阻塞队列中添加PullRequest呢。在看消费者消费流程的时候再来看看</p>
+
+<h3 id="负载均衡服务启动">负载均衡服务启动</h3>
+
+<p>负载均衡涉及到消息拉取相关的服务，内容较多，另外写。</p>
+

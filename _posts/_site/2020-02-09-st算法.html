@@ -1,0 +1,70 @@
+<h2 id="前言">前言</h2>
+
+<p>大概是去年十月份开始，开始刷起了leetcode。当时，主要是两个目的，一是加强自己的思维能力，个人觉得算法还是很有意思的，二是开始在日常工作中使用python写些脚步来处理些重复的劳动，借此去学习学习python（不过后面打着打着就开始用java了，蛋疼）。</p>
+
+<p>以前打比赛常用到RMQ算法，不过当时都没有深入了解过原理，前段时间仔细看了看原理和以前的模版，特地整理了一下，在O(1)的时间复制度实现区间最值查询，真的很巧妙</p>
+
+<h2 id="算法简介">算法简介</h2>
+
+<p>st算法网上有时也叫RMQ算法，即区间最值查询（Range Minimum/Maximum Query），其实st算法并不等于rmq算法，st算法为区间最值的问题提供了一个很好解决方案，其本质是一个动态规划。其中预处理的时间复杂度是O(n*log(n))，查询的时间复杂度是O(1)</p>
+
+<p>##算法讲解</p>
+
+<p>假设给定的数组为arr[i]，单次查询[l,r]区间内的最大值</p>
+
+<h3 id="预处理">预处理</h3>
+
+<p>dp[i,j]代表arr[i]开始，总共$2^j$数中的最大值</p>
+
+<p>状态转移方程为：dp[i,j]=max(dp[i,j-1],dp[i+$2^{j-1}$,j-1])</p>
+
+<p>该方程的意思即：arr[i],arr[i+1]……arr[i+$2^j$-1]数组可以分为两个子数组分别求最大值</p>
+
+<p>可以对上述公式进行展开：</p>
+
+<p>dp[i,j]:arr[i],arr[i+1]……arr[i+$2^j$-1]</p>
+
+<p>dp[i,j-1]:arr[i],arr[i+1]……arr[i+$2^{j-1}$-1]</p>
+
+<p>dp[i+$2^{j-1}$,j-1]:arr[i+$2^{j-1}$],arr[i+$2^{j-1}$+1]……arr[i+$2^j$-1]</p>
+
+<h3 id="区间查询">区间查询</h3>
+
+<p>那么对于区间[l,r]中最大值的查询，我们可以这么理解：求以下两个子区间中的最大值</p>
+
+<p>[l,k1],[k2,r]. (k1&lt;=k2)</p>
+
+<p>基于此，我们可以想到给(r - l + 1)取以2为底的对数，令t=$log_2{(r-l+1)}$，即可得到k1,k2</p>
+
+<p>[l,l+$2^t$-1],[r-$2^t$+1,r]</p>
+
+<p>[l,r]区间中的最大值即为:max(dp[l,t],dp[r-$2^t$+1,t])</p>
+
+<h2 id="算法实现">算法实现</h2>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kt">int</span><span class="o">[][]</span> <span class="n">dp</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">N</span><span class="o">][</span><span class="mi">31</span><span class="o">];</span>
+
+<span class="kt">void</span> <span class="nf">rmq_init</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">arr</span><span class="o">)</span> <span class="o">{</span>
+  <span class="kt">int</span> <span class="n">l</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+  <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">l</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+    <span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="n">arr</span><span class="o">[</span><span class="n">i</span><span class="o">];</span><span class="c1">//初始化</span>
+  <span class="o">}</span>
+  <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="o">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">j</span><span class="o">)</span> <span class="o">&lt;=</span> <span class="n">l</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">+</span> <span class="o">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">j</span><span class="o">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">l</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+      <span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">]</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">max</span><span class="o">(</span><span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="o">],</span> <span class="n">dp</span><span class="o">[</span><span class="n">i</span> <span class="o">+</span> <span class="o">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="o">(</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="o">))][</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="o">]);</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kt">int</span> <span class="nf">rmq</span><span class="o">(</span><span class="kt">int</span> <span class="n">l</span><span class="o">,</span> <span class="kt">int</span> <span class="n">r</span><span class="o">)</span> <span class="o">{</span>
+  <span class="kt">int</span> <span class="n">k</span> <span class="o">=</span> <span class="o">(</span><span class="kt">int</span><span class="o">)</span> <span class="o">(</span><span class="n">Math</span><span class="o">.</span><span class="na">log</span><span class="o">((</span><span class="kt">double</span><span class="o">)</span> <span class="n">r</span> <span class="o">-</span> <span class="n">l</span> <span class="o">+</span> <span class="mi">1</span><span class="o">)</span> <span class="o">/</span> <span class="n">Math</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="mf">2.0</span><span class="o">));</span>
+  <span class="k">return</span> <span class="n">Math</span><span class="o">.</span><span class="na">max</span><span class="o">(</span><span class="n">dp</span><span class="o">[</span><span class="n">l</span><span class="o">][</span><span class="n">k</span><span class="o">],</span> <span class="n">dp</span><span class="o">[</span><span class="n">r</span> <span class="o">-</span> <span class="o">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">k</span><span class="o">)</span> <span class="o">+</span> <span class="mi">1</span><span class="o">][</span><span class="n">k</span><span class="o">]);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>以上即为对st算法介绍，至此，其实除了rmq问题，对于区间求最大公倍数，最小公约数，st算法也同样适用。其实类似这种区间查询，以前还常常使用线段树，O(log(n))的效率也是很可观的</p>
+
+<p>偷偷放张最新的排名图（菜鸡也能上分，哈哈）：</p>
+
+<p><img src="/img/in-post/st/leetcode.png" alt="" /></p>
+

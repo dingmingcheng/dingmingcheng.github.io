@@ -1,0 +1,40 @@
+<h2 id="前言">前言</h2>
+
+<p>最近工作中接触到了OAuth1.0a，相比较OAuth2.0，1.0a确实是复杂了不少，中间也踩了不少的坑，特此记录。关于OAuth1.0，1.0a，2.0之间的区别，包括1.0的相关漏洞，可以看看知乎上这篇文章，<a href="https://www.zhihu.com/question/19851243">Oauth 1.0 1.0a 和 2.0 的之间的区别有哪些？</a>,我觉得还是比较详细的。</p>
+
+<h2 id="踩坑记录">踩坑记录</h2>
+
+<h3 id="生成签名">生成签名</h3>
+
+<p>生成签名踩的坑还是比较多的，一个一个讲吧</p>
+
+<p>1.加密密钥</p>
+
+<p>签名时采用的算法要看具体的服务提供者，常见的有HMAC-SHA1，HMAC-SHA256，其中需要提供一个加密密钥，在OAuth1.0a的流程中，每次都要生成签名，防止url被恶意篡改。在申请request_token时，密钥为consumer_secret加上&amp;，比如consumer_secret=“kwyfq3grv8”，密钥就是“kwyfq3grv8&amp;”。</p>
+
+<p>而在申请accesstoken或者访问相关资源时，密钥为“consumer_secret&amp;oauth_token”，注意，在申请accesstoken和访问相关资源中，其oauth_token的值是不同的，前者的值会在访问request_token的结果的url中给予，而后者的oauth_token则是来自于申请accesstoken的返回结果。</p>
+
+<p>2.加密内容</p>
+
+<p>对于加密内容，其中也有很多需要注意的地方。总的来说，加密内容的结构是这样的：</p>
+
+<p>“请求方法&amp;请求url&amp;请求参数”</p>
+
+<p>请求方法是GET，POST，PUT，DELETE等。</p>
+
+<p>请求url，需要注意进行url编码，java中我是这么写的，一开始测试时是用网站在线编码的，但是特殊符号的编码字母全是小写的，导致生成了错误的签名，一直没认证成功。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">URLEncoder</span><span class="o">.</span><span class="na">encode</span><span class="o">(</span><span class="n">requestUri</span><span class="o">.</span><span class="na">toString</span><span class="o">(),</span> <span class="s">"utf-8"</span><span class="o">)</span>
+</code></pre></div></div>
+
+<p>对于请求参数，一般都包括这几个，oauth_timestamp，oauth_signature_method，oauth_version，oauth_nonce，oauth_consumer_key等，其余的参数根据接口情况进行添加。这边参数的拼接也有讲究，需要按照key的字典序来，例如：</p>
+
+<p>oauth_consumer_key=xxxxxxxxx&amp;oauth_nonce=xxxxxxx&amp;oauth_signature_method=HMAC-SHA1&amp;oauth_timestamp=xxxxxxx&amp;oauth_version=1.0a</p>
+
+<p>3.生成签名值</p>
+
+<p>javax相关包中有这些加密方法，直接用就可以了，别忘了对生成的byte[]数组进行Base64编码。将生成的签名加入到请求参数中，就没问题了。</p>
+
+<h3 id="总结">总结</h3>
+
+<p>相比较2.0，1.0a还是麻烦了不少的，不过随着https的普及以及http2.0的发展，相信正如社会进程一样，一切都会向着更安全更快捷的方向发展下去。本文也只是简单记录了一下1.0a中一些流程细节，包括1.0中的漏洞，还有oauth_timestamp和oauth_nonce以及相关的重放攻击也都未提及。有兴趣的兄弟可以自行去查阅了解。</p>
